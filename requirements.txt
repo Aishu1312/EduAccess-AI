@@ -7,3 +7,5 @@ openai-whisper
 transformers
 firebase-admin
 python-multipart
+deep-translator
+langdetect
