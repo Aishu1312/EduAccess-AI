@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EduAccess AI</title>
+</head>
+<body>
+
+    <h1>EduAccess AI</h1>
+
+    <textarea id="inputText"></textarea>
+
+    <button onclick="generateNotes()">
+        Generate Notes
+    </button>
+
+    <h2>Output</h2>
+
+    <p id="output"></p>
+
+<script>
+
+async function generateNotes() {
+
+    let text = document.getElementById("inputText").value;
+
+    const response = await fetch(
+        "http://127.0.0.1:8000/generate-notes",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({text})
+        }
+    );
+
+    const data = await response.json();
+
+    document.getElementById("output").innerText =
+        data.notes;
+}
+
+</script>
+
+</body>
+</html>
