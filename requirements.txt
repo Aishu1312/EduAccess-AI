@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+tensorflow
+opencv-python
+mediapipe
+openai-whisper
+transformers
+firebase-admin
+python-multipart
