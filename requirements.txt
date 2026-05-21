@@ -1,11 +1,51 @@
-fastapi
-uvicorn
-tensorflow
-opencv-python
-mediapipe
-openai-whisper
-transformers
-firebase-admin
-python-multipart
-deep-translator
-langdetect
+# ─── EduAccess-AI Requirements ───────────────────────────────────
+# Install: pip install -r requirements.txt
+
+# ── Core Web Framework ────────────────────────────────────────────
+flask==3.0.0
+flask-cors==4.0.0
+gunicorn==21.2.0
+
+# ── AI / LLM ──────────────────────────────────────────────────────
+google-generativeai==0.7.2          # Gemini API
+openai==1.30.0                      # Optional: OpenAI fallback
+
+# ── NLP & Text Processing ─────────────────────────────────────────
+nltk==3.8.1
+scikit-learn==1.5.0
+numpy==1.26.4
+
+# ── Speech & Voice ────────────────────────────────────────────────
+SpeechRecognition==3.10.4
+gTTS==2.5.1
+pyttsx3==2.90
+pyaudio==0.2.14                     # Required for mic input
+
+# ── Computer Vision ───────────────────────────────────────────────
+opencv-python-headless==4.9.0.80    # Use headless for server deployment
+mediapipe==0.10.14                  # Hand/face landmark detection
+deepface==0.0.93                    # Emotion detection
+
+# ── OCR ───────────────────────────────────────────────────────────
+easyocr==1.7.1                      # Handwritten text — deep learning OCR
+pytesseract==0.3.10                 # Printed text OCR
+Pillow==10.3.0                      # Image processing
+pdf2image==1.17.0                   # PDF → image conversion
+
+# ── Translation & Language ────────────────────────────────────────
+deep-translator==1.11.4             # Google Translate wrapper (no key needed for basic)
+langdetect==1.0.9                   # Language auto-detection
+
+# ── Database ──────────────────────────────────────────────────────
+pymongo==4.7.1                      # MongoDB
+firebase-admin==6.5.0               # Firebase
+
+# ── Utilities ─────────────────────────────────────────────────────
+python-dotenv==1.0.1                # .env loading
+requests==2.32.0
+python-multipart==0.0.9
+schedule==1.2.1                     # Smart reminders
+
+# ── Development Tools ─────────────────────────────────────────────
+# pytest==8.2.0                     # Uncomment for testing
+# black==24.4.2                     # Uncomment for code formatting
