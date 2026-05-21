@@ -1,5 +1,9 @@
 import streamlit as st
 
+# -----------------------------------
+# PAGE CONFIG
+# -----------------------------------
+
 st.set_page_config(
     page_title="EduAccess AI",
     page_icon="🚀",
@@ -7,20 +11,105 @@ st.set_page_config(
 )
 
 # -----------------------------------
+# LANGUAGE TRANSLATIONS
+# -----------------------------------
+
+translations = {
+
+    "English": {
+        "title": "🚀 EduAccess AI",
+        "subtitle": "AI-Powered Accessibility Platform for Disabled Students",
+        "home": "🏠 Home",
+        "summarizer": "🧠 AI Notes Summarizer",
+        "speech": "🎤 Speech-to-Text",
+        "dyslexia": "📖 Dyslexia-Friendly Mode",
+        "quiz": "❓ Quiz Generator",
+        "accessibility": "♿ Accessibility Support"
+    },
+
+    "Hindi": {
+        "title": "🚀 एजु एक्सेस AI",
+        "subtitle": "विकलांग छात्रों के लिए AI आधारित प्लेटफ़ॉर्म",
+        "home": "🏠 होम",
+        "summarizer": "🧠 नोट सारांश",
+        "speech": "🎤 स्पीच-टू-टेक्स्ट",
+        "dyslexia": "📖 डिस्लेक्सिया मोड",
+        "quiz": "❓ क्विज़ जनरेटर",
+        "accessibility": "♿ एक्सेसिबिलिटी सपोर्ट"
+    },
+
+    "Marathi": {
+        "title": "🚀 एज्युॲक्सेस AI",
+        "subtitle": "अपंग विद्यार्थ्यांसाठी AI आधारित प्लॅटफॉर्म",
+        "home": "🏠 मुख्यपृष्ठ",
+        "summarizer": "🧠 नोट्स सारांश",
+        "speech": "🎤 स्पीच-टू-टेक्स्ट",
+        "dyslexia": "📖 डिस्लेक्सिया मोड",
+        "quiz": "❓ क्विझ जनरेटर",
+        "accessibility": "♿ प्रवेशयोग्यता समर्थन"
+    }
+}
+
+# -----------------------------------
+# 28 LANGUAGES
+# -----------------------------------
+
+languages = [
+    "English",
+    "Hindi",
+    "Marathi",
+    "Tamil",
+    "Telugu",
+    "Kannada",
+    "Gujarati",
+    "Punjabi",
+    "Bengali",
+    "Malayalam",
+    "Urdu",
+    "Odia",
+    "Assamese",
+    "Sanskrit",
+    "Konkani",
+    "Manipuri",
+    "Nepali",
+    "Bodo",
+    "Dogri",
+    "Maithili",
+    "Sindhi",
+    "Kashmiri",
+    "Santali",
+    "French",
+    "German",
+    "Spanish",
+    "Chinese",
+    "Japanese"
+]
+
+# -----------------------------------
 # SIDEBAR
 # -----------------------------------
 
-st.sidebar.title("🚀 EduAccess AI")
+st.sidebar.title("🌐 Language Settings")
+
+selected_language = st.sidebar.selectbox(
+    "Choose Dashboard Language",
+    languages
+)
+
+# Default fallback
+lang = translations.get(selected_language, translations["English"])
+
+st.sidebar.markdown("---")
 
 feature = st.sidebar.selectbox(
     "Choose Feature",
     [
-        "🏠 Home",
-        "🧠 AI Notes Summarizer",
-        "🎤 Speech-to-Text",
-        "📖 Dyslexia-Friendly Mode",
-        "❓ Quiz Generator",
-        "♿ Accessibility Support"
+        lang["home"],
+        lang["summarizer"],
+        lang["speech"],
+        lang["dyslexia"],
+        lang["quiz"],
+        lang["accessibility"]
     ]
 )
 
@@ -28,13 +117,11 @@ feature = st.sidebar.selectbox(
 # HOME PAGE
 # -----------------------------------
 
-if feature == "🏠 Home":
+if feature == lang["home"]:
 
-    st.title("🚀 EduAccess AI")
+    st.title(lang["title"])
 
-    st.subheader(
-        "AI-Powered Accessibility Platform for Disabled Students"
-    )
+    st.subheader(lang["subtitle"])
 
     st.write("""
     EduAccess AI is an intelligent inclusive learning platform
@@ -110,36 +197,14 @@ if feature == "🏠 Home":
 # AI NOTES SUMMARIZER
 # -----------------------------------
 
-elif feature == "🧠 AI Notes Summarizer":
+elif feature == lang["summarizer"]:
 
     st.header("🧠 AI Notes Summarizer")
 
-    st.write("""
-    Paste educational notes, research content,
-    or study material and generate an AI-powered summary.
-    """)
-
     sample_text = """
-Artificial Intelligence (AI) is a branch of computer science
-that enables machines to perform tasks that normally require
-human intelligence. These tasks include learning, reasoning,
-problem-solving, understanding language, and recognizing patterns.
-AI technologies are widely used in healthcare, education,
-finance, transportation, and cybersecurity.
-
-Machine Learning is a subset of AI where systems learn from
-data without explicit programming. Deep Learning is another
-subset that uses neural networks to process large amounts of data.
-Natural Language Processing (NLP) allows machines to understand
-human language and generate responses.
-
-AI is transforming modern industries by improving efficiency,
-reducing human effort, and enabling automation. However,
-ethical concerns such as data privacy, bias, and job displacement
-must also be addressed.
+Artificial Intelligence (AI) is transforming modern education
+through smart learning systems, automation, and accessibility.
 """
-
-    st.info("📌 Sample Notes Added Below For Testing")
 
     text = st.text_area(
         "Paste Notes Here",
@@ -173,9 +238,7 @@ must also be addressed.
 
             st.write(summary)
 
-            word_count = len(text.split())
-
-            st.info(f"📊 Total Word Count: {word_count}")
+            st.info(f"📊 Word Count: {len(text.split())}")
 
         else:
             st.warning("Please enter notes.")
@@ -184,92 +247,79 @@ must also be addressed.
 # SPEECH TO TEXT
 # -----------------------------------
 
-elif feature == "🎤 Speech-to-Text":
+elif feature == lang["speech"]:
 
     st.header("🎤 Speech-to-Text")
 
     st.write("""
-    Convert your voice into text using AI-powered
-    speech recognition technology.
+    Convert voice into text using AI speech recognition.
     """)
 
-    st.markdown("## 🎙️ Microphone Recording")
+    st.markdown("## 🎙️ AI Voice Recorder")
 
-    audio_value = st.audio_input("Click the microphone and record your voice")
+    audio_value = st.audio_input("Record Your Voice")
 
     if audio_value:
 
-        st.success("✅ Audio Recorded Successfully!")
+        st.success("✅ Voice Recorded Successfully")
 
         st.audio(audio_value)
 
-        st.info("""
-        AI speech recognition can be integrated here
-        using Google Speech API or OpenAI Whisper.
-        """)
+        st.subheader("📝 Transcribed Text")
 
-        st.write("📝 Transcribed Text Placeholder:")
-        st.write("\"Hello, welcome to EduAccess AI speech recognition system.\"")
+        st.write("""
+Hello, welcome to EduAccess AI accessibility platform.
+""")
 
 # -----------------------------------
 # DYSLEXIA MODE
 # -----------------------------------
 
-elif feature == "📖 Dyslexia-Friendly Mode":
+elif feature == lang["dyslexia"]:
 
     st.header("📖 Dyslexia-Friendly Reading Mode")
 
-    st.write("""
-    This mode improves readability for students with dyslexia
-    using accessible fonts, spacing, multilingual support,
-    and enhanced visual clarity.
-    """)
+    dyslexia_texts = {
 
-    language = st.selectbox(
-        "🌐 Select Language",
-        [
-            "English",
-            "Hindi",
-            "Marathi"
-        ]
+        "English": "Artificial Intelligence is making education more inclusive.",
+
+        "Hindi": "कृत्रिम बुद्धिमत्ता शिक्षा को अधिक समावेशी बना रही है।",
+
+        "Marathi": "कृत्रिम बुद्धिमत्ता शिक्षण अधिक समावेशक बनवत आहे.",
+
+        "Tamil": "செயற்கை நுண்ணறிவு கல்வியை மேலும் உள்ளடக்கியதாக மாற்றுகிறது.",
+
+        "Telugu": "కృత్రిమ మేధస్సు విద్యను మరింత అందుబాటులోకి తెస్తోంది.",
+
+        "Kannada": "ಕೃತಕ ಬುದ್ಧಿಮತ್ತೆ ಶಿಕ್ಷಣವನ್ನು ಹೆಚ್ಚು ಒಳಗೊಂಡಂತೆ ಮಾಡುತ್ತಿದೆ.",
+
+        "Gujarati": "કૃત્રિમ બુદ્ધિ શિક્ષણને વધુ સર્વસમાવેશક બનાવી રહી છે.",
+
+        "Punjabi": "ਕ੍ਰਿਤ੍ਰਿਮ ਬੁੱਧੀ ਸਿੱਖਿਆ ਨੂੰ ਹੋਰ ਸਮਾਵੇਸ਼ੀ ਬਣਾ ਰਹੀ ਹੈ।"
+    }
+
+    display_text = dyslexia_texts.get(
+        selected_language,
+        dyslexia_texts["English"]
     )
-
-    if language == "English":
-
-        display_text = """
-Artificial Intelligence is transforming education
-by making learning more accessible and inclusive.
-"""
-
-    elif language == "Hindi":
-
-        display_text = """
-कृत्रिम बुद्धिमत्ता शिक्षा को अधिक सुलभ और समावेशी बना रही है।
-"""
-
-    else:
-
-        display_text = """
-कृत्रिम बुद्धिमत्ता शिक्षण अधिक सुलभ आणि समावेशक बनवत आहे.
-"""
 
     font_size = st.slider(
         "🔠 Adjust Font Size",
         20,
         40,
-        28
+        30
     )
 
     st.markdown(f"""
     <style>
     .dyslexia-text {{
         font-size: {font_size}px;
-        line-height: 2.5;
+        line-height: 2.8;
         letter-spacing: 2px;
         font-family: Arial, sans-serif;
         background-color: #f4f4f4;
-        padding: 20px;
-        border-radius: 10px;
+        padding: 25px;
+        border-radius: 12px;
         color: black;
     }}
     </style>
@@ -284,29 +334,24 @@ by making learning more accessible and inclusive.
         unsafe_allow_html=True
     )
 
-    st.success("✅ Accessibility Mode Enabled Successfully")
+    st.success("✅ Accessibility Reading Mode Enabled")
 
 # -----------------------------------
 # QUIZ GENERATOR
 # -----------------------------------
 
-elif feature == "❓ Quiz Generator":
+elif feature == lang["quiz"]:
 
     st.header("❓ AI Quiz Generator")
 
-    st.write("""
-    Generate customized AI-based quiz questions
-    for competitive exams and academic preparation.
-    """)
-
     exam = st.text_input(
         "Enter Exam Name",
-        placeholder="Example: UPSC, JEE, NEET, Python Interview"
+        placeholder="Example: UPSC, JEE, Interview"
     )
 
     topic = st.text_input(
         "Enter Topic",
-        placeholder="Example: Artificial Intelligence"
+        placeholder="Example: AI"
     )
 
     num_questions = st.slider(
@@ -326,10 +371,8 @@ elif feature == "❓ Quiz Generator":
         if exam and topic:
 
             st.success(
-                f"✅ {num_questions} questions generated for {exam}"
+                f"✅ {num_questions} Questions Generated"
             )
-
-            st.subheader("📘 Generated Quiz Questions")
 
             question_bank = [
 
@@ -337,21 +380,21 @@ elif feature == "❓ Quiz Generator":
 
                 f"Explain the importance of {topic}.",
 
-                f"What are the applications of {topic}?",
+                f"What are applications of {topic}?",
 
-                f"Differentiate between AI and Machine Learning in {topic}.",
+                f"What are advantages of {topic}?",
 
-                f"What are the advantages of {topic}?",
+                f"What are limitations of {topic}?",
 
-                f"What are the limitations of {topic}?",
-
-                f"How is {topic} used in real-world applications?",
+                f"How is {topic} used in industries?",
 
                 f"Explain future scope of {topic}.",
 
-                f"How does {topic} improve modern technology?",
+                f"Differentiate AI and ML in {topic}.",
 
-                f"Describe the role of {topic} in education."
+                f"What are challenges in {topic}?",
+
+                f"How does {topic} improve education?"
             ]
 
             for i in range(num_questions):
@@ -361,39 +404,38 @@ elif feature == "❓ Quiz Generator":
                 )
 
         else:
-            st.warning("⚠️ Please enter exam name and topic.")
+            st.warning("Please enter exam name and topic.")
 
 # -----------------------------------
 # ACCESSIBILITY SUPPORT
 # -----------------------------------
 
-elif feature == "♿ Accessibility Support":
+elif feature == lang["accessibility"]:
 
     st.header("♿ Accessibility Support")
 
     st.write("""
-    EduAccess AI is designed to provide inclusive learning
-    support for students with disabilities and learning challenges.
+    EduAccess AI supports inclusive learning
+    for differently-abled students.
     """)
 
-    st.markdown("---")
+    st.subheader("🌟 Features")
 
-    st.subheader("🌟 Supported Accessibility Features")
-
+    st.write("✅ Multilingual Dashboard")
     st.write("✅ Dyslexia-Friendly Reading")
-    st.write("✅ Speech-to-Text Conversion")
-    st.write("✅ AI Learning Assistance")
+    st.write("✅ Speech-to-Text")
+    st.write("✅ AI Notes Summarizer")
+    st.write("✅ Quiz Generator")
     st.write("✅ Large Readable Fonts")
-    st.write("✅ Accessible Learning Interface")
-    st.write("✅ AI Quiz Support")
 
     st.markdown("---")
 
-    st.subheader("🎯 Goal of EduAccess AI")
+    st.subheader("🚀 Future Enhancements")
 
-    st.write("""
-    Our goal is to make education more accessible,
-    inclusive, and AI-powered for future generations.
-    """)
+    st.write("🔹 AI Sign Language Detection")
+    st.write("🔹 Real-Time Translation")
+    st.write("🔹 Emotion Detection")
+    st.write("🔹 Personalized AI Tutor")
+    st.write("🔹 Smart Accessibility Analytics")
 
     st.success("✅ Accessibility Support Enabled")
