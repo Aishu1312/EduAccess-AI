@@ -57,55 +57,97 @@ elif feature == "AI Notes Summarizer":
             st.warning("Please enter some notes.")
 
 # SPEECH TO TEXT
-elif feature == "Speech-to-Text":
+elif feature == "🎤 Speech-to-Text":
 
     st.header("🎤 Speech-to-Text")
 
-    st.write("""
-    This feature converts spoken audio into text
-    for accessibility support.
-    """)
+    st.write("Convert your voice into text using AI.")
 
-    st.info("Speech recognition demo feature.")
+    audio_value = st.audio_input("Record your voice")
+
+    if audio_value:
+        st.success("Audio recorded successfully!")
+
+        st.audio(audio_value)
+
+        st.info("Speech recognition processing feature can be integrated here.")
 
 # DYSLEXIA MODE
-elif feature == "Dyslexia-Friendly Mode":
+elif feature == "📖 Dyslexia-Friendly Mode":
 
     st.header("📖 Dyslexia-Friendly Reading Mode")
 
+    st.write("""
+    This mode improves readability for students with dyslexia
+    by increasing spacing, font size, and visual clarity.
+    """)
+
     st.markdown("""
     <style>
-    .dyslexia-font {
-        font-size:24px;
-        line-height:2;
-        letter-spacing:2px;
+    .dyslexia-text {
+        font-size: 28px;
+        line-height: 2.5;
+        letter-spacing: 2px;
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        padding: 20px;
+        border-radius: 10px;
     }
     </style>
     """, unsafe_allow_html=True)
 
     st.markdown(
-        '<p class="dyslexia-font">'
-        'This is a dyslexia-friendly reading mode example.'
-        '</p>',
+        '''
+        <div class="dyslexia-text">
+        Artificial Intelligence is transforming education by
+        making learning more personalized, accessible, and inclusive
+        for students across the world.
+        </div>
+        ''',
         unsafe_allow_html=True
     )
 
-# QUIZ GENERATOR
-elif feature == "Quiz Generator":
+    st.success("Accessibility mode enabled successfully.")
+
+# QUIZ GENERATORelif feature == "❓ Quiz Generator":
 
     st.header("❓ AI Quiz Generator")
 
-    topic = st.text_input("Enter Quiz Topic")
+    exam = st.text_input(
+        "Enter Exam Name",
+        placeholder="Example: UPSC, JEE, NEET, Python Interview"
+    )
+
+    topic = st.text_input(
+        "Enter Topic",
+        placeholder="Example: Artificial Intelligence"
+    )
+
+    num_questions = st.slider(
+        "Select Number of Questions",
+        1,
+        10,
+        5
+    )
+
+    difficulty = st.selectbox(
+        "Choose Difficulty Level",
+        ["Easy", "Medium", "Hard"]
+    )
 
     if st.button("Generate Quiz"):
 
-        if topic:
+        if exam and topic:
 
-            st.write(f"### Quiz on {topic}")
+            st.success(
+                f"{num_questions} questions generated for {exam}"
+            )
 
-            st.write("1. What is Artificial Intelligence?")
-            st.write("2. Explain NLP.")
-            st.write("3. What is Machine Learning?")
+            for i in range(1, num_questions + 1):
+
+                st.write(
+                    f"{i}. Explain {topic} concept related to {exam} exam."
+                )
 
         else:
-            st.warning("Please enter a topic.")
+            st.warning("Please enter exam name and topic.")
