@@ -221,13 +221,49 @@ elif feature == "📖 Dyslexia-Friendly Mode":
 
     st.write("""
     This mode improves readability for students with dyslexia
-    by increasing spacing, font size, and visual clarity.
+    using accessible fonts, spacing, multilingual support,
+    and enhanced visual clarity.
     """)
 
-    st.markdown("""
+    language = st.selectbox(
+        "🌐 Select Language",
+        [
+            "English",
+            "Hindi",
+            "Marathi"
+        ]
+    )
+
+    if language == "English":
+
+        display_text = """
+Artificial Intelligence is transforming education
+by making learning more accessible and inclusive.
+"""
+
+    elif language == "Hindi":
+
+        display_text = """
+कृत्रिम बुद्धिमत्ता शिक्षा को अधिक सुलभ और समावेशी बना रही है।
+"""
+
+    else:
+
+        display_text = """
+कृत्रिम बुद्धिमत्ता शिक्षण अधिक सुलभ आणि समावेशक बनवत आहे.
+"""
+
+    font_size = st.slider(
+        "🔠 Adjust Font Size",
+        20,
+        40,
+        28
+    )
+
+    st.markdown(f"""
     <style>
-    .dyslexia-text {
-        font-size: 28px;
+    .dyslexia-text {{
+        font-size: {font_size}px;
         line-height: 2.5;
         letter-spacing: 2px;
         font-family: Arial, sans-serif;
@@ -235,16 +271,14 @@ elif feature == "📖 Dyslexia-Friendly Mode":
         padding: 20px;
         border-radius: 10px;
         color: black;
-    }
+    }}
     </style>
     """, unsafe_allow_html=True)
 
     st.markdown(
-        """
+        f"""
         <div class="dyslexia-text">
-        Artificial Intelligence is transforming education by
-        making learning more personalized, accessible,
-        and inclusive for students across the world.
+        {display_text}
         </div>
         """,
         unsafe_allow_html=True
@@ -297,10 +331,33 @@ elif feature == "❓ Quiz Generator":
 
             st.subheader("📘 Generated Quiz Questions")
 
-            for i in range(1, num_questions + 1):
+            question_bank = [
+
+                f"What is {topic}?",
+
+                f"Explain the importance of {topic}.",
+
+                f"What are the applications of {topic}?",
+
+                f"Differentiate between AI and Machine Learning in {topic}.",
+
+                f"What are the advantages of {topic}?",
+
+                f"What are the limitations of {topic}?",
+
+                f"How is {topic} used in real-world applications?",
+
+                f"Explain future scope of {topic}.",
+
+                f"How does {topic} improve modern technology?",
+
+                f"Describe the role of {topic} in education."
+            ]
+
+            for i in range(num_questions):
 
                 st.write(
-                    f"{i}. Explain {topic} concept related to {exam} exam ({difficulty} level)."
+                    f"{i+1}. {question_bank[i]}"
                 )
 
         else:
