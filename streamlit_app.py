@@ -22,21 +22,83 @@ feature = st.sidebar.selectbox(
 )
 
 # HOME PAGE
-if feature == "Home":
-    st.header("Welcome to EduAccess AI")
+if feature == "🏠 Home":
+
+    st.title("🚀 EduAccess AI")
+
+    st.subheader(
+        "AI-Powered Accessibility Platform for Disabled Students"
+    )
 
     st.write("""
-    EduAccess AI is an intelligent accessibility platform designed
-    to help disabled students learn more effectively using AI,
-    NLP, speech technologies, and inclusive design.
+    EduAccess AI is an intelligent inclusive learning platform
+    designed to help students with disabilities learn more effectively
+    using Artificial Intelligence, NLP, speech technologies,
+    and accessibility-focused tools.
     """)
 
-    st.markdown("### Features")
-    st.write("✅ AI Notes Summarizer")
-    st.write("✅ Speech-to-Text")
-    st.write("✅ Dyslexia-Friendly Reading")
-    st.write("✅ AI Quiz Generator")
-    st.write("✅ Accessibility Support")
+    st.markdown("---")
+
+    st.header("🌟 Core Features")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        st.info("🧠 AI Notes Summarizer")
+        st.write("""
+        Generate concise AI-powered summaries from
+        long educational notes and study materials.
+        """)
+
+        st.success("🎤 Speech-to-Text")
+        st.write("""
+        Convert spoken language into text
+        for accessible learning support.
+        """)
+
+    with col2:
+
+        st.warning("📖 Dyslexia-Friendly Reading")
+        st.write("""
+        Improve readability using accessible fonts,
+        spacing, and visual enhancements.
+        """)
+
+        st.error("❓ AI Quiz Generator")
+        st.write("""
+        Generate customized quizzes based on
+        exams, topics, and difficulty levels.
+        """)
+
+    st.markdown("---")
+
+    st.header("♿ Accessibility Support")
+
+    st.write("""
+    EduAccess AI focuses on inclusive education
+    for students with:
+    """)
+
+    st.write("✅ Dyslexia")
+    st.write("✅ Visual Learning Difficulties")
+    st.write("✅ Speech Impairments")
+    st.write("✅ Reading Challenges")
+    st.write("✅ Learning Disabilities")
+
+    st.markdown("---")
+
+    st.header("🚀 Future Scope")
+
+    st.write("""
+    Future versions of EduAccess AI may include:
+    """)
+
+    st.write("🔹 Real-Time Sign Language Recognition")
+    st.write("🔹 AI Career Guidance")
+    st.write("🔹 Emotion-Aware Learning")
+    st.write("🔹 Personalized AI Tutor")
+    st.write("🔹 Multilingual Accessibility Support")
 
 # SUMMARIZER
 elif feature == "🧠 AI Notes Summarizer":
