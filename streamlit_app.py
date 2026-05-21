@@ -39,22 +39,48 @@ if feature == "Home":
     st.write("✅ Accessibility Support")
 
 # SUMMARIZER
-elif feature == "AI Notes Summarizer":
+elif feature == "🧠 AI Notes Summarizer":
 
     st.header("🧠 AI Notes Summarizer")
 
-    text = st.text_area("Paste your educational notes here")
+    st.write("""
+    Paste educational notes, research content, or study material
+    and generate an AI-powered concise summary.
+    """)
+
+    text = st.text_area(
+        "Paste Notes Here",
+        height=250
+    )
+
+    summary_length = st.selectbox(
+        "Select Summary Length",
+        ["Short", "Medium", "Detailed"]
+    )
 
     if st.button("Generate Summary"):
 
         if text:
-            summary = text[:300] + "..."
+
+            sentences = text.split('.')
+
+            if summary_length == "Short":
+                summary = '.'.join(sentences[:2])
+
+            elif summary_length == "Medium":
+                summary = '.'.join(sentences[:4])
+
+            else:
+                summary = '.'.join(sentences[:6])
 
             st.success("Summary Generated Successfully")
+
+            st.subheader("📄 Generated Summary")
+
             st.write(summary)
 
         else:
-            st.warning("Please enter some notes.")
+            st.warning("Please enter notes.")
 
 # SPEECH TO TEXT
 elif feature == "🎤 Speech-to-Text":
