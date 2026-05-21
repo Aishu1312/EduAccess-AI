@@ -1,0 +1,60 @@
+# ─── EduAccess-AI .gitignore ──────────────────────────────────────
+
+# CRITICAL: Never commit these
+.env
+*.env
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+venv/
+env/
+.venv/
+pip-log.txt
+
+# Node / React
+node_modules/
+frontend/build/
+frontend/.env
+npm-debug.log*
+yarn-error.log*
+.npm/
+.yarn/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ML Models (too large for Git — use Git LFS or separate storage)
+*.pkl
+*.h5
+*.pt
+*.pth
+models/
+
+# Uploads (user data — never commit)
+uploads/
+temp/
+*.mp3
+*.wav
+
+# Logs
+*.log
+logs/
+
+# Firebase
+.firebase/
+firebase-debug.log
