@@ -160,46 +160,94 @@ elif feature == lang["speech"]:
     import speech_recognition as sr
     import tempfile
 
-    st.header("🎤 Voice Assistant (Works Without API)")
+    st.header("🎤 Voice Assistant (No API Required)")
 
+    # 🎙️ MIC INPUT
     audio = st.audio_input("🎙️ Record Voice")
 
-    if audio:
+    # 📂 FILE UPLOAD (ADDED ✅)
+    uploaded_file = st.file_uploader("📂 Upload Audio", type=["wav", "mp3", "m4a"])
 
-        with tempfile.NamedTemporaryFile(delete=False) as tmp:
-            tmp.write(audio.read())
+    source = audio if audio else uploaded_file
+
+    if source:
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+            tmp.write(source.read())
             audio_path = tmp.name
 
         recognizer = sr.Recognizer()
 
         try:
-            with sr.AudioFile(audio_path) as source:
-                data = recognizer.record(source)
-                text = recognizer.recognize_google(data)
+            with sr.AudioFile(audio_path) as src:
+                audio_data = recognizer.record(src)
+                text = recognizer.recognize_google(audio_data)
 
             st.subheader("📝 Your Question")
             st.write(text)
 
         except:
             text = ""
-            st.error("❌ Could not understand audio")
+            st.error("❌ Could not understand audio. Speak clearly.")
 
-        # 🤖 ANSWER (NO API)
+        # 🤖 DETAILED AI ANSWER (NO API)
         if text:
 
             st.subheader("🤖 AI Answer")
 
-            if "ai" in text.lower():
-                st.success("AI is the simulation of human intelligence in machines.")
+            text_lower = text.lower()
 
-            elif "machine learning" in text.lower():
-                st.success("Machine Learning is a subset of AI that allows systems to learn from data.")
+            if "ai" in text_lower:
+                st.success("""
+Artificial Intelligence (AI) refers to machines that can mimic human intelligence.
 
-            elif "education" in text.lower():
-                st.success("AI improves education through personalized learning and accessibility.")
+👉 Example:
+- Chatbots like ChatGPT
+- Self-driving cars
+
+👉 Real Life Use:
+- Healthcare diagnosis
+- Smart assistants like Alexa
+""")
+
+            elif "machine learning" in text_lower:
+                st.success("""
+Machine Learning is a part of AI where systems learn from data.
+
+👉 Example:
+- Netflix recommendations
+- Spam email detection
+
+👉 How it works:
+System learns patterns from past data and predicts future outcomes.
+""")
+
+            elif "education" in text_lower:
+                st.success("""
+AI is transforming education by making learning personalized and accessible.
+
+👉 Example:
+- AI tutors
+- Voice-based learning for blind students
+
+👉 Benefits:
+- Learn anytime
+- Learn at your own pace
+""")
 
             else:
-                st.success("This is a smart AI assistant. It answers based on your question.")
+                st.success(f"""
+Your Question: {text}
+
+👉 Explanation:
+This is an intelligent response system. Based on your query, here's a simple explanation:
+
+- The topic relates to general knowledge or academics
+- Try asking about AI, ML, Science, or Education
+
+👉 Example:
+Ask: "What is AI?" or "Explain Machine Learning"
+""")
             
 # ---------------------------------------------------
 # DYSLEXIA MODE
@@ -228,61 +276,62 @@ elif feature == lang["dyslexia"]:
 # ---------------------------------------------------
 elif feature == lang["quiz"]:
 
-    st.header("❓ Smart AI Quiz Generator")
+    st.header("❓ Kahoot Style Quiz")
 
     topic = st.text_input("Enter Topic")
 
-    if st.button("Generate Quiz"):
+    if st.button("Start Quiz"):
 
-        if topic == "":
-            st.warning("Enter topic first")
-        else:
+        # ✅ Generate 20 questions
+        st.session_state.quiz = [
+            {
+                "question": f"What is {topic}?",
+                "options": ["Definition", "Example", "Tool", "None"],
+                "answer": "Definition",
+                "explanation": f"{topic} is defined as a concept used in studies."
+            }
+        ]
 
-            # 🔥 Smart predefined logic
-            if "ai" in topic.lower():
+        # Auto-generate more
+        for i in range(2, 21):
+            st.session_state.quiz.append({
+                "question": f"{topic} Question {i}",
+                "options": ["Option A", "Option B", "Option C", "Option D"],
+                "answer": "Option A",
+                "explanation": "Option A is correct based on concept."
+            })
 
-                st.session_state.quiz = [
-                    {
-                        "question": "What is AI?",
-                        "options": ["Machine Intelligence","Human Brain","Software","None"],
-                        "answer": "Machine Intelligence",
-                        "explanation": "AI simulates human intelligence."
-                    },
-                    {
-                        "question": "Where is AI used?",
-                        "options": ["Healthcare","Farming","Robotics","All"],
-                        "answer": "All",
-                        "explanation": "AI is used everywhere."
-                    }
-                ]
+        st.session_state.q_index = 0
+        st.session_state.score = 0
 
-            else:
-                st.session_state.quiz = [
-                    {
-                        "question": f"What is {topic}?",
-                        "options": ["Concept","Tool","Device","None"],
-                        "answer": "Concept",
-                        "explanation": f"{topic} is a concept."
-                    }
-                ]
-
-    # DISPLAY QUIZ
+    # 🚀 RUN QUIZ
     if "quiz" in st.session_state:
 
-        for i, q in enumerate(st.session_state.quiz):
+        q_index = st.session_state.q_index
+        quiz = st.session_state.quiz
 
-            st.subheader(f"Q{i+1}: {q['question']}")
+        if q_index < len(quiz):
 
-            ans = st.radio("Choose answer", q["options"], key=i)
+            q = quiz[q_index]
 
-            if st.button(f"Submit {i}"):
+            st.subheader(f"Q{q_index+1}: {q['question']}")
 
-                if ans == q["answer"]:
-                    st.success("✅ Correct")
+            user_ans = st.radio("Choose Answer", q["options"], key=q_index)
+
+            if st.button("Submit Answer"):
+
+                if user_ans == q["answer"]:
+                    st.success("✅ Correct!")
+                    st.session_state.score += 1
                 else:
                     st.error("❌ Wrong")
-                    st.write("✔ Correct:", q["answer"])
-                    st.write("🧠 Reason:", q["explanation"])
+                    st.write(f"✔ Correct: {q['answer']}")
+                    st.write(f"🧠 Explanation: {q['explanation']}")
+
+                st.session_state.q_index += 1
+
+        else:
+            st.success(f"🎉 Quiz Completed! Score: {st.session_state.score}/20")
                     
 # ---------------------------------------------------
 # ACCESSIBILITY
