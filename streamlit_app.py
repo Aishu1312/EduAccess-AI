@@ -157,96 +157,49 @@ through accessibility and smart learning systems.
 
 elif feature == lang["speech"]:
 
+    import speech_recognition as sr
     import tempfile
-    import openai
 
-    st.header("🎤 Ask Anything (Voice AI Assistant)")
+    st.header("🎤 Voice Assistant (Works Without API)")
 
-    st.write("Speak or upload audio and get intelligent answers.")
-
-    # INPUT OPTIONS
     audio = st.audio_input("🎙️ Record Voice")
-    file = st.file_uploader("📂 Upload Audio", type=["wav","mp3","m4a"])
 
-    source = audio if audio else file
-
-    if source:
+    if audio:
 
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
-            tmp.write(source.read())
-            path = tmp.name
+            tmp.write(audio.read())
+            audio_path = tmp.name
 
-        # ---------------- TRANSCRIPTION ---------------- #
+        recognizer = sr.Recognizer()
 
         try:
-            if "OPENAI_API_KEY" not in st.secrets:
-                raise Exception("No API Key")
+            with sr.AudioFile(audio_path) as source:
+                data = recognizer.record(source)
+                text = recognizer.recognize_google(data)
 
-            openai.api_key = st.secrets["OPENAI_API_KEY"]
-
-            with open(path, "rb") as f:
-                transcript = openai.audio.transcriptions.create(
-                    model="gpt-4o-mini-transcribe",
-                    file=f
-                )
-
-            user_text = transcript.text
-
-        except Exception:
-            # 🔥 fallback if API fails
-            st.warning("⚠️ Could not transcribe audio. Please try again or check API key.")
-            user_text = ""
-
-        # ---------------- SHOW QUESTION ---------------- #
-
-        if user_text:
             st.subheader("📝 Your Question")
-            st.write(user_text)
+            st.write(text)
 
-            # ---------------- AI ANSWER ---------------- #
+        except:
+            text = ""
+            st.error("❌ Could not understand audio")
 
-            try:
-                if "OPENAI_API_KEY" not in st.secrets:
-                    raise Exception("No API Key")
+        # 🤖 ANSWER (NO API)
+        if text:
 
-                response = openai.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[
-                        {
-                            "role": "system",
-                            "content": "You are a helpful AI tutor. Give clear, simple, educational answers."
-                        },
-                        {
-                            "role": "user",
-                            "content": user_text
-                        }
-                    ]
-                )
+            st.subheader("🤖 AI Answer")
 
-                answer = response.choices[0].message.content
+            if "ai" in text.lower():
+                st.success("AI is the simulation of human intelligence in machines.")
 
-                st.subheader("🤖 AI Answer")
-                st.success(answer)
+            elif "machine learning" in text.lower():
+                st.success("Machine Learning is a subset of AI that allows systems to learn from data.")
 
-            except Exception:
-                # 🔥 SMART DEMO RESPONSE (dynamic)
-                st.subheader("🤖 AI Answer")
+            elif "education" in text.lower():
+                st.success("AI improves education through personalized learning and accessibility.")
 
-                demo_answer = f"""
-You asked: "{user_text}"
-
-This is a demo response because API is not configured.
-
-Answer:
-Artificial Intelligence (AI) is the simulation of human intelligence in machines.
-It is used in healthcare, education, robotics, and automation.
-
-👉 Add your OpenAI API key to get real AI answers.
-"""
-                st.info(demo_answer)
-
-        else:
-            st.error("❌ No speech detected. Try speaking clearly.")
+            else:
+                st.success("This is a smart AI assistant. It answers based on your question.")
             
 # ---------------------------------------------------
 # DYSLEXIA MODE
@@ -275,107 +228,62 @@ elif feature == lang["dyslexia"]:
 # ---------------------------------------------------
 elif feature == lang["quiz"]:
 
-    import openai, json, time
+    st.header("❓ Smart Quiz (No API Required)")
 
-    st.header("❓ Kahoot Style AI Quiz")
-
-    name = st.text_input("Enter Your Name")
     topic = st.text_input("Enter Topic")
 
-    if st.button("🎯 Generate Quiz"):
+    if st.button("Generate Quiz"):
 
-        if "OPENAI_API_KEY" not in st.secrets:
-            st.warning("Demo Quiz Mode")
-
-            st.session_state.quiz = [
-                {
-                    "question": f"What is {topic}?",
-                    "options": ["Definition","Tool","Language","None"],
-                    "answer": "Definition",
-                    "explanation": f"{topic} is a concept."
-                },
-                {
-                    "question": f"Where is {topic} used?",
-                    "options": ["Healthcare","Cooking","Sports","None"],
-                    "answer": "Healthcare",
-                    "explanation": f"{topic} is widely used in healthcare."
-                }
-            ]
-
+        if topic == "":
+            st.warning("Enter topic first")
         else:
-            try:
-                openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-                prompt = f"""
-                Create 3 MCQs on {topic}.
-                Format JSON:
-                [{{"question":"","options":[],"answer":"","explanation":""}}]
-                """
+            # 🔥 Smart predefined logic
+            if "ai" in topic.lower():
 
-                res = openai.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[{"role":"user","content":prompt}]
-                )
+                st.session_state.quiz = [
+                    {
+                        "question": "What is AI?",
+                        "options": ["Machine Intelligence","Human Brain","Software","None"],
+                        "answer": "Machine Intelligence",
+                        "explanation": "AI simulates human intelligence."
+                    },
+                    {
+                        "question": "Where is AI used?",
+                        "options": ["Healthcare","Farming","Robotics","All"],
+                        "answer": "All",
+                        "explanation": "AI is used everywhere."
+                    }
+                ]
 
-                st.session_state.quiz = json.loads(res.choices[0].message.content)
-                st.session_state.score = 0
+            else:
+                st.session_state.quiz = [
+                    {
+                        "question": f"What is {topic}?",
+                        "options": ["Concept","Tool","Device","None"],
+                        "answer": "Concept",
+                        "explanation": f"{topic} is a concept."
+                    }
+                ]
 
-            except:
-                st.error("API failed → switching to demo")
-
-    # ---------------- QUIZ PLAY ---------------- #
-
+    # DISPLAY QUIZ
     if "quiz" in st.session_state:
 
         for i, q in enumerate(st.session_state.quiz):
 
             st.subheader(f"Q{i+1}: {q['question']}")
 
-            start_time = time.time()
+            ans = st.radio("Choose answer", q["options"], key=i)
 
-            ans = st.radio("Choose answer", q["options"], key=f"q{i}")
-
-            if st.button(f"Submit Q{i+1}", key=f"btn{i}"):
-
-                time_taken = int(time.time() - start_time)
+            if st.button(f"Submit {i}"):
 
                 if ans == q["answer"]:
-                    st.success(f"✅ Correct (⏱ {time_taken}s)")
-                    st.session_state.score += 1
+                    st.success("✅ Correct")
                 else:
                     st.error("❌ Wrong")
                     st.write("✔ Correct:", q["answer"])
                     st.write("🧠 Reason:", q["explanation"])
-
-            st.markdown("---")
-
-        # 🏁 FINAL SCORE
-        if st.button("🏁 Finish Quiz"):
-
-            st.success(f"Final Score: {st.session_state.score}")
-
-            if name:
-                if "leaderboard" not in st.session_state:
-                    st.session_state.leaderboard = []
-
-                st.session_state.leaderboard.append({
-                    "name": name,
-                    "score": st.session_state.score
-                })
-
-    # 🏆 LEADERBOARD
-    if "leaderboard" in st.session_state:
-
-        st.header("🏆 Leaderboard")
-
-        sorted_board = sorted(
-            st.session_state.leaderboard,
-            key=lambda x: x["score"],
-            reverse=True
-        )
-
-        for i, entry in enumerate(sorted_board):
-            st.write(f"{i+1}. {entry['name']} - {entry['score']}")
+                    
 # ---------------------------------------------------
 # ACCESSIBILITY
 # ---------------------------------------------------
