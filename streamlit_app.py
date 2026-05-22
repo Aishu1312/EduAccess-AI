@@ -232,69 +232,27 @@ through accessibility and smart learning systems.
 # SPEECH TO TEXT
 # ---------------------------------------------------
 
-elif feature_key == "speech":
+elif feature == lang["speech"]:
 
-    st.header("🎤 Speech-to-Text + AI Answer")
+    st.header("🎤 Speech-to-Text")
 
-    st.subheader("🎙️ Record Voice")
-    audio_value = st.audio_input("Record")
+    st.write("""
+Convert voice into text using AI speech recognition.
+""")
 
-    st.subheader("📂 Upload Audio")
-    file = st.file_uploader("Upload Audio", type=["wav", "mp3", "m4a"])
-
-    audio_source = None
+    audio_value = st.audio_input("🎙️ Record Voice")
 
     if audio_value:
-        audio_source = audio_value
+
+        st.success("✅ Audio Recorded Successfully")
+
         st.audio(audio_value)
 
-    elif file:
-        audio_source = file
-        st.audio(file)
+        st.subheader("📝 Transcribed Text")
 
-    if audio_source:
-
-        try:
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-                tmp.write(audio_source.read())
-                temp_path = tmp.name
-
-            if "OPENAI_API_KEY" not in st.secrets:
-                st.warning("API key missing. Showing demo output.")
-                text = "What is Artificial Intelligence?"
-            else:
-                openai.api_key = st.secrets["OPENAI_API_KEY"]
-
-                with open(temp_path, "rb") as f:
-                    transcript = openai.audio.transcriptions.create(
-                        model="gpt-4o-mini-transcribe",
-                        file=f
-                    )
-                text = transcript.text
-
-            st.success("📝 Transcribed Text")
-            st.write(text)
-
-            # 🔥 AI ANSWER
-            if "OPENAI_API_KEY" in st.secrets:
-
-                response = openai.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[
-                        {"role": "system", "content": "You are a helpful tutor."},
-                        {"role": "user", "content": text}
-                    ]
-                )
-
-                answer = response.choices[0].message.content
-
-                st.markdown("### 🤖 AI Answer")
-                st.success(answer)
-
-        except Exception as e:
-            st.error("Error processing audio")
-            st.write(str(e))
-
+        st.write("""
+Hello, welcome to EduAccess AI.
+""")
 
 # ---------------------------------------------------
 # DYSLEXIA MODE
