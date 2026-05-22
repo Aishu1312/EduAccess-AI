@@ -339,47 +339,71 @@ else:
 
 elif feature == lang["quiz"]:
 
-    st.header("❓ AI Quiz Generator")
+    import openai
+    import json
+
+    st.header("❓ AI Quiz Generator (Kahoot Style)")
 
     topic = st.text_input("Enter Topic")
 
-    if st.button(lang["quiz_button"]):
+    num_q = st.slider("Number of Questions", 1, 5, 3)
 
-        st.session_state.quiz = [
-            {
-                "q": f"What is {topic}?",
-                "options": ["Definition", "Example", "Tool", "None"],
-                "answer": "Definition",
-                "explanation": f"{topic} refers to its definition."
-            },
-            {
-                "q": f"Where is {topic} used?",
-                "options": ["Healthcare", "Sports", "Cooking", "None"],
-                "answer": "Healthcare",
-                "explanation": f"{topic} is widely used in healthcare."
-            }
-        ]
+    if st.button("Generate AI Quiz"):
 
+        if "OPENAI_API_KEY" not in st.secrets:
+            st.error("API key missing")
+        else:
+            openai.api_key = st.secrets["OPENAI_API_KEY"]
+
+            prompt = f"""
+            Generate {num_q} MCQ questions on topic: {topic}.
+
+            Format strictly as JSON:
+            [
+              {{
+                "question": "...",
+                "options": ["A","B","C","D"],
+                "answer": "...",
+                "explanation": "..."
+              }}
+            ]
+            """
+
+            response = openai.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}]
+            )
+
+            try:
+                quiz = json.loads(response.choices[0].message.content)
+                st.session_state["quiz"] = quiz
+            except:
+                st.error("Failed to generate quiz")
+
+    # DISPLAY QUIZ
     if "quiz" in st.session_state:
 
-        for i, item in enumerate(st.session_state.quiz):
+        score = 0
 
-            st.subheader(f"Q{i+1}: {item['q']}")
+        for i, q in enumerate(st.session_state["quiz"]):
+
+            st.subheader(f"Q{i+1}: {q['question']}")
 
             user_ans = st.radio(
                 "Choose answer",
-                item["options"],
-                key=f"q_{i}"
+                q["options"],
+                key=f"quiz_{i}"
             )
 
-            if st.button(f"Submit Answer {i+1}", key=f"btn_{i}"):
+            if st.button(f"Submit Q{i+1}", key=f"btn_{i}"):
 
-                if user_ans == item["answer"]:
-                    st.success("✅ Correct Answer")
+                if user_ans == q["answer"]:
+                    st.success("✅ Correct!")
+                    score += 1
                 else:
-                    st.error("❌ Wrong Answer")
-                    st.write(f"✔ Correct Answer: {item['answer']}")
-                    st.write(f"🧠 Explanation: {item['explanation']}")
+                    st.error("❌ Wrong")
+                    st.write(f"✔ Correct Answer: {q['answer']}")
+                    st.write(f"🧠 Explanation: {q['explanation']}")
 
             st.markdown("---")
 
