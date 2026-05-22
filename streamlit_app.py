@@ -228,7 +228,7 @@ elif feature == lang["dyslexia"]:
 # ---------------------------------------------------
 elif feature == lang["quiz"]:
 
-    st.header("❓ Smart Quiz (No API Required)")
+    st.header("❓ Smart AI Quiz Generator")
 
     topic = st.text_input("Enter Topic")
 
