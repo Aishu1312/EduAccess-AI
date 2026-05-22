@@ -160,8 +160,11 @@ elif feature == lang["speech"]:
     import tempfile
     import openai
 
-    st.header("🎤 Speech-to-Text + AI Answer")
+    st.header("🎤 Ask Anything (Voice AI Assistant)")
 
+    st.write("Speak or upload audio and get intelligent answers.")
+
+    # INPUT OPTIONS
     audio = st.audio_input("🎙️ Record Voice")
     file = st.file_uploader("📂 Upload Audio", type=["wav","mp3","m4a"])
 
@@ -173,43 +176,78 @@ elif feature == lang["speech"]:
             tmp.write(source.read())
             path = tmp.name
 
-        # ✅ SAFE MODE (NO CRASH)
-        if "OPENAI_API_KEY" not in st.secrets:
-            st.warning("⚠️ Demo Mode (No API Key)")
-            text = "What is Artificial Intelligence?"
+        # ---------------- TRANSCRIPTION ---------------- #
 
-        else:
-            try:
-                openai.api_key = st.secrets["OPENAI_API_KEY"]
+        try:
+            if "OPENAI_API_KEY" not in st.secrets:
+                raise Exception("No API Key")
 
-                with open(path, "rb") as f:
-                    transcript = openai.audio.transcriptions.create(
-                        model="gpt-4o-mini-transcribe",
-                        file=f
-                    )
+            openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-                text = transcript.text
-
-            except Exception:
-                st.warning("⚠️ API Error → Demo Mode")
-                text = "What is Artificial Intelligence?"
-
-        st.subheader("📝 Transcribed Text")
-        st.write(text)
-
-        # 🤖 ANSWER
-        if "OPENAI_API_KEY" in st.secrets:
-            try:
-                res = openai.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[{"role":"user","content":text}]
+            with open(path, "rb") as f:
+                transcript = openai.audio.transcriptions.create(
+                    model="gpt-4o-mini-transcribe",
+                    file=f
                 )
 
-                st.subheader("🤖 AI Answer")
-                st.success(res.choices[0].message.content)
+            user_text = transcript.text
 
-            except:
-                st.info("Demo Answer: AI is the simulation of human intelligence.")
+        except Exception:
+            # 🔥 fallback if API fails
+            st.warning("⚠️ Could not transcribe audio. Please try again or check API key.")
+            user_text = ""
+
+        # ---------------- SHOW QUESTION ---------------- #
+
+        if user_text:
+            st.subheader("📝 Your Question")
+            st.write(user_text)
+
+            # ---------------- AI ANSWER ---------------- #
+
+            try:
+                if "OPENAI_API_KEY" not in st.secrets:
+                    raise Exception("No API Key")
+
+                response = openai.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": "You are a helpful AI tutor. Give clear, simple, educational answers."
+                        },
+                        {
+                            "role": "user",
+                            "content": user_text
+                        }
+                    ]
+                )
+
+                answer = response.choices[0].message.content
+
+                st.subheader("🤖 AI Answer")
+                st.success(answer)
+
+            except Exception:
+                # 🔥 SMART DEMO RESPONSE (dynamic)
+                st.subheader("🤖 AI Answer")
+
+                demo_answer = f"""
+You asked: "{user_text}"
+
+This is a demo response because API is not configured.
+
+Answer:
+Artificial Intelligence (AI) is the simulation of human intelligence in machines.
+It is used in healthcare, education, robotics, and automation.
+
+👉 Add your OpenAI API key to get real AI answers.
+"""
+                st.info(demo_answer)
+
+        else:
+            st.error("❌ No speech detected. Try speaking clearly.")
+            
 # ---------------------------------------------------
 # DYSLEXIA MODE
 # ---------------------------------------------------
