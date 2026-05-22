@@ -38,7 +38,7 @@ feature_key = st.sidebar.selectbox(
 
 # ---------------- HOME ---------------- #
 
-if feature == lang["home"]:
+if feature_key == "home":
 
     st.title(lang["title"])
 
