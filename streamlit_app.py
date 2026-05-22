@@ -300,70 +300,77 @@ elif feature == lang["quiz"]:
 
     topic = st.text_input("Enter Topic")
 
-    # 🎯 Generate quiz
     if st.button("Start Quiz"):
 
         quiz = []
 
-        # Templates to generate dynamic questions
-        templates = [
-            f"What is {topic}?",
-            f"Which of the following best describes {topic}?",
-            f"Where is {topic} commonly used?",
-            f"What is an example of {topic}?",
-            f"What is a key feature of {topic}?",
-            f"Why is {topic} important?",
-            f"What problem does {topic} solve?",
-            f"Which field uses {topic}?",
-            f"What is the benefit of {topic}?",
-            f"What is a limitation of {topic}?"
-        ]
-
-        options_pool = [
-            ["Correct concept", "Wrong idea", "Irrelevant option", "None"],
-            ["Used in real world", "Not used anywhere", "Only theory", "None"],
-            ["Improves efficiency", "Slows systems", "No effect", "None"],
-            ["Widely used", "Never used", "Rarely useful", "None"],
-            ["Helps automation", "Stops automation", "Manual work only", "None"]
-        ]
-
-        # Generate 20 questions
-        for i in range(20):
-            q = random.choice(templates)
-            opts = random.choice(options_pool)
-
+        # 🔹 EASY (10)
+        for i in range(1, 11):
             quiz.append({
-                "question": f"{i+1}. {q}",
-                "options": opts,
-                "answer": opts[0],  # first option = correct
-                "user_answer": None
+                "question": f"{i}. What is {topic}?",
+                "options": [
+                    f"A basic definition of {topic}",
+                    f"A detailed explanation of {topic}",
+                    f"A real-world example of {topic}",
+                    f"An unrelated concept"
+                ],
+                "answer": f"A basic definition of {topic}"
+            })
+
+        # 🔹 MEDIUM (5)
+        for i in range(11, 16):
+            quiz.append({
+                "question": f"{i}. Where is {topic} commonly applied?",
+                "options": [
+                    "Healthcare and education",
+                    "Only theoretical research",
+                    "Limited to labs",
+                    "Not used practically"
+                ],
+                "answer": "Healthcare and education"
+            })
+
+        # 🔹 HARD (5)
+        for i in range(16, 21):
+            quiz.append({
+                "question": f"{i}. What is a major limitation of {topic}?",
+                "options": [
+                    "High cost and complexity",
+                    "Unlimited scalability",
+                    "No dependency on data",
+                    "Always accurate"
+                ],
+                "answer": "High cost and complexity"
             })
 
         st.session_state.quiz = quiz
         st.session_state.q_index = 0
-        st.session_state.score = 0
+        st.session_state.answers = [None] * 20
 
-    # 🧠 RUN QUIZ
+    # 🚀 RUN QUIZ
     if "quiz" in st.session_state:
 
         quiz = st.session_state.quiz
         i = st.session_state.q_index
 
+        # 📊 PROGRESS BAR
+        st.progress((i + 1) / 20)
+        st.write(f"📍 Question {i+1} of 20")
+
         q = quiz[i]
 
         st.subheader(q["question"])
 
-        # retain previous answer
         selected = st.radio(
             "Choose Answer",
             q["options"],
-            index=q["options"].index(q["user_answer"]) if q["user_answer"] else 0,
+            index=q["options"].index(st.session_state.answers[i]) if st.session_state.answers[i] else 0,
             key=f"q_{i}"
         )
 
         # ✅ SAVE ANSWER
         if st.button("Submit Answer"):
-            st.session_state.quiz[i]["user_answer"] = selected
+            st.session_state.answers[i] = selected
 
             if selected == q["answer"]:
                 st.success("✅ Correct!")
@@ -371,7 +378,7 @@ elif feature == lang["quiz"]:
                 st.error("❌ Wrong")
                 st.write(f"✔ Correct Answer: {q['answer']}")
 
-        # 🔁 NAVIGATION BUTTONS
+        # 🔁 NAVIGATION
         col1, col2 = st.columns(2)
 
         with col1:
@@ -379,15 +386,19 @@ elif feature == lang["quiz"]:
                 st.session_state.q_index -= 1
 
         with col2:
-            if st.button("Next ➡") and i < len(quiz) - 1:
+            if st.button("Next ➡") and i < 19:
                 st.session_state.q_index += 1
 
-        # 🏁 FINAL SCORE
+        # 📌 ATTEMPT STATUS
+        attempted = sum([1 for a in st.session_state.answers if a is not None])
+        st.info(f"✅ Attempted: {attempted} / 20")
+
+        # 🏁 FINAL RESULT
         if st.button("Finish Quiz"):
 
             score = 0
-            for q in quiz:
-                if q["user_answer"] == q["answer"]:
+            for idx, q in enumerate(quiz):
+                if st.session_state.answers[idx] == q["answer"]:
                     score += 1
 
             st.success(f"🎉 Final Score: {score}/20")
