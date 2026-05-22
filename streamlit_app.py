@@ -1,75 +1,18 @@
-# streamlit_app.py
-
 import streamlit as st
-from googletrans import Translator
-import speech_recognition as sr
-from PIL import Image
-import pyttsx3
+from deep_translator import GoogleTranslator
+from gtts import gTTS
+import os
+import tempfile
 
-# ---------------- PAGE CONFIG ---------------- #
+# ---------------- CONFIG ---------------- #
 
 st.set_page_config(
     page_title="EduAccess AI",
     page_icon="🚀",
-    layout="wide",
+    layout="wide"
 )
 
-# ---------------- CUSTOM CSS ---------------- #
-
-st.markdown("""
-<style>
-
-html, body, [class*="css"] {
-    background-color: #050816;
-    color: white;
-    font-family: 'Arial';
-}
-
-/* Bigger fonts for low vision users */
-.big-text {
-    font-size: 22px !important;
-    line-height: 1.8;
-}
-
-/* Feature Boxes */
-.feature-box {
-    padding: 20px;
-    border-radius: 15px;
-    margin-bottom: 20px;
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-/* Accessibility */
-.access-box {
-    background-color: #0f172a;
-    padding: 20px;
-    border-radius: 15px;
-    margin-top: 20px;
-}
-
-/* Buttons */
-.stButton>button {
-    width: 100%;
-    border-radius: 12px;
-    height: 50px;
-    font-size: 18px;
-    background-color: #2563eb;
-    color: white;
-}
-
-/* Sidebar */
-section[data-testid="stSidebar"] {
-    background-color: #111827;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-# ---------------- TRANSLATION SYSTEM ---------------- #
-
-translator = Translator()
+# ---------------- LANGUAGE SYSTEM ---------------- #
 
 languages = {
     "English": "en",
@@ -87,54 +30,66 @@ languages = {
     "German": "de",
     "Chinese": "zh-cn",
     "Japanese": "ja",
-    "Russian": "ru",
     "Arabic": "ar"
 }
 
-# ---------------- SIDEBAR ---------------- #
-
 st.sidebar.title("🌐 Language Settings")
-
-selected_language = st.sidebar.selectbox(
-    "Choose Dashboard Language",
-    list(languages.keys())
-)
-
+selected_language = st.sidebar.selectbox("Choose Language", list(languages.keys()))
 lang_code = languages[selected_language]
-
-theme = st.sidebar.selectbox(
-    "🎨 Theme",
-    ["Dark", "Light"]
-)
-
-# ---------------- TRANSLATE FUNCTION ---------------- #
 
 def tr(text):
     try:
-        return translator.translate(text, dest=lang_code).text
+        return GoogleTranslator(source='auto', target=lang_code).translate(text)
     except:
         return text
 
+# ---------------- ACCESSIBILITY SETTINGS ---------------- #
+
+st.sidebar.title("♿ Accessibility")
+
+font_size = st.sidebar.slider("Font Size", 14, 30, 18)
+
+high_contrast = st.sidebar.checkbox("High Contrast Mode")
+
+# ---------------- STYLING ---------------- #
+
+bg_color = "#000000" if high_contrast else "#050816"
+text_color = "#FFFFFF" if high_contrast else "#E5E7EB"
+
+st.markdown(f"""
+<style>
+body {{
+    background-color: {bg_color};
+    color: {text_color};
+    font-size: {font_size}px;
+}}
+
+.feature-box {{
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg,#1e3a8a,#0f172a);
+}}
+
+</style>
+""", unsafe_allow_html=True)
+
 # ---------------- TEXT TO SPEECH ---------------- #
 
-def speak_text(text):
-    engine = pyttsx3.init()
-    engine.say(text)
-    engine.runAndWait()
+def speak(text):
+    tts = gTTS(text=text, lang=lang_code)
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
+        tts.save(fp.name)
+        return fp.name
 
 # ---------------- HEADER ---------------- #
 
 st.title(tr("🚀 EduAccess AI"))
+st.subheader(tr("AI Platform for Divyang and All Students"))
 
-st.subheader(
-    tr("AI-Powered Learning Platform for Divyang and Normal Students")
-)
-
-st.write(
-    tr(
-        "EduAccess AI helps students learn better using Artificial Intelligence, NLP, accessibility tools, speech technologies, and inclusive education support."
-    )
-)
+st.write(tr(
+    "This platform helps students learn using AI with full accessibility support for visually impaired, hearing impaired, speech impaired, and mobility-impaired users."
+))
 
 st.divider()
 
@@ -144,181 +99,88 @@ st.header(tr("✨ Core Features"))
 
 col1, col2 = st.columns(2)
 
-with col1:
+features = [
+    ("📘 AI Notes Summarizer", "Generate short summaries from notes"),
+    ("🎤 Speech to Text (Upload Audio)", "Convert uploaded audio into text"),
+    ("🔊 Text to Speech", "Listen to study content"),
+    ("📖 Dyslexia Friendly UI", "Easy reading design"),
+    ("❓ AI Quiz Generator", "Auto generate quiz"),
+    ("🌍 Full Language Translation", "Translate everything instantly")
+]
 
-    st.markdown(f"""
-    <div class="feature-box" style="background:linear-gradient(90deg,#1e3a8a,#0f172a)">
-    📘 {tr("AI Notes Summarizer")}
-    <br><br>
-    <span class='big-text'>
-    {tr("Generate concise AI-powered summaries from educational notes.")}
-    </span>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown(f"""
-    <div class="feature-box" style="background:linear-gradient(90deg,#065f46,#0f172a)">
-    🎤 {tr("Speech-to-Text")}
-    <br><br>
-    <span class='big-text'>
-    {tr("Convert spoken language into text using AI.")}
-    </span>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown(f"""
-    <div class="feature-box" style="background:linear-gradient(90deg,#7c3aed,#0f172a)">
-    🗣️ {tr("Text-to-Speech")}
-    <br><br>
-    <span class='big-text'>
-    {tr("Read study material aloud for visually impaired students.")}
-    </span>
-    </div>
-    """, unsafe_allow_html=True)
-
-with col2:
-
-    st.markdown(f"""
-    <div class="feature-box" style="background:linear-gradient(90deg,#854d0e,#0f172a)">
-    📖 {tr("Dyslexia-Friendly Reading")}
-    <br><br>
-    <span class='big-text'>
-    {tr("Improve readability using accessibility-focused UI.")}
-    </span>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown(f"""
-    <div class="feature-box" style="background:linear-gradient(90deg,#7f1d1d,#0f172a)">
-    ❓ {tr("AI Quiz Generator")}
-    <br><br>
-    <span class='big-text'>
-    {tr("Generate exam-based AI quiz questions instantly.")}
-    </span>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown(f"""
-    <div class="feature-box" style="background:linear-gradient(90deg,#0f766e,#0f172a)">
-    🌍 {tr("Real-Time Language Translation")}
-    <br><br>
-    <span class='big-text'>
-    {tr("Translate all content into multiple global languages instantly.")}
-    </span>
-    </div>
-    """, unsafe_allow_html=True)
+for i, (title, desc) in enumerate(features):
+    with (col1 if i % 2 == 0 else col2):
+        st.markdown(f"""
+        <div class="feature-box">
+        <b>{tr(title)}</b><br><br>
+        {tr(desc)}
+        </div>
+        """, unsafe_allow_html=True)
 
 st.divider()
 
-# ---------------- ACCESSIBILITY SUPPORT ---------------- #
+# ---------------- ACCESSIBILITY ---------------- #
 
 st.header(tr("♿ Accessibility Support"))
 
+st.write(tr("Designed for ALL Divyang users:"))
+
 st.markdown(f"""
-<div class="access-box">
-
-✅ {tr("Support for Blind / Visually Impaired Students")}  
-<br><br>
-
-✅ {tr("Speech Assistance for Students who Cannot Speak")}  
-<br><br>
-
-✅ {tr("AI Voice Navigation for Hands-Free Control")}  
-<br><br>
-
-✅ {tr("Keyboard-Free Learning Experience")}  
-<br><br>
-
-✅ {tr("Large Readable Fonts for Low Vision Students")}  
-<br><br>
-
-✅ {tr("Hearing-Impaired Friendly Text Communication")}  
-<br><br>
-
-✅ {tr("Support for Students with No Hands or Limited Mobility")}  
-<br><br>
-
-✅ {tr("Wheelchair-Friendly Digital Accessibility")}  
-<br><br>
-
-✅ {tr("AI-Based Learning Assistance for Cognitive Disabilities")}  
-<br><br>
-
-✅ {tr("Screen Reader Compatibility")}  
-<br><br>
-
-✅ {tr("Multilingual Learning Support")}  
-
-</div>
-""", unsafe_allow_html=True)
+- 👁️ {tr("For Blind: Text-to-Speech, screen reader friendly")}
+- 👂 {tr("For Deaf: Full text-based interface")}
+- 🗣️ {tr("For Speech Impairment: Text input instead of voice")}
+- 🦽 {tr("For Mobility Issues: Keyboard-free large UI")}
+- 🧠 {tr("For Learning Disabilities: Simple UI + summaries")}
+""")
 
 st.divider()
-
-# ---------------- VOICE INPUT ---------------- #
-
-st.header(tr("🎤 Voice Input Demo"))
-
-if st.button(tr("Start Voice Recognition")):
-
-    recognizer = sr.Recognizer()
-
-    try:
-        with sr.Microphone() as source:
-
-            st.info(tr("Listening... Please speak now."))
-
-            audio = recognizer.listen(source)
-
-            text = recognizer.recognize_google(audio)
-
-            st.success(tr("Recognized Speech:"))
-            st.write(text)
-
-    except:
-        st.error(tr("Microphone not detected or speech could not be recognized."))
 
 # ---------------- TEXT TO SPEECH ---------------- #
 
-st.header(tr("🔊 Text To Speech"))
+st.header(tr("🔊 Text to Speech"))
 
-tts_text = st.text_area(
-    tr("Enter text to read aloud")
-)
+text_input = st.text_area(tr("Enter text"))
 
-if st.button(tr("Read Aloud")):
-
-    if tts_text:
-        speak_text(tts_text)
-        st.success(tr("Reading completed."))
-
-# ---------------- FUTURE FEATURES ---------------- #
+if st.button(tr("Convert to Speech")):
+    if text_input:
+        audio_file = speak(text_input)
+        st.audio(audio_file)
 
 st.divider()
 
-st.header(tr("🚀 Future Possibilities"))
+# ---------------- AUDIO TO TEXT (UPLOAD BASED) ---------------- #
 
-future_features = [
-    "Real-time Sign Language Recognition",
-    "AI Career Guidance",
-    "Emotion-Based Learning Assistance",
-    "Personalized AI Tutor",
-    "Voice-Controlled Navigation",
-    "Brain-Computer Interface Support",
-    "AI-Based Exam Preparation",
-    "Smart Attendance System",
-    "AI Mental Health Support",
-    "Offline Learning Support"
+st.header(tr("🎤 Audio to Text"))
+
+uploaded_file = st.file_uploader(tr("Upload audio file"), type=["wav", "mp3"])
+
+if uploaded_file:
+    st.success(tr("Audio uploaded successfully"))
+    st.audio(uploaded_file)
+
+    st.info(tr("Speech-to-text feature can be integrated using Whisper API (advanced feature)"))
+
+st.divider()
+
+# ---------------- FUTURE FEATURES ---------------- #
+
+st.header(tr("🚀 Future Scope"))
+
+future = [
+    "Sign Language Recognition",
+    "AI Personal Tutor",
+    "Emotion-Based Learning",
+    "Career Guidance AI",
+    "Offline Mode"
 ]
 
-for feature in future_features:
-    st.write("🔹", tr(feature))
+for f in future:
+    st.write("🔹", tr(f))
 
 # ---------------- FOOTER ---------------- #
 
 st.divider()
 
-st.success(
-    tr(
-        "EduAccess AI is designed to provide inclusive education for every student, including Divyang students, through Artificial Intelligence and accessibility technologies."
-    )
-)
+st.success(tr(
+    "EduAccess AI ensures inclusive education for every student using advanced AI and accessibility tools."
+))
