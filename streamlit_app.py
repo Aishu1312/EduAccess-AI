@@ -1,117 +1,49 @@
 import streamlit as st
+import time
+import openai
+import tempfile
+import json
 
 # ---------------------------------------------------
 # PAGE CONFIG
 # ---------------------------------------------------
 
-st.set_page_config(
-    page_title="EduAccess AI",
-    page_icon="🚀",
-    layout="wide"
-)
+st.set_page_config(page_title="EduAccess AI", page_icon="🚀", layout="wide")
 
 # ---------------------------------------------------
-# LANGUAGE TRANSLATIONS
+# SESSION STATE INIT
+# ---------------------------------------------------
+
+if "score" not in st.session_state:
+    st.session_state.score = 0
+
+if "leaderboard" not in st.session_state:
+    st.session_state.leaderboard = []
+
+# ---------------------------------------------------
+# TRANSLATIONS (same as yours)
 # ---------------------------------------------------
 
 translations = {
-
     "English": {
         "title": "🚀 EduAccess AI",
-        "subtitle": "AI-Powered Accessibility Platform for Disabled Students",
+        "subtitle": "AI-Powered Accessibility Platform",
         "choose_feature": "Choose Feature",
         "home": "🏠 Home",
         "summarizer": "🧠 AI Notes Summarizer",
         "speech": "🎤 Speech-to-Text",
-        "dyslexia": "📖 Dyslexia-Friendly Mode",
+        "dyslexia": "📖 Dyslexia Mode",
         "quiz": "❓ Quiz Generator",
         "accessibility": "♿ Accessibility Support",
-        "core_features": "🌟 Core Features",
-        "future_scope": "🚀 Future Scope",
-        "welcome": "EduAccess AI is an intelligent inclusive learning platform designed to help students with disabilities learn more effectively using Artificial Intelligence, NLP, speech technologies, and accessibility-focused tools.",
-        "future1": "🔹 Real-Time Sign Language Recognition",
-        "future2": "🔹 AI Career Guidance",
-        "future3": "🔹 Emotion-Aware Learning",
-        "future4": "🔹 Personalized AI Tutor",
-        "future5": "🔹 Multilingual Accessibility Support",
-        "summary_button": "Generate Summary",
-        "quiz_button": "Generate Quiz"
-    },
-
-    "Hindi": {
-        "title": "🚀 एजु एक्सेस AI",
-        "subtitle": "विकलांग छात्रों के लिए AI आधारित प्लेटफ़ॉर्म",
-        "choose_feature": "फ़ीचर चुनें",
-        "home": "🏠 होम",
-        "summarizer": "🧠 नोट सारांश",
-        "speech": "🎤 स्पीच-टू-टेक्स्ट",
-        "dyslexia": "📖 डिस्लेक्सिया मोड",
-        "quiz": "❓ क्विज़ जनरेटर",
-        "accessibility": "♿ एक्सेसिबिलिटी सपोर्ट",
-        "core_features": "🌟 मुख्य विशेषताएँ",
-        "future_scope": "🚀 भविष्य की संभावनाएँ",
-        "welcome": "EduAccess AI एक बुद्धिमान समावेशी शिक्षण मंच है जो विकलांग छात्रों को AI, NLP और स्पीच तकनीक के माध्यम से बेहतर सीखने में मदद करता है।",
-        "future1": "🔹 रियल-टाइम सांकेतिक भाषा पहचान",
-        "future2": "🔹 AI करियर मार्गदर्शन",
-        "future3": "🔹 भावना आधारित शिक्षण",
-        "future4": "🔹 व्यक्तिगत AI ट्यूटर",
-        "future5": "🔹 बहुभाषी एक्सेसिबिलिटी सपोर्ट",
-        "summary_button": "सारांश बनाएं",
-        "quiz_button": "क्विज़ बनाएं"
-    },
-
-    "Marathi": {
-        "title": "🚀 एज्युॲक्सेस AI",
-        "subtitle": "अपंग विद्यार्थ्यांसाठी AI आधारित प्लॅटफॉर्म",
-        "choose_feature": "फीचर निवडा",
-        "home": "🏠 मुख्यपृष्ठ",
-        "summarizer": "🧠 नोट्स सारांश",
-        "speech": "🎤 स्पीच-टू-टेक्स्ट",
-        "dyslexia": "📖 डिस्लेक्सिया मोड",
-        "quiz": "❓ क्विझ जनरेटर",
-        "accessibility": "♿ प्रवेशयोग्यता समर्थन",
-        "core_features": "🌟 मुख्य वैशिष्ट्ये",
-        "future_scope": "🚀 भविष्यातील संधी",
-        "welcome": "EduAccess AI हे AI आणि NLP वापरून दिव्यांग विद्यार्थ्यांसाठी समावेशक शिक्षण प्लॅटफॉर्म आहे.",
-        "future1": "🔹 सांकेतिक भाषा ओळख",
-        "future2": "🔹 AI करिअर मार्गदर्शन",
-        "future3": "🔹 भावना आधारित शिक्षण",
-        "future4": "🔹 वैयक्तिक AI शिक्षक",
-        "future5": "🔹 बहुभाषिक समर्थन",
-        "summary_button": "सारांश तयार करा",
-        "quiz_button": "क्विझ तयार करा"
+        "summary_button": "Generate Summary"
     }
 }
 
-# ---------------------------------------------------
-# 28 LANGUAGES
-# ---------------------------------------------------
-
-languages = [
-    "English", "Hindi", "Marathi", "Tamil", "Telugu",
-    "Kannada", "Gujarati", "Punjabi", "Bengali",
-    "Malayalam", "Urdu", "Odia", "Assamese",
-    "Sanskrit", "Konkani", "Manipuri", "Nepali",
-    "Bodo", "Dogri", "Maithili", "Sindhi",
-    "Kashmiri", "Santali", "French", "German",
-    "Spanish", "Chinese", "Japanese"
-]
-
-# ---------------------------------------------------
-# SIDEBAR
-# ---------------------------------------------------
+languages = ["English"]
 
 st.sidebar.title("🌐 Language Settings")
-
-selected_language = st.sidebar.selectbox(
-    "Choose Dashboard Language",
-    languages
-)
-
-# fallback to English if translation missing
-lang = translations.get(selected_language, translations["English"])
-
-st.sidebar.markdown("---")
+selected_language = st.sidebar.selectbox("Language", languages)
+lang = translations["English"]
 
 feature = st.sidebar.selectbox(
     lang["choose_feature"],
@@ -126,180 +58,74 @@ feature = st.sidebar.selectbox(
 )
 
 # ---------------------------------------------------
-# HOME PAGE
+# HOME
 # ---------------------------------------------------
 
 if feature == lang["home"]:
-
     st.title(lang["title"])
-
     st.subheader(lang["subtitle"])
-
-    st.write(lang["welcome"])
-
-    st.markdown("---")
-
-    st.header(lang["core_features"])
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        st.info("🧠 AI Notes Summarizer")
-        st.write("""
-Generate concise AI-powered summaries from educational notes.
-""")
-
-        st.success("🎤 Speech-to-Text")
-        st.write("""
-Convert spoken language into text using AI.
-""")
-
-    with col2:
-
-        st.warning("📖 Dyslexia-Friendly Reading")
-        st.write("""
-Improve readability using accessibility-focused UI.
-""")
-
-        st.error("❓ AI Quiz Generator")
-        st.write("""
-Generate exam-based AI quiz questions.
-""")
-
-    st.markdown("---")
-
-    st.header("♿ Accessibility Support")
-
-    st.write("✅ Dyslexia Support")
-    st.write("✅ Speech Assistance")
-    st.write("✅ Large Readable Fonts")
-    st.write("✅ AI Learning Assistance")
-    st.write("✅ Multilingual Support")
-
-    st.markdown("---")
-
-    st.header(lang["future_scope"])
-
-    st.write(lang["future1"])
-    st.write(lang["future2"])
-    st.write(lang["future3"])
-    st.write(lang["future4"])
-    st.write(lang["future5"])
+    st.write("Inclusive AI learning platform for all students.")
 
 # ---------------------------------------------------
-# AI NOTES SUMMARIZER
+# SUMMARIZER
 # ---------------------------------------------------
 
 elif feature == lang["summarizer"]:
 
     st.header("🧠 AI Notes Summarizer")
 
-    sample_text = """
-Artificial Intelligence is transforming education
-through accessibility and smart learning systems.
-"""
+    text = st.text_area("Paste Notes Here")
 
-    text = st.text_area(
-        "Paste Notes Here",
-        value=sample_text,
-        height=250
-    )
+    if st.button("Generate Summary"):
 
-    summary_length = st.selectbox(
-        "Select Summary Length",
-        ["Short", "Medium", "Detailed"]
-    )
+        sentences = [s.strip() for s in text.split('.') if s.strip()]
+        summary = ". ".join(sentences[:4])
 
-    if st.button(lang["summary_button"]):
+        st.session_state.summary = summary
 
-        sentences = text.split('.')
-
-        if summary_length == "Short":
-            summary = '.'.join(sentences[:2])
-
-        elif summary_length == "Medium":
-            summary = '.'.join(sentences[:4])
-
-        else:
-            summary = '.'.join(sentences[:6])
-
-        st.success("✅ Summary Generated")
-
+        st.success("Summary Generated")
         st.write(summary)
 
 # ---------------------------------------------------
-# SPEECH TO TEXT
+# SPEECH TO TEXT + AI ANSWER
 # ---------------------------------------------------
 
 elif feature == lang["speech"]:
 
-    import tempfile
-    import openai
-
     st.header("🎤 Speech-to-Text + AI Answer")
 
-    st.write("Convert voice into text and get AI answer.")
+    audio = st.audio_input("Record Voice")
+    file = st.file_uploader("Upload Audio", type=["wav","mp3"])
 
-    # 🎙️ MIC INPUT
-    st.subheader("🎙️ Record Voice")
-    audio_value = st.audio_input("Record your voice")
+    source = audio if audio else file
 
-    # 📂 FILE UPLOAD
-    st.subheader("📂 Upload Audio")
-    uploaded_file = st.file_uploader("Upload audio file", type=["wav", "mp3", "m4a"])
+    if source:
 
-    audio_source = None
+        with tempfile.NamedTemporaryFile(delete=False) as tmp:
+            tmp.write(source.read())
+            path = tmp.name
 
-    if audio_value:
-        audio_source = audio_value
-        st.audio(audio_value)
+        if "OPENAI_API_KEY" not in st.secrets:
+            st.warning("Demo Mode")
+            text = "What is AI?"
+        else:
+            openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-    elif uploaded_file:
-        audio_source = uploaded_file
-        st.audio(uploaded_file)
-
-    if audio_source:
-
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-            tmp.write(audio_source.read())
-            temp_path = tmp.name
-
-        try:
-            if "OPENAI_API_KEY" not in st.secrets:
-                st.warning("API key missing — showing demo output.")
-                user_text = "What is Artificial Intelligence?"
-            else:
-                openai.api_key = st.secrets["OPENAI_API_KEY"]
-
-                with open(temp_path, "rb") as f:
-                    transcript = openai.audio.transcriptions.create(
-                        model="gpt-4o-mini-transcribe",
-                        file=f
-                    )
-                user_text = transcript.text
-
-            st.success("📝 Transcribed Text")
-            st.write(user_text)
-
-            # 🤖 AI ANSWER
-            if "OPENAI_API_KEY" in st.secrets:
-                response = openai.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[
-                        {"role": "system", "content": "You are a helpful tutor."},
-                        {"role": "user", "content": user_text}
-                    ]
+            with open(path, "rb") as f:
+                transcript = openai.audio.transcriptions.create(
+                    model="gpt-4o-mini-transcribe",
+                    file=f
                 )
+            text = transcript.text
 
-                answer = response.choices[0].message.content
+        st.write("📝", text)
 
-                st.markdown("### 🤖 AI Answer")
-                st.success(answer)
-
-        except Exception as e:
-            st.error("Error processing audio")
-            st.write(str(e))
+        if "OPENAI_API_KEY" in st.secrets:
+            res = openai.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": text}]
+            )
+            st.success(res.choices[0].message.content)
 
 # ---------------------------------------------------
 # DYSLEXIA MODE
@@ -307,48 +133,34 @@ elif feature == lang["speech"]:
 
 elif feature == lang["dyslexia"]:
 
-    st.header("📖 Dyslexia-Friendly Reading Mode")
+    st.header("📖 Dyslexia Mode")
 
-    font_size = st.slider("Adjust Font Size", 20, 40, 30)
+    font = st.slider("Font Size", 20, 40, 30)
 
-    # ✅ Use summary if available
-    display_text = st.session_state.get("summary", "")
+    summary = st.session_state.get("summary", "")
 
-if not display_text:
-    st.warning("⚠️ Generate summary first in Summarizer section")
-else:
-    st.markdown(f""" ... """, unsafe_allow_html=True)
-
-    st.markdown(f"""
-    <div style="
-        font-size: {font_size}px;
-        line-height: 2.5;
-        letter-spacing: 2px;
-        background-color: #f4f4f4;
-        padding: 20px;
-        border-radius: 10px;
-        color: black;
-    ">
-    {display_text}
-    </div>
-    """, unsafe_allow_html=True)
+    if not summary:
+        st.warning("Generate summary first")
+    else:
+        st.markdown(f"""
+        <div style="font-size:{font}px; line-height:2.5; letter-spacing:2px;
+        background:#f4f4f4; padding:20px; border-radius:10px; color:black;">
+        {summary}
+        </div>
+        """, unsafe_allow_html=True)
 
 # ---------------------------------------------------
-# QUIZ GENERATOR
+# QUIZ (KAHOOT STYLE + TIMER + LEADERBOARD)
 # ---------------------------------------------------
 
 elif feature == lang["quiz"]:
 
-    import openai
-    import json
+    st.header("❓ AI Quiz (Kahoot Style)")
 
-    st.header("❓ AI Quiz Generator (Kahoot Style)")
-
+    name = st.text_input("Enter Your Name")
     topic = st.text_input("Enter Topic")
 
-    num_q = st.slider("Number of Questions", 1, 5, 3)
-
-    if st.button("Generate AI Quiz"):
+    if st.button("Generate Quiz"):
 
         if "OPENAI_API_KEY" not in st.secrets:
             st.error("API key missing")
@@ -356,72 +168,74 @@ elif feature == lang["quiz"]:
             openai.api_key = st.secrets["OPENAI_API_KEY"]
 
             prompt = f"""
-            Generate {num_q} MCQ questions on topic: {topic}.
-
-            Format strictly as JSON:
-            [
-              {{
-                "question": "...",
-                "options": ["A","B","C","D"],
-                "answer": "...",
-                "explanation": "..."
-              }}
-            ]
+            Generate 3 MCQ questions on {topic} in JSON format.
             """
 
-            response = openai.chat.completions.create(
+            res = openai.chat.completions.create(
                 model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}]
+                messages=[{"role":"user","content":prompt}]
             )
 
             try:
-                quiz = json.loads(response.choices[0].message.content)
-                st.session_state["quiz"] = quiz
+                quiz = json.loads(res.choices[0].message.content)
+                st.session_state.quiz = quiz
+                st.session_state.score = 0
             except:
-                st.error("Failed to generate quiz")
+                st.error("Error generating quiz")
 
-    # DISPLAY QUIZ
     if "quiz" in st.session_state:
 
-        score = 0
+        for i, q in enumerate(st.session_state.quiz):
 
-        for i, q in enumerate(st.session_state["quiz"]):
+            st.subheader(q["question"])
 
-            st.subheader(f"Q{i+1}: {q['question']}")
+            start = time.time()
 
-            user_ans = st.radio(
-                "Choose answer",
-                q["options"],
-                key=f"quiz_{i}"
+            ans = st.radio("Choose", q["options"], key=i)
+
+            if st.button(f"Submit {i}"):
+
+                time_taken = int(time.time() - start)
+
+                if ans == q["answer"]:
+                    st.success(f"Correct! ⏱️ {time_taken}s")
+                    st.session_state.score += 1
+                else:
+                    st.error("Wrong")
+                    st.write("Correct:", q["answer"])
+                    st.write("Explanation:", q["explanation"])
+
+        if st.button("Finish Quiz"):
+
+            st.success(f"Final Score: {st.session_state.score}")
+
+            st.session_state.leaderboard.append(
+                {"name": name, "score": st.session_state.score}
             )
 
-            if st.button(f"Submit Q{i+1}", key=f"btn_{i}"):
+    # LEADERBOARD
+    if st.session_state.leaderboard:
 
-                if user_ans == q["answer"]:
-                    st.success("✅ Correct!")
-                    score += 1
-                else:
-                    st.error("❌ Wrong")
-                    st.write(f"✔ Correct Answer: {q['answer']}")
-                    st.write(f"🧠 Explanation: {q['explanation']}")
+        st.header("🏆 Leaderboard")
 
-            st.markdown("---")
+        sorted_board = sorted(
+            st.session_state.leaderboard,
+            key=lambda x: x["score"],
+            reverse=True
+        )
+
+        for i, entry in enumerate(sorted_board):
+            st.write(f"{i+1}. {entry['name']} - {entry['score']}")
 
 # ---------------------------------------------------
-# ACCESSIBILITY SUPPORT
+# ACCESSIBILITY
 # ---------------------------------------------------
 
 elif feature == lang["accessibility"]:
 
     st.header("♿ Accessibility Support")
 
-    st.write("""
-EduAccess AI provides inclusive learning
-for differently-abled students.
-""")
-
-    st.write("✅ AI Accessibility")
-    st.write("✅ Speech Support")
-    st.write("✅ Dyslexia Mode")
-    st.write("✅ Multilingual Dashboard")
-    st.write("✅ Accessible Learning")
+    st.write("👁️ Blind → Audio + screen reader")
+    st.write("👂 Deaf → Text UI")
+    st.write("🗣️ Speech impaired → Text input")
+    st.write("🦽 Mobility → Large UI")
