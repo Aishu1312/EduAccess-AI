@@ -206,39 +206,43 @@ elif feature_key == "quiz":
 
     if st.button("Generate Quiz"):
 
-        quiz = [
+        st.session_state.quiz = [
             {
                 "q": f"What is {topic}?",
-                "options": ["Definition","Example","Tool","None"],
+                "options": ["Definition", "Example", "Tool", "None"],
                 "answer": "Definition",
                 "explanation": f"{topic} refers to its definition."
             },
             {
                 "q": f"Where is {topic} used?",
-                "options": ["Healthcare","Sports","Cooking","None"],
+                "options": ["Healthcare", "Sports", "Cooking", "None"],
                 "answer": "Healthcare",
                 "explanation": f"{topic} is widely used in healthcare."
             }
         ]
 
-        for i, item in enumerate(quiz):
+    if "quiz" in st.session_state:
+
+        for i, item in enumerate(st.session_state.quiz):
 
             st.subheader(f"Q{i+1}: {item['q']}")
 
             user_ans = st.radio(
                 "Choose answer",
                 item["options"],
-                key=f"q{i}"
+                key=f"radio_{i}"
             )
 
-            if st.button(f"Submit Q{i+1}"):
+            if st.button(f"Submit Answer {i+1}", key=f"btn_{i}"):
 
                 if user_ans == item["answer"]:
                     st.success("✅ Correct Answer")
                 else:
                     st.error("❌ Wrong Answer")
-                    st.write(f"✔ Correct: {item['answer']}")
-                    st.write(f"🧠 Reason: {item['explanation']}")
+                    st.write(f"✔ Correct Answer: {item['answer']}")
+                    st.write(f"🧠 Explanation: {item['explanation']}")
+
+            st.markdown("---")
 
 # ---------------- ACCESSIBILITY ---------------- #
 
