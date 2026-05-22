@@ -157,10 +157,13 @@ through accessibility and smart learning systems.
 
 elif feature == lang["speech"]:
 
+    import tempfile
+    import openai
+
     st.header("🎤 Speech-to-Text + AI Answer")
 
-    audio = st.audio_input("Record Voice")
-    file = st.file_uploader("Upload Audio", type=["wav","mp3"])
+    audio = st.audio_input("🎙️ Record Voice")
+    file = st.file_uploader("📂 Upload Audio", type=["wav","mp3","m4a"])
 
     source = audio if audio else file
 
@@ -170,28 +173,43 @@ elif feature == lang["speech"]:
             tmp.write(source.read())
             path = tmp.name
 
+        # ✅ SAFE MODE (NO CRASH)
         if "OPENAI_API_KEY" not in st.secrets:
-            st.warning("Demo Mode")
-            text = "What is AI?"
+            st.warning("⚠️ Demo Mode (No API Key)")
+            text = "What is Artificial Intelligence?"
+
         else:
-            openai.api_key = st.secrets["OPENAI_API_KEY"]
+            try:
+                openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-            with open(path, "rb") as f:
-                transcript = openai.audio.transcriptions.create(
-                    model="gpt-4o-mini-transcribe",
-                    file=f
-                )
-            text = transcript.text
+                with open(path, "rb") as f:
+                    transcript = openai.audio.transcriptions.create(
+                        model="gpt-4o-mini-transcribe",
+                        file=f
+                    )
 
-        st.write("📝", text)
+                text = transcript.text
 
+            except Exception:
+                st.warning("⚠️ API Error → Demo Mode")
+                text = "What is Artificial Intelligence?"
+
+        st.subheader("📝 Transcribed Text")
+        st.write(text)
+
+        # 🤖 ANSWER
         if "OPENAI_API_KEY" in st.secrets:
-            res = openai.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": text}]
-            )
-            st.success(res.choices[0].message.content)
+            try:
+                res = openai.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[{"role":"user","content":text}]
+                )
 
+                st.subheader("🤖 AI Answer")
+                st.success(res.choices[0].message.content)
+
+            except:
+                st.info("Demo Answer: AI is the simulation of human intelligence.")
 # ---------------------------------------------------
 # DYSLEXIA MODE
 # ---------------------------------------------------
