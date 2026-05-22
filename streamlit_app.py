@@ -295,67 +295,97 @@ elif feature == lang["dyslexia"]:
 elif feature == lang["quiz"]:
 
     import random
+    import time
+    import speech_recognition as sr
+    import tempfile
 
-    st.header("❓ Smart Quiz Generator")
+    st.header("🎯 Kahoot-Style Smart Quiz")
 
     topic = st.text_input("Enter Topic")
+    username = st.text_input("Enter Your Name")
 
+    # -------------------------------
+    # GENERATE ADVANCED QUESTIONS
+    # -------------------------------
+    def generate_questions(topic):
+
+        base = topic.lower()
+
+        questions = []
+
+        # EASY (10)
+        for i in range(1, 11):
+            questions.append({
+                "question": f"{i}. What best describes {topic}?",
+                "options": [
+                    f"A general definition of {topic}",
+                    f"A specific application of {topic}",
+                    f"A related but different concept",
+                    f"An incorrect interpretation"
+                ],
+                "answer": f"A general definition of {topic}"
+            })
+
+        # MEDIUM (5)
+        for i in range(11, 16):
+            questions.append({
+                "question": f"{i}. Which of the following is a correct application of {topic}?",
+                "options": [
+                    f"Using {topic} in real-world systems",
+                    f"Using {topic} only in theory",
+                    f"{topic} has no practical use",
+                    f"{topic} replaces all human work"
+                ],
+                "answer": f"Using {topic} in real-world systems"
+            })
+
+        # HARD (5)
+        for i in range(16, 21):
+            questions.append({
+                "question": f"{i}. Which statement about {topic} is most accurate?",
+                "options": [
+                    f"{topic} depends on data and algorithms",
+                    f"{topic} works without data",
+                    f"{topic} is always 100% accurate",
+                    f"{topic} has no limitations"
+                ],
+                "answer": f"{topic} depends on data and algorithms"
+            })
+
+        random.shuffle(questions)
+        return questions
+
+    # -------------------------------
+    # START QUIZ
+    # -------------------------------
     if st.button("Start Quiz"):
 
-        quiz = []
-
-        # 🔹 EASY (10)
-        for i in range(1, 11):
-            quiz.append({
-                "question": f"{i}. What is {topic}?",
-                "options": [
-                    f"A basic definition of {topic}",
-                    f"A detailed explanation of {topic}",
-                    f"A real-world example of {topic}",
-                    f"An unrelated concept"
-                ],
-                "answer": f"A basic definition of {topic}"
-            })
-
-        # 🔹 MEDIUM (5)
-        for i in range(11, 16):
-            quiz.append({
-                "question": f"{i}. Where is {topic} commonly applied?",
-                "options": [
-                    "Healthcare and education",
-                    "Only theoretical research",
-                    "Limited to labs",
-                    "Not used practically"
-                ],
-                "answer": "Healthcare and education"
-            })
-
-        # 🔹 HARD (5)
-        for i in range(16, 21):
-            quiz.append({
-                "question": f"{i}. What is a major limitation of {topic}?",
-                "options": [
-                    "High cost and complexity",
-                    "Unlimited scalability",
-                    "No dependency on data",
-                    "Always accurate"
-                ],
-                "answer": "High cost and complexity"
-            })
-
-        st.session_state.quiz = quiz
-        st.session_state.q_index = 0
+        st.session_state.quiz = generate_questions(topic)
+        st.session_state.index = 0
+        st.session_state.score = 0
         st.session_state.answers = [None] * 20
+        st.session_state.start_time = time.time()
 
-    # 🚀 RUN QUIZ
+    # -------------------------------
+    # RUN QUIZ
+    # -------------------------------
     if "quiz" in st.session_state:
 
+        i = st.session_state.index
         quiz = st.session_state.quiz
-        i = st.session_state.q_index
 
-        # 📊 PROGRESS BAR
+        # ⏱ TIMER (15 sec per question)
+        elapsed = int(time.time() - st.session_state.start_time)
+        remaining = max(15 - elapsed, 0)
+
         st.progress((i + 1) / 20)
-        st.write(f"📍 Question {i+1} of 20")
+        st.write(f"📍 Question {i+1}/20 | ⏱ Time Left: {remaining}s")
+
+        if remaining == 0:
+            st.warning("⏰ Time's up! Moving to next question...")
+            st.session_state.index += 1
+            st.session_state.start_time = time.time()
+            st.rerun()
 
         q = quiz[i]
 
@@ -364,44 +394,76 @@ elif feature == lang["quiz"]:
         selected = st.radio(
             "Choose Answer",
             q["options"],
-            index=q["options"].index(st.session_state.answers[i]) if st.session_state.answers[i] else 0,
             key=f"q_{i}"
         )
 
-        # ✅ SAVE ANSWER
+        # 🎤 VOICE ANSWER
+        audio = st.audio_input("🎙️ Speak Answer (optional)")
+
+        if audio:
+            with tempfile.NamedTemporaryFile(delete=False) as tmp:
+                tmp.write(audio.read())
+                path = tmp.name
+
+            r = sr.Recognizer()
+            try:
+                with sr.AudioFile(path) as src:
+                    data = r.record(src)
+                    voice_text = r.recognize_google(data)
+
+                st.info(f"🎤 You said: {voice_text}")
+
+                for opt in q["options"]:
+                    if opt.lower() in voice_text.lower():
+                        selected = opt
+
+            except:
+                st.error("Voice not clear")
+
+        # ✅ SUBMIT
         if st.button("Submit Answer"):
+
             st.session_state.answers[i] = selected
 
             if selected == q["answer"]:
                 st.success("✅ Correct!")
+                st.session_state.score += 1
             else:
                 st.error("❌ Wrong")
-                st.write(f"✔ Correct Answer: {q['answer']}")
+                st.write(f"✔ Correct: {q['answer']}")
 
-        # 🔁 NAVIGATION
-        col1, col2 = st.columns(2)
+            st.session_state.index += 1
+            st.session_state.start_time = time.time()
+            st.rerun()
 
-        with col1:
-            if st.button("⬅ Previous") and i > 0:
-                st.session_state.q_index -= 1
+        # 📊 STATUS
+        attempted = len([a for a in st.session_state.answers if a])
+        st.info(f"✅ Attempted: {attempted}/20")
 
-        with col2:
-            if st.button("Next ➡") and i < 19:
-                st.session_state.q_index += 1
+        # 🏁 END
+        if i >= 19:
 
-        # 📌 ATTEMPT STATUS
-        attempted = sum([1 for a in st.session_state.answers if a is not None])
-        st.info(f"✅ Attempted: {attempted} / 20")
+            st.success(f"🎉 Final Score: {st.session_state.score}/20")
 
-        # 🏁 FINAL RESULT
-        if st.button("Finish Quiz"):
+            # 🏆 LEADERBOARD
+            if "leaderboard" not in st.session_state:
+                st.session_state.leaderboard = []
 
-            score = 0
-            for idx, q in enumerate(quiz):
-                if st.session_state.answers[idx] == q["answer"]:
-                    score += 1
+            st.session_state.leaderboard.append({
+                "name": username,
+                "score": st.session_state.score
+            })
 
-            st.success(f"🎉 Final Score: {score}/20")
+            leaderboard = sorted(
+                st.session_state.leaderboard,
+                key=lambda x: x["score"],
+                reverse=True
+            )
+
+            st.subheader("🏆 Leaderboard")
+
+            for idx, player in enumerate(leaderboard[:5]):
+                st.write(f"{idx+1}. {player['name']} - {player['score']}")
             
 # ---------------------------------------------------
 # ACCESSIBILITY
