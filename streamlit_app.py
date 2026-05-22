@@ -298,152 +298,148 @@ elif feature == lang["quiz"]:
     import speech_recognition as sr
     import tempfile
 
-    st.header("🎯 KBC Style AI Quiz")
+    st.header("🎯 KBC Style Smart Quiz (Ultra Fast)")
 
-    # ----------------------------
+    # ---------------------------
     # USER INPUT
-    # ----------------------------
+    # ---------------------------
     name = st.text_input("👤 Enter Your Name")
     topic = st.text_input("📘 Enter Topic")
 
-    if "quiz_started" not in st.session_state:
-        st.session_state.quiz_started = False
+    # ---------------------------
+    # SESSION STATE
+    # ---------------------------
+    if "started" not in st.session_state:
+        st.session_state.started = False
 
-    if "q_index" not in st.session_state:
-        st.session_state.q_index = 0
+    if "q_no" not in st.session_state:
+        st.session_state.q_no = 1
 
     if "score" not in st.session_state:
         st.session_state.score = 0
 
-    if "used_questions" not in st.session_state:
-        st.session_state.used_questions = set()
+    if "asked" not in st.session_state:
+        st.session_state.asked = set()
 
-    # ----------------------------
-    # SMART QUESTION GENERATOR
-    # ----------------------------
-    def generate_unique_question(topic):
+    # ---------------------------
+    # QUESTION GENERATOR (NO REPEAT)
+    # ---------------------------
+    def generate_question(topic):
 
         templates = [
-            f"What is the primary purpose of {topic}?",
-            f"Which scenario best represents {topic}?",
+            f"What is the main purpose of {topic}?",
+            f"Which scenario best explains {topic}?",
             f"What is a key feature of {topic}?",
-            f"How does {topic} impact real-world systems?",
-            f"Which of the following best defines {topic}?",
-            f"What makes {topic} different from traditional methods?",
-            f"Which application uses {topic} most effectively?",
+            f"Which of the following correctly defines {topic}?",
+            f"How does {topic} improve systems?",
             f"What is a limitation of {topic}?",
-            f"Which concept is closely related to {topic}?",
-            f"How does {topic} improve efficiency?"
+            f"Which real-world use shows {topic}?",
+            f"What distinguishes {topic} from traditional methods?",
+            f"Which field uses {topic} effectively?",
+            f"What is the impact of {topic}?"
         ]
 
-        while True:
-            q_text = random.choice(templates)
+        # ensure no repetition
+        available = list(set(templates) - st.session_state.asked)
 
-            if q_text not in st.session_state.used_questions:
-                st.session_state.used_questions.add(q_text)
-                break
+        if not available:
+            st.session_state.asked = set()
+            available = templates
 
-        options_pool = [
-            f"{topic} enables intelligent decision-making",
-            f"{topic} is purely manual and static",
-            f"{topic} replaces all human involvement",
-            f"{topic} has no real-world use"
+        q_text = random.choice(available)
+        st.session_state.asked.add(q_text)
+
+        correct = f"{topic} enables intelligent decision-making"
+
+        options = [
+            correct,
+            f"{topic} eliminates all human roles",
+            f"{topic} works without data",
+            f"{topic} has no practical applications"
         ]
 
-        random.shuffle(options_pool)
+        random.shuffle(options)
 
-        return {
-            "question": q_text,
-            "options": options_pool,
-            "answer": f"{topic} enables intelligent decision-making"
-        }
+        return q_text, options, correct
 
-    # ----------------------------
+    # ---------------------------
     # START QUIZ
-    # ----------------------------
+    # ---------------------------
     if st.button("🚀 Start Quiz") and topic and name:
 
-        st.session_state.quiz_started = True
-        st.session_state.q_index = 0
+        st.session_state.started = True
+        st.session_state.q_no = 1
         st.session_state.score = 0
-        st.session_state.used_questions = set()
-        st.session_state.questions = [
-            generate_unique_question(topic) for _ in range(20)
-        ]
+        st.session_state.asked = set()
 
-    # ----------------------------
-    # QUIZ FLOW (KBC STYLE)
-    # ----------------------------
-    if st.session_state.quiz_started:
+    # ---------------------------
+    # QUIZ FLOW
+    # ---------------------------
+    if st.session_state.started:
 
-        i = st.session_state.q_index
-        q = st.session_state.questions[i]
+        if st.session_state.q_no > 20:
+            st.success(f"🏆 Final Score: {st.session_state.score}/20")
+            st.session_state.started = False
+            st.stop()
 
-        st.markdown(f"### 🎤 Question {i+1} / 20")
+        q_text, options, correct = generate_question(topic)
 
-        st.subheader(q["question"])
+        st.markdown(f"### 🎤 Question {st.session_state.q_no}/20")
+        st.subheader(q_text)
 
-        # ----------------------------
-        # OPTIONS (BUTTON STYLE)
-        # ----------------------------
-        selected = st.radio("Choose Answer", q["options"], key=f"q_{i}")
+        # OPTIONS
+        selected = st.radio("Choose Answer", options)
 
-        # ----------------------------
-        # VOICE INPUT (OPTIONAL)
-        # ----------------------------
-        st.markdown("🎙️ Speak Your Answer (Optional)")
+        # ---------------------------
+        # VOICE ANSWER
+        # ---------------------------
+        st.markdown("🎙️ Speak Answer (Optional)")
+        audio = st.audio_input("Record")
 
-        audio = st.audio_input("Record Answer")
-
-        spoken_text = ""
+        spoken = ""
 
         if audio:
             with tempfile.NamedTemporaryFile(delete=False) as tmp:
                 tmp.write(audio.read())
                 path = tmp.name
 
-            recognizer = sr.Recognizer()
+            r = sr.Recognizer()
 
             try:
                 with sr.AudioFile(path) as source:
-                    data = recognizer.record(source)
-                    spoken_text = recognizer.recognize_google(data)
+                    data = r.record(source)
+                    spoken = r.recognize_google(data)
 
-                st.info(f"🗣️ You said: {spoken_text}")
+                st.info(f"🗣️ You said: {spoken}")
 
             except:
-                st.warning("Could not understand voice")
+                st.warning("Voice not clear")
 
-        # ----------------------------
+        # ---------------------------
         # SUBMIT
-        # ----------------------------
-        if st.button("✅ Submit Answer"):
+        # ---------------------------
+        if st.button("✅ Submit"):
 
-            final_answer = selected
+            final = selected
 
-            # If voice matches option → override
-            for opt in q["options"]:
-                if opt.lower() in spoken_text.lower():
-                    final_answer = opt
+            for opt in options:
+                if opt.lower() in spoken.lower():
+                    final = opt
 
-            if final_answer == q["answer"]:
-                st.success("✅ Correct Answer!")
+            if final == correct:
+                st.success("✅ Correct!")
                 st.session_state.score += 1
             else:
-                st.error("❌ Wrong Answer")
-                st.write(f"✔ Correct: {q['answer']}")
+                st.error("❌ Wrong")
+                st.write(f"✔ Correct: {correct}")
 
-            # NEXT QUESTION AUTO
-            if st.session_state.q_index < 19:
-                st.session_state.q_index += 1
-            else:
-                st.success(f"🏆 Final Score: {st.session_state.score}/20")
-                st.session_state.quiz_started = False
+            st.session_state.q_no += 1
+            st.rerun()
 
-        # ----------------------------
+        # ---------------------------
         # PROGRESS
-        # ----------------------------
-        st.progress((i+1)/20)
+        # ---------------------------
+        st.progress(st.session_state.q_no / 20)
         st.write(f"📊 Score: {st.session_state.score}")
             
 # ---------------------------------------------------
