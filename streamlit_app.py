@@ -38,9 +38,64 @@ feature_key = st.sidebar.selectbox(
 
 # ---------------- HOME ---------------- #
 
-if feature_key == "home":
-    st.title("🚀 EduAccess AI")
-    st.write("AI-powered inclusive learning platform")
+if feature == lang["home"]:
+
+    st.title(lang["title"])
+
+    st.subheader(lang["subtitle"])
+
+    st.write(lang["welcome"])
+
+    st.markdown("---")
+
+    st.header(lang["core_features"])
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        st.info("🧠 AI Notes Summarizer")
+        st.write("""
+Generate concise AI-powered summaries from educational notes.
+""")
+
+        st.success("🎤 Speech-to-Text")
+        st.write("""
+Convert spoken language into text using AI.
+""")
+
+    with col2:
+
+        st.warning("📖 Dyslexia-Friendly Reading")
+        st.write("""
+Improve readability using accessibility-focused UI.
+""")
+
+        st.error("❓ AI Quiz Generator")
+        st.write("""
+Generate exam-based AI quiz questions.
+""")
+
+    st.markdown("---")
+
+    st.header("♿ Accessibility Support")
+
+    st.write("✅ Dyslexia Support")
+    st.write("✅ Speech Assistance")
+    st.write("✅ Large Readable Fonts")
+    st.write("✅ AI Learning Assistance")
+    st.write("✅ Multilingual Support")
+
+    st.markdown("---")
+
+    st.header(lang["future_scope"])
+
+    st.write(lang["future1"])
+    st.write(lang["future2"])
+    st.write(lang["future3"])
+    st.write(lang["future4"])
+    st.write(lang["future5"])
+
 
 # ---------------- SUMMARIZER ---------------- #
 
