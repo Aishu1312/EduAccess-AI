@@ -119,18 +119,38 @@ elif feature == lang["summarizer"]:
 
     st.header("🧠 AI Notes Summarizer")
 
-    text = st.text_area("Paste Notes Here")
+    sample_text = """
+Artificial Intelligence is transforming education
+through accessibility and smart learning systems.
+"""
 
-    if st.button("Generate Summary"):
+    text = st.text_area(
+        "Paste Notes Here",
+        value=sample_text,
+        height=250
+    )
 
-        sentences = [s.strip() for s in text.split('.') if s.strip()]
-        summary = ". ".join(sentences[:4])
+    summary_length = st.selectbox(
+        "Select Summary Length",
+        ["Short", "Medium", "Detailed"]
+    )
 
-        st.session_state.summary = summary
+    if st.button(lang["summary_button"]):
 
-        st.success("Summary Generated")
+        sentences = text.split('.')
+
+        if summary_length == "Short":
+            summary = '.'.join(sentences[:2])
+
+        elif summary_length == "Medium":
+            summary = '.'.join(sentences[:4])
+
+        else:
+            summary = '.'.join(sentences[:6])
+
+        st.success("✅ Summary Generated")
+
         st.write(summary)
-
 # ---------------------------------------------------
 # SPEECH TO TEXT + AI ANSWER
 # ---------------------------------------------------
