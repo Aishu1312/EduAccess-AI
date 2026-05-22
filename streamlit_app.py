@@ -115,25 +115,51 @@ if feature == lang["home"]:
 # SUMMARIZER
 # ---------------------------------------------------
 
-if st.button(lang["summary_button"]):
+elif feature == lang["summarizer"]:
 
-    sentences = [s.strip() for s in text.split('.') if s.strip()]
+    st.header("🧠 AI Notes Summarizer")
 
-    if summary_length == "Short":
-        num = max(2, len(sentences)//4)
-    elif summary_length == "Medium":
-        num = max(4, len(sentences)//2)
-    else:
-        num = len(sentences)
+    sample_text = """Artificial Intelligence is transforming education through accessibility and smart learning systems."""
 
-    summary = ". ".join(sentences[:num]) + "."
+    text = st.text_area(
+        "📌 Paste Notes Here",
+        value=sample_text,
+        height=250
+    )
 
-    # ✅ SAVE SUMMARY
-    st.session_state["summary"] = summary
+    summary_length = st.selectbox(
+        "Select Summary Length",
+        ["Short", "Medium", "Detailed"]
+    )
 
-    st.success("✅ Summary Generated")
+    if st.button("Generate Summary"):
 
-    st.write(summary)
+        sentences = [s.strip() for s in text.split('.') if s.strip()]
+
+        if summary_length == "Short":
+            num = max(2, len(sentences)//4)
+        elif summary_length == "Medium":
+            num = max(4, len(sentences)//2)
+        else:
+            num = len(sentences)
+
+        summary = ". ".join(sentences[:num]) + "."
+
+        # ✅ store summary globally
+        st.session_state["summary"] = summary
+
+        st.success("✅ Summary Generated")
+
+        st.markdown(f"""
+        <div style="
+            background-color:#14532d;
+            padding:15px;
+            border-radius:10px;
+            color:white;
+        ">
+        {summary}
+        </div>
+        """, unsafe_allow_html=True)
     
 # ---------------------------------------------------
 # SPEECH TO TEXT + AI ANSWER
@@ -268,7 +294,7 @@ elif feature == lang["dyslexia"]:
 # ---------------------------------------------------
 elif feature == lang["quiz"]:
 
-    st.header("❓ Kahoot Style Quiz")
+    st.header("❓ Smart Quiz Generator")
 
     topic = st.text_input("Enter Topic")
 
@@ -277,45 +303,69 @@ elif feature == lang["quiz"]:
         quiz = []
 
         # 🔹 BASIC (10)
-        for i in range(1, 11):
-            quiz.append({
-                "question": f"{i}. What is {topic}?",
-                "options": [
-                    "Basic definition",
-                    "Advanced concept",
-                    "Tool",
-                    "None"
-                ],
-                "answer": "Basic definition",
-                "explanation": f"{topic} at basic level means understanding its definition."
-            })
+        basic_questions = [
+            ("What does AI stand for?", ["Artificial Intelligence", "Automated Input", "Advanced Interface", "None"], "Artificial Intelligence"),
+            ("Which language is popular for AI?", ["Python", "HTML", "CSS", "SQL"], "Python"),
+            ("AI is used in?", ["Healthcare", "Education", "Robotics", "All of the above"], "All of the above"),
+            ("Which is an AI assistant?", ["Siri", "Calculator", "Notepad", "Paint"], "Siri"),
+            ("AI works using?", ["Data", "Guessing", "Magic", "Luck"], "Data"),
+        ]
 
         # 🔹 MEDIUM (5)
-        for i in range(11, 16):
-            quiz.append({
-                "question": f"{i}. Where is {topic} used?",
-                "options": [
-                    "Healthcare",
-                    "Agriculture",
-                    "Education",
-                    "All of the above"
-                ],
-                "answer": "All of the above",
-                "explanation": f"{topic} is widely used in multiple industries."
-            })
+        medium_questions = [
+            ("Machine Learning is a subset of?", ["AI", "Web Dev", "Networking", "Database"], "AI"),
+            ("Which library is used in Python for ML?", ["Scikit-learn", "Bootstrap", "React", "Flask"], "Scikit-learn"),
+            ("Supervised learning uses?", ["Labeled data", "No data", "Random data", "Images only"], "Labeled data"),
+            ("Which is not AI?", ["Calculator", "Chatbot", "Robot", "Voice Assistant"], "Calculator"),
+            ("Neural networks are inspired by?", ["Human brain", "Computer chips", "Internet", "Robots"], "Human brain"),
+        ]
 
         # 🔹 HARD (5)
-        for i in range(16, 21):
+        hard_questions = [
+            ("What is overfitting?", [
+                "Model learns noise",
+                "Model is perfect",
+                "Model ignores data",
+                "None"
+            ], "Model learns noise"),
+
+            ("Bias in AI means?", [
+                "Unfair results",
+                "Fast processing",
+                "Correct output",
+                "None"
+            ], "Unfair results"),
+
+            ("Deep Learning uses?", [
+                "Neural networks",
+                "HTML",
+                "Excel",
+                "PowerPoint"
+            ], "Neural networks"),
+
+            ("Which is NLP task?", [
+                "Text analysis",
+                "Image editing",
+                "Video rendering",
+                "None"
+            ], "Text analysis"),
+
+            ("AI ethics deals with?", [
+                "Fairness & safety",
+                "Coding speed",
+                "Hardware",
+                "None"
+            ], "Fairness & safety"),
+        ]
+
+        # 👉 Combine + add numbering
+        all_questions = basic_questions + medium_questions + hard_questions
+
+        for i, (q, opts, ans) in enumerate(all_questions):
             quiz.append({
-                "question": f"{i}. What is a challenge of {topic}?",
-                "options": [
-                    "High cost",
-                    "Bias",
-                    "Privacy issues",
-                    "All of the above"
-                ],
-                "answer": "All of the above",
-                "explanation": f"{topic} has real-world challenges like bias and privacy."
+                "question": f"{i+1}. {q}",
+                "options": opts,
+                "answer": ans
             })
 
         st.session_state["quiz"] = quiz
@@ -348,12 +398,12 @@ elif feature == lang["quiz"]:
                 else:
                     st.error("❌ Wrong")
                     st.write(f"✔ Correct Answer: {q['answer']}")
-                    st.write(f"🧠 Explanation: {q['explanation']}")
 
                 st.session_state["q_index"] += 1
 
         else:
-            st.success(f"🎉 Quiz Completed! Score: {st.session_state['score']}/20")                    
+            st.success(f"🎉 Quiz Completed! Score: {st.session_state['score']}/20")
+            
 # ---------------------------------------------------
 # ACCESSIBILITY
 # ---------------------------------------------------
