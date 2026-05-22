@@ -234,25 +234,72 @@ through accessibility and smart learning systems.
 
 elif feature == lang["speech"]:
 
-    st.header("🎤 Speech-to-Text")
+    import tempfile
+    import openai
 
-    st.write("""
-Convert voice into text using AI speech recognition.
-""")
+    st.header("🎤 Speech-to-Text + AI Answer")
 
-    audio_value = st.audio_input("🎙️ Record Voice")
+    st.write("Convert voice into text and get AI answer.")
+
+    # 🎙️ MIC INPUT
+    st.subheader("🎙️ Record Voice")
+    audio_value = st.audio_input("Record your voice")
+
+    # 📂 FILE UPLOAD
+    st.subheader("📂 Upload Audio")
+    uploaded_file = st.file_uploader("Upload audio file", type=["wav", "mp3", "m4a"])
+
+    audio_source = None
 
     if audio_value:
-
-        st.success("✅ Audio Recorded Successfully")
-
+        audio_source = audio_value
         st.audio(audio_value)
 
-        st.subheader("📝 Transcribed Text")
+    elif uploaded_file:
+        audio_source = uploaded_file
+        st.audio(uploaded_file)
 
-        st.write("""
-Hello, welcome to EduAccess AI.
-""")
+    if audio_source:
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+            tmp.write(audio_source.read())
+            temp_path = tmp.name
+
+        try:
+            if "OPENAI_API_KEY" not in st.secrets:
+                st.warning("API key missing — showing demo output.")
+                user_text = "What is Artificial Intelligence?"
+            else:
+                openai.api_key = st.secrets["OPENAI_API_KEY"]
+
+                with open(temp_path, "rb") as f:
+                    transcript = openai.audio.transcriptions.create(
+                        model="gpt-4o-mini-transcribe",
+                        file=f
+                    )
+                user_text = transcript.text
+
+            st.success("📝 Transcribed Text")
+            st.write(user_text)
+
+            # 🤖 AI ANSWER
+            if "OPENAI_API_KEY" in st.secrets:
+                response = openai.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful tutor."},
+                        {"role": "user", "content": user_text}
+                    ]
+                )
+
+                answer = response.choices[0].message.content
+
+                st.markdown("### 🤖 AI Answer")
+                st.success(answer)
+
+        except Exception as e:
+            st.error("Error processing audio")
+            st.write(str(e))
 
 # ---------------------------------------------------
 # DYSLEXIA MODE
@@ -262,56 +309,16 @@ elif feature == lang["dyslexia"]:
 
     st.header("📖 Dyslexia-Friendly Reading Mode")
 
-    font_size = st.slider(
-        "Adjust Font Size",
-        20,
-        40,
-        30
-    )
+    font_size = st.slider("Adjust Font Size", 20, 40, 30)
 
-    dyslexia_texts = {
-
-        "English": "Artificial Intelligence improves accessible education.",
-
-        "Hindi": "कृत्रिम बुद्धिमत्ता शिक्षा को अधिक सुलभ बनाती है।",
-
-        "Marathi": "कृत्रिम बुद्धिमत्ता शिक्षण अधिक सुलभ बनवते.",
-
-        "Tamil": "செயற்கை நுண்ணறிவு கல்வியை மேம்படுத்துகிறது.",
-
-        "Telugu": "కృత్రిమ మేధస్సు విద్యను మెరుగుపరుస్తుంది.",
-
-        "Kannada": "ಕೃತಕ ಬುದ್ಧಿಮತ್ತೆ ಶಿಕ್ಷಣವನ್ನು ಸುಧಾರಿಸುತ್ತದೆ.",
-
-        "Gujarati": "કૃત્રિમ બુદ્ધિ શિક્ષણને વધુ સુલભ બનાવે છે.",
-
-        "Punjabi": "ਕ੍ਰਿਤ੍ਰਿਮ ਬੁੱਧੀ ਸਿੱਖਿਆ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਂਦੀ ਹੈ।",
-
-        "Bengali": "কৃত্রিম বুদ্ধিমত্তা শিক্ষা উন্নত করছে।",
-
-        "Malayalam": "കൃത്രിമ ബുദ്ധി വിദ്യാഭ്യാസം മെച്ചപ്പെടുത്തുന്നു.",
-
-        "Urdu": "مصنوعی ذہانت تعلیم کو بہتر بنا رہی ہے۔",
-
-        "French": "L'intelligence artificielle améliore l'éducation.",
-
-        "German": "Künstliche Intelligenz verbessert die Bildung.",
-
-        "Spanish": "La inteligencia artificial mejora la educación.",
-
-        "Chinese": "人工智能正在改善教育。",
-
-        "Japanese": "人工知能は教育を向上させています。"
-    }
-
-    display_text = dyslexia_texts.get(
-        selected_language,
-        dyslexia_texts["English"]
+    # ✅ Use summary if available
+    display_text = st.session_state.get(
+        "summary",
+        "No summary generated yet. Please generate summary first."
     )
 
     st.markdown(f"""
-    <style>
-    .dyslexia-text {{
+    <div style="
         font-size: {font_size}px;
         line-height: 2.5;
         letter-spacing: 2px;
@@ -319,18 +326,10 @@ elif feature == lang["dyslexia"]:
         padding: 20px;
         border-radius: 10px;
         color: black;
-    }}
-    </style>
+    ">
+    {display_text}
+    </div>
     """, unsafe_allow_html=True)
-
-    st.markdown(
-        f"""
-        <div class="dyslexia-text">
-        {display_text}
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
 
 # ---------------------------------------------------
 # QUIZ GENERATOR
@@ -340,47 +339,47 @@ elif feature == lang["quiz"]:
 
     st.header("❓ AI Quiz Generator")
 
-    exam = st.text_input("Enter Exam Name")
-
     topic = st.text_input("Enter Topic")
-
-    num_questions = st.slider(
-        "Select Number of Questions",
-        1,
-        10,
-        5
-    )
 
     if st.button(lang["quiz_button"]):
 
-        question_bank = [
-
-            f"What is {topic}?",
-
-            f"Explain applications of {topic}.",
-
-            f"What are advantages of {topic}?",
-
-            f"What are limitations of {topic}?",
-
-            f"How does {topic} help society?",
-
-            f"Explain future scope of {topic}.",
-
-            f"How is {topic} used in industries?",
-
-            f"Differentiate AI and ML in {topic}.",
-
-            f"What are challenges in {topic}?",
-
-            f"Describe the importance of {topic}."
+        st.session_state.quiz = [
+            {
+                "q": f"What is {topic}?",
+                "options": ["Definition", "Example", "Tool", "None"],
+                "answer": "Definition",
+                "explanation": f"{topic} refers to its definition."
+            },
+            {
+                "q": f"Where is {topic} used?",
+                "options": ["Healthcare", "Sports", "Cooking", "None"],
+                "answer": "Healthcare",
+                "explanation": f"{topic} is widely used in healthcare."
+            }
         ]
 
-        st.subheader("📘 Generated Questions")
+    if "quiz" in st.session_state:
 
-        for i in range(num_questions):
+        for i, item in enumerate(st.session_state.quiz):
 
-            st.write(f"{i+1}. {question_bank[i]}")
+            st.subheader(f"Q{i+1}: {item['q']}")
+
+            user_ans = st.radio(
+                "Choose answer",
+                item["options"],
+                key=f"q_{i}"
+            )
+
+            if st.button(f"Submit Answer {i+1}", key=f"btn_{i}"):
+
+                if user_ans == item["answer"]:
+                    st.success("✅ Correct Answer")
+                else:
+                    st.error("❌ Wrong Answer")
+                    st.write(f"✔ Correct Answer: {item['answer']}")
+                    st.write(f"🧠 Explanation: {item['explanation']}")
+
+            st.markdown("---")
 
 # ---------------------------------------------------
 # ACCESSIBILITY SUPPORT
