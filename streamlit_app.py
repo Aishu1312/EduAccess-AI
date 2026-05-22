@@ -130,13 +130,13 @@ elif feature_key == "summarizer":
 
 elif feature_key == "speech":
 
-    st.header("🎤 Speech-to-Text")
+    st.header("🎤 Speech-to-Text + AI Answer")
 
     st.subheader("🎙️ Record Voice")
     audio_value = st.audio_input("Record")
 
     st.subheader("📂 Upload Audio")
-    file = st.file_uploader("Upload", type=["wav","mp3"])
+    file = st.file_uploader("Upload Audio", type=["wav", "mp3", "m4a"])
 
     audio_source = None
 
@@ -144,30 +144,52 @@ elif feature_key == "speech":
         audio_source = audio_value
         st.audio(audio_value)
 
-    if file:
+    elif file:
         audio_source = file
         st.audio(file)
 
     if audio_source:
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-            tmp.write(audio_source.read())
-            temp_path = tmp.name
-
         try:
-            openai.api_key = st.secrets["OPENAI_API_KEY"]
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+                tmp.write(audio_source.read())
+                temp_path = tmp.name
 
-            with open(temp_path,"rb") as f:
-                transcript = openai.audio.transcriptions.create(
-                    model="gpt-4o-mini-transcribe",
-                    file=f
+            if "OPENAI_API_KEY" not in st.secrets:
+                st.warning("API key missing. Showing demo output.")
+                text = "What is Artificial Intelligence?"
+            else:
+                openai.api_key = st.secrets["OPENAI_API_KEY"]
+
+                with open(temp_path, "rb") as f:
+                    transcript = openai.audio.transcriptions.create(
+                        model="gpt-4o-mini-transcribe",
+                        file=f
+                    )
+                text = transcript.text
+
+            st.success("📝 Transcribed Text")
+            st.write(text)
+
+            # 🔥 AI ANSWER
+            if "OPENAI_API_KEY" in st.secrets:
+
+                response = openai.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful tutor."},
+                        {"role": "user", "content": text}
+                    ]
                 )
 
-            st.success("Transcribed")
-            st.write(transcript.text)
+                answer = response.choices[0].message.content
+
+                st.markdown("### 🤖 AI Answer")
+                st.success(answer)
 
         except Exception as e:
-            st.error(str(e))
+            st.error("Error processing audio")
+            st.write(str(e))
 
 # ---------------- DYSLEXIA ---------------- #
 
