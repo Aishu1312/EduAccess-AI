@@ -205,80 +205,41 @@ elif feature == lang["dyslexia"]:
 # ---------------------------------------------------
 # QUIZ (KAHOOT STYLE + TIMER + LEADERBOARD)
 # ---------------------------------------------------
+if st.button("Generate Quiz"):
 
-elif feature == lang["quiz"]:
+    if "OPENAI_API_KEY" not in st.secrets:
 
-    st.header("❓ AI Quiz (Kahoot Style)")
+        st.warning("⚠️ Demo Mode (No API Key)")
 
-    name = st.text_input("Enter Your Name")
-    topic = st.text_input("Enter Topic")
+        st.session_state.quiz = [
+            {
+                "question": f"What is {topic}?",
+                "options": ["Definition", "Example", "Tool", "None"],
+                "answer": "Definition",
+                "explanation": f"{topic} is a concept, not a tool."
+            },
+            {
+                "question": f"Where is {topic} used?",
+                "options": ["Healthcare", "Sports", "Cooking", "None"],
+                "answer": "Healthcare",
+                "explanation": f"{topic} is widely used in healthcare."
+            }
+        ]
 
-    if st.button("Generate Quiz"):
+    else:
+        openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-        if "OPENAI_API_KEY" not in st.secrets:
-            st.error("API key missing")
-        else:
-            openai.api_key = st.secrets["OPENAI_API_KEY"]
-
-            prompt = f"""
-            Generate 3 MCQ questions on {topic} in JSON format.
-            """
-
+        try:
             res = openai.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[{"role":"user","content":prompt}]
             )
 
-            try:
-                quiz = json.loads(res.choices[0].message.content)
-                st.session_state.quiz = quiz
-                st.session_state.score = 0
-            except:
-                st.error("Error generating quiz")
+            quiz = json.loads(res.choices[0].message.content)
+            st.session_state.quiz = quiz
 
-    if "quiz" in st.session_state:
-
-        for i, q in enumerate(st.session_state.quiz):
-
-            st.subheader(q["question"])
-
-            start = time.time()
-
-            ans = st.radio("Choose", q["options"], key=i)
-
-            if st.button(f"Submit {i}"):
-
-                time_taken = int(time.time() - start)
-
-                if ans == q["answer"]:
-                    st.success(f"Correct! ⏱️ {time_taken}s")
-                    st.session_state.score += 1
-                else:
-                    st.error("Wrong")
-                    st.write("Correct:", q["answer"])
-                    st.write("Explanation:", q["explanation"])
-
-        if st.button("Finish Quiz"):
-
-            st.success(f"Final Score: {st.session_state.score}")
-
-            st.session_state.leaderboard.append(
-                {"name": name, "score": st.session_state.score}
-            )
-
-    # LEADERBOARD
-    if st.session_state.leaderboard:
-
-        st.header("🏆 Leaderboard")
-
-        sorted_board = sorted(
-            st.session_state.leaderboard,
-            key=lambda x: x["score"],
-            reverse=True
-        )
-
-        for i, entry in enumerate(sorted_board):
-            st.write(f"{i+1}. {entry['name']} - {entry['score']}")
+        except Exception as e:
+            st.error("API Error — switching to demo quiz")
 
 # ---------------------------------------------------
 # ACCESSIBILITY
