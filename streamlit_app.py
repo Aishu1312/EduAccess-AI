@@ -298,66 +298,70 @@ elif feature == lang["quiz"]:
     import speech_recognition as sr
     import tempfile
 
-    st.header("🎯 KBC Style Smart Quiz (Ultra Fast)")
+    st.header("🎯 KBC Style Smart Quiz (No Repeat)")
 
-    # ---------------------------
-    # USER INPUT
-    # ---------------------------
     name = st.text_input("👤 Enter Your Name")
     topic = st.text_input("📘 Enter Topic")
 
-    # ---------------------------
-    # SESSION STATE
-    # ---------------------------
+    # SESSION
     if "started" not in st.session_state:
         st.session_state.started = False
-
     if "q_no" not in st.session_state:
         st.session_state.q_no = 1
-
     if "score" not in st.session_state:
         st.session_state.score = 0
-
-    if "asked" not in st.session_state:
-        st.session_state.asked = set()
+    if "used_q" not in st.session_state:
+        st.session_state.used_q = []
 
     # ---------------------------
-    # QUESTION GENERATOR (NO REPEAT)
+    # LARGE QUESTION BANK (DYNAMIC)
     # ---------------------------
     def generate_question(topic):
 
-        templates = [
-            f"What is the main purpose of {topic}?",
-            f"Which scenario best explains {topic}?",
-            f"What is a key feature of {topic}?",
-            f"Which of the following correctly defines {topic}?",
-            f"How does {topic} improve systems?",
+        question_types = [
+
+            f"What is the primary purpose of {topic}?",
+            f"Which of the following best defines {topic}?",
+            f"How is {topic} used in real-world applications?",
+            f"What makes {topic} important in modern systems?",
+            f"Which scenario is an example of {topic}?",
             f"What is a limitation of {topic}?",
-            f"Which real-world use shows {topic}?",
-            f"What distinguishes {topic} from traditional methods?",
-            f"Which field uses {topic} effectively?",
-            f"What is the impact of {topic}?"
+            f"How does {topic} improve efficiency?",
+            f"Which field benefits the most from {topic}?",
+            f"What distinguishes {topic} from traditional approaches?",
+            f"Why is {topic} widely adopted today?",
+            f"What is a key component of {topic}?",
+            f"What problem does {topic} solve?",
+            f"Which statement about {topic} is correct?",
+            f"What happens when {topic} is applied?",
+            f"What is the future scope of {topic}?",
+            f"Which industry uses {topic} the most?",
+            f"What is the role of data in {topic}?",
+            f"How does {topic} impact decision making?",
+            f"What is a real-life example of {topic}?",
+            f"What is the biggest advantage of {topic}?"
         ]
 
-        # ensure no repetition
-        available = list(set(templates) - st.session_state.asked)
+        # REMOVE USED QUESTIONS
+        remaining = list(set(question_types) - set(st.session_state.used_q))
 
-        if not available:
-            st.session_state.asked = set()
-            available = templates
+        if not remaining:
+            st.session_state.used_q = []
+            remaining = question_types
 
-        q_text = random.choice(available)
-        st.session_state.asked.add(q_text)
+        q_text = random.choice(remaining)
+        st.session_state.used_q.append(q_text)
 
-        correct = f"{topic} enables intelligent decision-making"
+        # SMART OPTIONS (CONFUSING)
+        correct = f"{topic} enables intelligent and automated decision-making"
 
-        options = [
-            correct,
-            f"{topic} eliminates all human roles",
-            f"{topic} works without data",
-            f"{topic} has no practical applications"
+        distractors = [
+            f"{topic} works only manually without automation",
+            f"{topic} has no practical real-world use",
+            f"{topic} completely replaces human intelligence"
         ]
 
+        options = [correct] + distractors
         random.shuffle(options)
 
         return q_text, options, correct
@@ -370,15 +374,15 @@ elif feature == lang["quiz"]:
         st.session_state.started = True
         st.session_state.q_no = 1
         st.session_state.score = 0
-        st.session_state.asked = set()
+        st.session_state.used_q = []
 
     # ---------------------------
     # QUIZ FLOW
     # ---------------------------
     if st.session_state.started:
 
-        if st.session_state.q_no > 20:
-            st.success(f"🏆 Final Score: {st.session_state.score}/20")
+        if st.session_state.q_no > 15:
+            st.success(f"🏆 Final Score: {st.session_state.score}/15")
             st.session_state.started = False
             st.stop()
 
@@ -387,12 +391,9 @@ elif feature == lang["quiz"]:
         st.markdown(f"### 🎤 Question {st.session_state.q_no}/20")
         st.subheader(q_text)
 
-        # OPTIONS
         selected = st.radio("Choose Answer", options)
 
-        # ---------------------------
-        # VOICE ANSWER
-        # ---------------------------
+        # 🎙️ VOICE
         st.markdown("🎙️ Speak Answer (Optional)")
         audio = st.audio_input("Record")
 
@@ -415,9 +416,7 @@ elif feature == lang["quiz"]:
             except:
                 st.warning("Voice not clear")
 
-        # ---------------------------
         # SUBMIT
-        # ---------------------------
         if st.button("✅ Submit"):
 
             final = selected
@@ -436,10 +435,8 @@ elif feature == lang["quiz"]:
             st.session_state.q_no += 1
             st.rerun()
 
-        # ---------------------------
         # PROGRESS
-        # ---------------------------
-        st.progress(st.session_state.q_no / 20)
+        st.progress(st.session_state.q_no / 15)
         st.write(f"📊 Score: {st.session_state.score}")
             
 # ---------------------------------------------------
