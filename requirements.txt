@@ -1,10 +1,23 @@
 streamlit
-Flask
-python-dotenv
-gtts
-SpeechRecognition
+
+# Translation (REPLACE googletrans)
+deep-translator
+
+# Text-to-Speech (works on cloud)
+gTTS
+
+# NLP & AI
 nltk
+scikit-learn
+
+# Data handling
 pandas
 numpy
-scikit-learn
+
+# Utilities
 requests
+python-dotenv
+pillow
+
+# Optional (only if you REALLY need it)
+SpeechRecognition
