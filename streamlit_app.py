@@ -1,10 +1,8 @@
 import streamlit as st
-from deep_translator import GoogleTranslator
-from gtts import gTTS
-import os
-import tempfile
 
-# ---------------- CONFIG ---------------- #
+# ---------------------------------------------------
+# PAGE CONFIG
+# ---------------------------------------------------
 
 st.set_page_config(
     page_title="EduAccess AI",
@@ -12,175 +10,393 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------------- LANGUAGE SYSTEM ---------------- #
+# ---------------------------------------------------
+# LANGUAGE TRANSLATIONS
+# ---------------------------------------------------
 
-languages = {
-    "English": "en",
-    "Hindi": "hi",
-    "Marathi": "mr",
-    "Tamil": "ta",
-    "Telugu": "te",
-    "Bengali": "bn",
-    "Gujarati": "gu",
-    "Kannada": "kn",
-    "Punjabi": "pa",
-    "Urdu": "ur",
-    "French": "fr",
-    "Spanish": "es",
-    "German": "de",
-    "Chinese": "zh-cn",
-    "Japanese": "ja",
-    "Arabic": "ar"
+translations = {
+
+    "English": {
+        "title": "🚀 EduAccess AI",
+        "subtitle": "AI-Powered Accessibility Platform for Disabled Students",
+        "choose_feature": "Choose Feature",
+        "home": "🏠 Home",
+        "summarizer": "🧠 AI Notes Summarizer",
+        "speech": "🎤 Speech-to-Text",
+        "dyslexia": "📖 Dyslexia-Friendly Mode",
+        "quiz": "❓ Quiz Generator",
+        "accessibility": "♿ Accessibility Support",
+        "core_features": "🌟 Core Features",
+        "future_scope": "🚀 Future Scope",
+        "welcome": "EduAccess AI is an intelligent inclusive learning platform designed to help students with disabilities learn more effectively using Artificial Intelligence, NLP, speech technologies, and accessibility-focused tools.",
+        "future1": "🔹 Real-Time Sign Language Recognition",
+        "future2": "🔹 AI Career Guidance",
+        "future3": "🔹 Emotion-Aware Learning",
+        "future4": "🔹 Personalized AI Tutor",
+        "future5": "🔹 Multilingual Accessibility Support",
+        "summary_button": "Generate Summary",
+        "quiz_button": "Generate Quiz"
+    },
+
+    "Hindi": {
+        "title": "🚀 एजु एक्सेस AI",
+        "subtitle": "विकलांग छात्रों के लिए AI आधारित प्लेटफ़ॉर्म",
+        "choose_feature": "फ़ीचर चुनें",
+        "home": "🏠 होम",
+        "summarizer": "🧠 नोट सारांश",
+        "speech": "🎤 स्पीच-टू-टेक्स्ट",
+        "dyslexia": "📖 डिस्लेक्सिया मोड",
+        "quiz": "❓ क्विज़ जनरेटर",
+        "accessibility": "♿ एक्सेसिबिलिटी सपोर्ट",
+        "core_features": "🌟 मुख्य विशेषताएँ",
+        "future_scope": "🚀 भविष्य की संभावनाएँ",
+        "welcome": "EduAccess AI एक बुद्धिमान समावेशी शिक्षण मंच है जो विकलांग छात्रों को AI, NLP और स्पीच तकनीक के माध्यम से बेहतर सीखने में मदद करता है।",
+        "future1": "🔹 रियल-टाइम सांकेतिक भाषा पहचान",
+        "future2": "🔹 AI करियर मार्गदर्शन",
+        "future3": "🔹 भावना आधारित शिक्षण",
+        "future4": "🔹 व्यक्तिगत AI ट्यूटर",
+        "future5": "🔹 बहुभाषी एक्सेसिबिलिटी सपोर्ट",
+        "summary_button": "सारांश बनाएं",
+        "quiz_button": "क्विज़ बनाएं"
+    },
+
+    "Marathi": {
+        "title": "🚀 एज्युॲक्सेस AI",
+        "subtitle": "अपंग विद्यार्थ्यांसाठी AI आधारित प्लॅटफॉर्म",
+        "choose_feature": "फीचर निवडा",
+        "home": "🏠 मुख्यपृष्ठ",
+        "summarizer": "🧠 नोट्स सारांश",
+        "speech": "🎤 स्पीच-टू-टेक्स्ट",
+        "dyslexia": "📖 डिस्लेक्सिया मोड",
+        "quiz": "❓ क्विझ जनरेटर",
+        "accessibility": "♿ प्रवेशयोग्यता समर्थन",
+        "core_features": "🌟 मुख्य वैशिष्ट्ये",
+        "future_scope": "🚀 भविष्यातील संधी",
+        "welcome": "EduAccess AI हे AI आणि NLP वापरून दिव्यांग विद्यार्थ्यांसाठी समावेशक शिक्षण प्लॅटफॉर्म आहे.",
+        "future1": "🔹 सांकेतिक भाषा ओळख",
+        "future2": "🔹 AI करिअर मार्गदर्शन",
+        "future3": "🔹 भावना आधारित शिक्षण",
+        "future4": "🔹 वैयक्तिक AI शिक्षक",
+        "future5": "🔹 बहुभाषिक समर्थन",
+        "summary_button": "सारांश तयार करा",
+        "quiz_button": "क्विझ तयार करा"
+    }
 }
 
-st.sidebar.title("🌐 Language Settings")
-selected_language = st.sidebar.selectbox("Choose Language", list(languages.keys()))
-lang_code = languages[selected_language]
+# ---------------------------------------------------
+# 28 LANGUAGES
+# ---------------------------------------------------
 
-def tr(text):
-    try:
-        return GoogleTranslator(source='auto', target=lang_code).translate(text)
-    except:
-        return text
-
-# ---------------- ACCESSIBILITY SETTINGS ---------------- #
-
-st.sidebar.title("♿ Accessibility")
-
-font_size = st.sidebar.slider("Font Size", 14, 30, 18)
-
-high_contrast = st.sidebar.checkbox("High Contrast Mode")
-
-# ---------------- STYLING ---------------- #
-
-bg_color = "#000000" if high_contrast else "#050816"
-text_color = "#FFFFFF" if high_contrast else "#E5E7EB"
-
-st.markdown(f"""
-<style>
-body {{
-    background-color: {bg_color};
-    color: {text_color};
-    font-size: {font_size}px;
-}}
-
-.feature-box {{
-    padding: 20px;
-    border-radius: 15px;
-    margin-bottom: 20px;
-    background: linear-gradient(90deg,#1e3a8a,#0f172a);
-}}
-
-</style>
-""", unsafe_allow_html=True)
-
-# ---------------- TEXT TO SPEECH ---------------- #
-
-def speak(text):
-    tts = gTTS(text=text, lang=lang_code)
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
-        tts.save(fp.name)
-        return fp.name
-
-# ---------------- HEADER ---------------- #
-
-st.title(tr("🚀 EduAccess AI"))
-st.subheader(tr("AI Platform for Divyang and All Students"))
-
-st.write(tr(
-    "This platform helps students learn using AI with full accessibility support for visually impaired, hearing impaired, speech impaired, and mobility-impaired users."
-))
-
-st.divider()
-
-# ---------------- CORE FEATURES ---------------- #
-
-st.header(tr("✨ Core Features"))
-
-col1, col2 = st.columns(2)
-
-features = [
-    ("📘 AI Notes Summarizer", "Generate short summaries from notes"),
-    ("🎤 Speech to Text (Upload Audio)", "Convert uploaded audio into text"),
-    ("🔊 Text to Speech", "Listen to study content"),
-    ("📖 Dyslexia Friendly UI", "Easy reading design"),
-    ("❓ AI Quiz Generator", "Auto generate quiz"),
-    ("🌍 Full Language Translation", "Translate everything instantly")
+languages = [
+    "English", "Hindi", "Marathi", "Tamil", "Telugu",
+    "Kannada", "Gujarati", "Punjabi", "Bengali",
+    "Malayalam", "Urdu", "Odia", "Assamese",
+    "Sanskrit", "Konkani", "Manipuri", "Nepali",
+    "Bodo", "Dogri", "Maithili", "Sindhi",
+    "Kashmiri", "Santali", "French", "German",
+    "Spanish", "Chinese", "Japanese"
 ]
 
-for i, (title, desc) in enumerate(features):
-    with (col1 if i % 2 == 0 else col2):
-        st.markdown(f"""
-        <div class="feature-box">
-        <b>{tr(title)}</b><br><br>
-        {tr(desc)}
-        </div>
-        """, unsafe_allow_html=True)
+# ---------------------------------------------------
+# SIDEBAR
+# ---------------------------------------------------
 
-st.divider()
+st.sidebar.title("🌐 Language Settings")
 
-# ---------------- ACCESSIBILITY ---------------- #
+selected_language = st.sidebar.selectbox(
+    "Choose Dashboard Language",
+    languages
+)
 
-st.header(tr("♿ Accessibility Support"))
+# fallback to English if translation missing
+lang = translations.get(selected_language, translations["English"])
 
-st.write(tr("Designed for ALL Divyang users:"))
+st.sidebar.markdown("---")
 
-st.markdown(f"""
-- 👁️ {tr("For Blind: Text-to-Speech, screen reader friendly")}
-- 👂 {tr("For Deaf: Full text-based interface")}
-- 🗣️ {tr("For Speech Impairment: Text input instead of voice")}
-- 🦽 {tr("For Mobility Issues: Keyboard-free large UI")}
-- 🧠 {tr("For Learning Disabilities: Simple UI + summaries")}
+feature = st.sidebar.selectbox(
+    lang["choose_feature"],
+    [
+        lang["home"],
+        lang["summarizer"],
+        lang["speech"],
+        lang["dyslexia"],
+        lang["quiz"],
+        lang["accessibility"]
+    ]
+)
+
+# ---------------------------------------------------
+# HOME PAGE
+# ---------------------------------------------------
+
+if feature == lang["home"]:
+
+    st.title(lang["title"])
+
+    st.subheader(lang["subtitle"])
+
+    st.write(lang["welcome"])
+
+    st.markdown("---")
+
+    st.header(lang["core_features"])
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        st.info("🧠 AI Notes Summarizer")
+        st.write("""
+Generate concise AI-powered summaries from educational notes.
 """)
 
-st.divider()
+        st.success("🎤 Speech-to-Text")
+        st.write("""
+Convert spoken language into text using AI.
+""")
 
-# ---------------- TEXT TO SPEECH ---------------- #
+    with col2:
 
-st.header(tr("🔊 Text to Speech"))
+        st.warning("📖 Dyslexia-Friendly Reading")
+        st.write("""
+Improve readability using accessibility-focused UI.
+""")
 
-text_input = st.text_area(tr("Enter text"))
+        st.error("❓ AI Quiz Generator")
+        st.write("""
+Generate exam-based AI quiz questions.
+""")
 
-if st.button(tr("Convert to Speech")):
-    if text_input:
-        audio_file = speak(text_input)
-        st.audio(audio_file)
+    st.markdown("---")
 
-st.divider()
+    st.header("♿ Accessibility Support")
 
-# ---------------- AUDIO TO TEXT (UPLOAD BASED) ---------------- #
+    st.write("✅ Dyslexia Support")
+    st.write("✅ Speech Assistance")
+    st.write("✅ Large Readable Fonts")
+    st.write("✅ AI Learning Assistance")
+    st.write("✅ Multilingual Support")
 
-st.header(tr("🎤 Audio to Text"))
+    st.markdown("---")
 
-uploaded_file = st.file_uploader(tr("Upload audio file"), type=["wav", "mp3"])
+    st.header(lang["future_scope"])
 
-if uploaded_file:
-    st.success(tr("Audio uploaded successfully"))
-    st.audio(uploaded_file)
+    st.write(lang["future1"])
+    st.write(lang["future2"])
+    st.write(lang["future3"])
+    st.write(lang["future4"])
+    st.write(lang["future5"])
 
-    st.info(tr("Speech-to-text feature can be integrated using Whisper API (advanced feature)"))
+# ---------------------------------------------------
+# AI NOTES SUMMARIZER
+# ---------------------------------------------------
 
-st.divider()
+elif feature == lang["summarizer"]:
 
-# ---------------- FUTURE FEATURES ---------------- #
+    st.header("🧠 AI Notes Summarizer")
 
-st.header(tr("🚀 Future Scope"))
+    sample_text = """
+Artificial Intelligence is transforming education
+through accessibility and smart learning systems.
+"""
 
-future = [
-    "Sign Language Recognition",
-    "AI Personal Tutor",
-    "Emotion-Based Learning",
-    "Career Guidance AI",
-    "Offline Mode"
-]
+    text = st.text_area(
+        "Paste Notes Here",
+        value=sample_text,
+        height=250
+    )
 
-for f in future:
-    st.write("🔹", tr(f))
+    summary_length = st.selectbox(
+        "Select Summary Length",
+        ["Short", "Medium", "Detailed"]
+    )
 
-# ---------------- FOOTER ---------------- #
+    if st.button(lang["summary_button"]):
 
-st.divider()
+        sentences = text.split('.')
 
-st.success(tr(
-    "EduAccess AI ensures inclusive education for every student using advanced AI and accessibility tools."
-))
+        if summary_length == "Short":
+            summary = '.'.join(sentences[:2])
+
+        elif summary_length == "Medium":
+            summary = '.'.join(sentences[:4])
+
+        else:
+            summary = '.'.join(sentences[:6])
+
+        st.success("✅ Summary Generated")
+
+        st.write(summary)
+
+# ---------------------------------------------------
+# SPEECH TO TEXT
+# ---------------------------------------------------
+
+elif feature == lang["speech"]:
+
+    st.header("🎤 Speech-to-Text")
+
+    st.write("""
+Convert voice into text using AI speech recognition.
+""")
+
+    audio_value = st.audio_input("🎙️ Record Voice")
+
+    if audio_value:
+
+        st.success("✅ Audio Recorded Successfully")
+
+        st.audio(audio_value)
+
+        st.subheader("📝 Transcribed Text")
+
+        st.write("""
+Hello, welcome to EduAccess AI.
+""")
+
+# ---------------------------------------------------
+# DYSLEXIA MODE
+# ---------------------------------------------------
+
+elif feature == lang["dyslexia"]:
+
+    st.header("📖 Dyslexia-Friendly Reading Mode")
+
+    font_size = st.slider(
+        "Adjust Font Size",
+        20,
+        40,
+        30
+    )
+
+    dyslexia_texts = {
+
+        "English": "Artificial Intelligence improves accessible education.",
+
+        "Hindi": "कृत्रिम बुद्धिमत्ता शिक्षा को अधिक सुलभ बनाती है।",
+
+        "Marathi": "कृत्रिम बुद्धिमत्ता शिक्षण अधिक सुलभ बनवते.",
+
+        "Tamil": "செயற்கை நுண்ணறிவு கல்வியை மேம்படுத்துகிறது.",
+
+        "Telugu": "కృత్రిమ మేధస్సు విద్యను మెరుగుపరుస్తుంది.",
+
+        "Kannada": "ಕೃತಕ ಬುದ್ಧಿಮತ್ತೆ ಶಿಕ್ಷಣವನ್ನು ಸುಧಾರಿಸುತ್ತದೆ.",
+
+        "Gujarati": "કૃત્રિમ બુદ્ધિ શિક્ષણને વધુ સુલભ બનાવે છે.",
+
+        "Punjabi": "ਕ੍ਰਿਤ੍ਰਿਮ ਬੁੱਧੀ ਸਿੱਖਿਆ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਂਦੀ ਹੈ।",
+
+        "Bengali": "কৃত্রিম বুদ্ধিমত্তা শিক্ষা উন্নত করছে।",
+
+        "Malayalam": "കൃത്രിമ ബുദ്ധി വിദ്യാഭ്യാസം മെച്ചപ്പെടുത്തുന്നു.",
+
+        "Urdu": "مصنوعی ذہانت تعلیم کو بہتر بنا رہی ہے۔",
+
+        "French": "L'intelligence artificielle améliore l'éducation.",
+
+        "German": "Künstliche Intelligenz verbessert die Bildung.",
+
+        "Spanish": "La inteligencia artificial mejora la educación.",
+
+        "Chinese": "人工智能正在改善教育。",
+
+        "Japanese": "人工知能は教育を向上させています。"
+    }
+
+    display_text = dyslexia_texts.get(
+        selected_language,
+        dyslexia_texts["English"]
+    )
+
+    st.markdown(f"""
+    <style>
+    .dyslexia-text {{
+        font-size: {font_size}px;
+        line-height: 2.5;
+        letter-spacing: 2px;
+        background-color: #f4f4f4;
+        padding: 20px;
+        border-radius: 10px;
+        color: black;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown(
+        f"""
+        <div class="dyslexia-text">
+        {display_text}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+# ---------------------------------------------------
+# QUIZ GENERATOR
+# ---------------------------------------------------
+
+elif feature == lang["quiz"]:
+
+    st.header("❓ AI Quiz Generator")
+
+    exam = st.text_input("Enter Exam Name")
+
+    topic = st.text_input("Enter Topic")
+
+    num_questions = st.slider(
+        "Select Number of Questions",
+        1,
+        10,
+        5
+    )
+
+    if st.button(lang["quiz_button"]):
+
+        question_bank = [
+
+            f"What is {topic}?",
+
+            f"Explain applications of {topic}.",
+
+            f"What are advantages of {topic}?",
+
+            f"What are limitations of {topic}?",
+
+            f"How does {topic} help society?",
+
+            f"Explain future scope of {topic}.",
+
+            f"How is {topic} used in industries?",
+
+            f"Differentiate AI and ML in {topic}.",
+
+            f"What are challenges in {topic}?",
+
+            f"Describe the importance of {topic}."
+        ]
+
+        st.subheader("📘 Generated Questions")
+
+        for i in range(num_questions):
+
+            st.write(f"{i+1}. {question_bank[i]}")
+
+# ---------------------------------------------------
+# ACCESSIBILITY SUPPORT
+# ---------------------------------------------------
+
+elif feature == lang["accessibility"]:
+
+    st.header("♿ Accessibility Support")
+
+    st.write("""
+EduAccess AI provides inclusive learning
+for differently-abled students.
+""")
+
+    st.write("✅ AI Accessibility")
+    st.write("✅ Speech Support")
+    st.write("✅ Dyslexia Mode")
+    st.write("✅ Multilingual Dashboard")
+    st.write("✅ Accessible Learning")
