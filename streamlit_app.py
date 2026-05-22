@@ -115,42 +115,26 @@ if feature == lang["home"]:
 # SUMMARIZER
 # ---------------------------------------------------
 
-elif feature == lang["summarizer"]:
+if st.button(lang["summary_button"]):
 
-    st.header("🧠 AI Notes Summarizer")
+    sentences = [s.strip() for s in text.split('.') if s.strip()]
 
-    sample_text = """
-Artificial Intelligence is transforming education
-through accessibility and smart learning systems.
-"""
+    if summary_length == "Short":
+        num = max(2, len(sentences)//4)
+    elif summary_length == "Medium":
+        num = max(4, len(sentences)//2)
+    else:
+        num = len(sentences)
 
-    text = st.text_area(
-        "Paste Notes Here",
-        value=sample_text,
-        height=250
-    )
+    summary = ". ".join(sentences[:num]) + "."
 
-    summary_length = st.selectbox(
-        "Select Summary Length",
-        ["Short", "Medium", "Detailed"]
-    )
+    # ✅ SAVE SUMMARY
+    st.session_state["summary"] = summary
 
-    if st.button(lang["summary_button"]):
+    st.success("✅ Summary Generated")
 
-        sentences = text.split('.')
-
-        if summary_length == "Short":
-            summary = '.'.join(sentences[:2])
-
-        elif summary_length == "Medium":
-            summary = '.'.join(sentences[:4])
-
-        else:
-            summary = '.'.join(sentences[:6])
-
-        st.success("✅ Summary Generated")
-
-        st.write(summary)
+    st.write(summary)
+    
 # ---------------------------------------------------
 # SPEECH TO TEXT + AI ANSWER
 # ---------------------------------------------------
@@ -255,22 +239,30 @@ Ask: "What is AI?" or "Explain Machine Learning"
 
 elif feature == lang["dyslexia"]:
 
-    st.header("📖 Dyslexia Mode")
+    st.header("📖 Dyslexia-Friendly Reading Mode")
 
-    font = st.slider("Font Size", 20, 40, 30)
+    font_size = st.slider("Adjust Font Size", 20, 40, 30)
 
-    summary = st.session_state.get("summary", "")
+    display_text = st.session_state.get("summary", "")
 
-    if not summary:
-        st.warning("Generate summary first")
+    if not display_text:
+        st.warning("⚠️ Generate summary first in Summarizer section")
+
     else:
         st.markdown(f"""
-        <div style="font-size:{font}px; line-height:2.5; letter-spacing:2px;
-        background:#f4f4f4; padding:20px; border-radius:10px; color:black;">
-        {summary}
+        <div style="
+            font-size: {font_size}px;
+            line-height: 2.5;
+            letter-spacing: 2px;
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 10px;
+            color: black;
+        ">
+        {display_text}
         </div>
         """, unsafe_allow_html=True)
-
+        
 # ---------------------------------------------------
 # QUIZ (KAHOOT STYLE + TIMER + LEADERBOARD)
 # ---------------------------------------------------
@@ -282,57 +274,86 @@ elif feature == lang["quiz"]:
 
     if st.button("Start Quiz"):
 
-        # ✅ Generate 20 questions
-        st.session_state.quiz = [
-            {
-                "question": f"What is {topic}?",
-                "options": ["Definition", "Example", "Tool", "None"],
-                "answer": "Definition",
-                "explanation": f"{topic} is defined as a concept used in studies."
-            }
-        ]
+        quiz = []
 
-        # Auto-generate more
-        for i in range(2, 21):
-            st.session_state.quiz.append({
-                "question": f"{topic} Question {i}",
-                "options": ["Option A", "Option B", "Option C", "Option D"],
-                "answer": "Option A",
-                "explanation": "Option A is correct based on concept."
+        # 🔹 BASIC (10)
+        for i in range(1, 11):
+            quiz.append({
+                "question": f"{i}. What is {topic}?",
+                "options": [
+                    "Basic definition",
+                    "Advanced concept",
+                    "Tool",
+                    "None"
+                ],
+                "answer": "Basic definition",
+                "explanation": f"{topic} at basic level means understanding its definition."
             })
 
-        st.session_state.q_index = 0
-        st.session_state.score = 0
+        # 🔹 MEDIUM (5)
+        for i in range(11, 16):
+            quiz.append({
+                "question": f"{i}. Where is {topic} used?",
+                "options": [
+                    "Healthcare",
+                    "Agriculture",
+                    "Education",
+                    "All of the above"
+                ],
+                "answer": "All of the above",
+                "explanation": f"{topic} is widely used in multiple industries."
+            })
+
+        # 🔹 HARD (5)
+        for i in range(16, 21):
+            quiz.append({
+                "question": f"{i}. What is a challenge of {topic}?",
+                "options": [
+                    "High cost",
+                    "Bias",
+                    "Privacy issues",
+                    "All of the above"
+                ],
+                "answer": "All of the above",
+                "explanation": f"{topic} has real-world challenges like bias and privacy."
+            })
+
+        st.session_state["quiz"] = quiz
+        st.session_state["q_index"] = 0
+        st.session_state["score"] = 0
 
     # 🚀 RUN QUIZ
     if "quiz" in st.session_state:
 
-        q_index = st.session_state.q_index
-        quiz = st.session_state.quiz
+        q_index = st.session_state["q_index"]
+        quiz = st.session_state["quiz"]
 
         if q_index < len(quiz):
 
             q = quiz[q_index]
 
-            st.subheader(f"Q{q_index+1}: {q['question']}")
+            st.subheader(q["question"])
 
-            user_ans = st.radio("Choose Answer", q["options"], key=q_index)
+            user_ans = st.radio(
+                "Choose Answer",
+                q["options"],
+                key=f"q_{q_index}"
+            )
 
             if st.button("Submit Answer"):
 
                 if user_ans == q["answer"]:
                     st.success("✅ Correct!")
-                    st.session_state.score += 1
+                    st.session_state["score"] += 1
                 else:
                     st.error("❌ Wrong")
-                    st.write(f"✔ Correct: {q['answer']}")
+                    st.write(f"✔ Correct Answer: {q['answer']}")
                     st.write(f"🧠 Explanation: {q['explanation']}")
 
-                st.session_state.q_index += 1
+                st.session_state["q_index"] += 1
 
         else:
-            st.success(f"🎉 Quiz Completed! Score: {st.session_state.score}/20")
-                    
+            st.success(f"🎉 Quiz Completed! Score: {st.session_state['score']}/20")                    
 # ---------------------------------------------------
 # ACCESSIBILITY
 # ---------------------------------------------------
