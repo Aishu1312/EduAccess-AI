@@ -295,19 +295,17 @@ elif feature == lang["dyslexia"]:
 elif feature == lang["quiz"]:
 
     import random
-    import time
+    import speech_recognition as sr
+    import tempfile
 
-    st.header("🎯 Kahoot-Style Smart Quiz")
+    st.header("🎯 KBC Style AI Quiz")
 
-    # -------------------------------
-    # USER INPUT (FIXED ORDER)
-    # -------------------------------
-    name = st.text_input("Enter Your Name")
-    topic = st.text_input("Enter Topic")
+    # ----------------------------
+    # USER INPUT
+    # ----------------------------
+    name = st.text_input("👤 Enter Your Name")
+    topic = st.text_input("📘 Enter Topic")
 
-    # -------------------------------
-    # INIT SESSION
-    # -------------------------------
     if "quiz_started" not in st.session_state:
         st.session_state.quiz_started = False
 
@@ -317,163 +315,136 @@ elif feature == lang["quiz"]:
     if "score" not in st.session_state:
         st.session_state.score = 0
 
-    if "answers" not in st.session_state:
-        st.session_state.answers = {}
+    if "used_questions" not in st.session_state:
+        st.session_state.used_questions = set()
 
-    if "start_time" not in st.session_state:
-        st.session_state.start_time = time.time()
+    # ----------------------------
+    # SMART QUESTION GENERATOR
+    # ----------------------------
+    def generate_unique_question(topic):
 
-    # -------------------------------
-    # QUESTION GENERATOR (SMART)
-    # -------------------------------
-    def generate_questions(topic):
+        templates = [
+            f"What is the primary purpose of {topic}?",
+            f"Which scenario best represents {topic}?",
+            f"What is a key feature of {topic}?",
+            f"How does {topic} impact real-world systems?",
+            f"Which of the following best defines {topic}?",
+            f"What makes {topic} different from traditional methods?",
+            f"Which application uses {topic} most effectively?",
+            f"What is a limitation of {topic}?",
+            f"Which concept is closely related to {topic}?",
+            f"How does {topic} improve efficiency?"
+        ]
 
-        questions = []
+        while True:
+            q_text = random.choice(templates)
 
-        # EASY (10)
-        for i in range(10):
-            q = {
-                "question": f"{i+1}. Which statement correctly explains {topic}?",
-                "options": [
-                    f"{topic} is used only for entertainment",
-                    f"{topic} involves intelligent decision making",
-                    f"{topic} has no real-world applications",
-                    f"{topic} is unrelated to technology"
-                ],
-                "answer": f"{topic} involves intelligent decision making"
-            }
-            questions.append(q)
+            if q_text not in st.session_state.used_questions:
+                st.session_state.used_questions.add(q_text)
+                break
 
-        # MEDIUM (5)
-        for i in range(10, 15):
-            q = {
-                "question": f"{i+1}. What is a key characteristic of {topic} systems?",
-                "options": [
-                    "They cannot learn from data",
-                    "They adapt based on patterns",
-                    "They only follow fixed instructions",
-                    "They avoid automation"
-                ],
-                "answer": "They adapt based on patterns"
-            }
-            questions.append(q)
+        options_pool = [
+            f"{topic} enables intelligent decision-making",
+            f"{topic} is purely manual and static",
+            f"{topic} replaces all human involvement",
+            f"{topic} has no real-world use"
+        ]
 
-        # HARD (5)
-        for i in range(15, 20):
-            q = {
-                "question": f"{i+1}. Which scenario best represents advanced use of {topic}?",
-                "options": [
-                    "Manual calculations",
-                    "Rule-based automation only",
-                    "Self-learning predictive systems",
-                    "Static database queries"
-                ],
-                "answer": "Self-learning predictive systems"
-            }
-            questions.append(q)
+        random.shuffle(options_pool)
 
-        random.shuffle(questions)
-        return questions
+        return {
+            "question": q_text,
+            "options": options_pool,
+            "answer": f"{topic} enables intelligent decision-making"
+        }
 
-    # -------------------------------
+    # ----------------------------
     # START QUIZ
-    # -------------------------------
-    if st.button("Start Quiz") and topic and name:
-        st.session_state.quiz = generate_questions(topic)
+    # ----------------------------
+    if st.button("🚀 Start Quiz") and topic and name:
+
         st.session_state.quiz_started = True
         st.session_state.q_index = 0
         st.session_state.score = 0
-        st.session_state.answers = {}
-        st.session_state.start_time = time.time()
+        st.session_state.used_questions = set()
+        st.session_state.questions = [
+            generate_unique_question(topic) for _ in range(20)
+        ]
 
-    # -------------------------------
-    # QUIZ UI
-    # -------------------------------
+    # ----------------------------
+    # QUIZ FLOW (KBC STYLE)
+    # ----------------------------
     if st.session_state.quiz_started:
 
-        quiz = st.session_state.quiz
         i = st.session_state.q_index
-        q = quiz[i]
+        q = st.session_state.questions[i]
 
-        # TIMER
-        time_limit = 20
-        elapsed = int(time.time() - st.session_state.start_time)
-        remaining = max(0, time_limit - elapsed)
+        st.markdown(f"### 🎤 Question {i+1} / 20")
 
-        st.markdown(f"""
-        📍 Question {i+1}/20 | ⏱ Time Left: {remaining}s
-        """)
-
-        # QUESTION
         st.subheader(q["question"])
 
-        selected = st.radio(
-            "Choose Answer",
-            q["options"],
-            key=f"q_{i}"
-        )
+        # ----------------------------
+        # OPTIONS (BUTTON STYLE)
+        # ----------------------------
+        selected = st.radio("Choose Answer", q["options"], key=f"q_{i}")
 
-        # -------------------------------
+        # ----------------------------
+        # VOICE INPUT (OPTIONAL)
+        # ----------------------------
+        st.markdown("🎙️ Speak Your Answer (Optional)")
+
+        audio = st.audio_input("Record Answer")
+
+        spoken_text = ""
+
+        if audio:
+            with tempfile.NamedTemporaryFile(delete=False) as tmp:
+                tmp.write(audio.read())
+                path = tmp.name
+
+            recognizer = sr.Recognizer()
+
+            try:
+                with sr.AudioFile(path) as source:
+                    data = recognizer.record(source)
+                    spoken_text = recognizer.recognize_google(data)
+
+                st.info(f"🗣️ You said: {spoken_text}")
+
+            except:
+                st.warning("Could not understand voice")
+
+        # ----------------------------
         # SUBMIT
-        # -------------------------------
-        if st.button("Submit Answer"):
+        # ----------------------------
+        if st.button("✅ Submit Answer"):
 
-            if selected == q["answer"]:
-                st.success("✅ Correct!")
+            final_answer = selected
+
+            # If voice matches option → override
+            for opt in q["options"]:
+                if opt.lower() in spoken_text.lower():
+                    final_answer = opt
+
+            if final_answer == q["answer"]:
+                st.success("✅ Correct Answer!")
                 st.session_state.score += 1
             else:
-                st.error("❌ Wrong!")
-                st.write(f"✔ Correct Answer: {q['answer']}")
+                st.error("❌ Wrong Answer")
+                st.write(f"✔ Correct: {q['answer']}")
 
-            st.session_state.answers[i] = selected
-
-        # -------------------------------
-        # NAVIGATION
-        # -------------------------------
-        col1, col2 = st.columns(2)
-
-        with col1:
-            if st.button("⬅ Previous") and i > 0:
-                st.session_state.q_index -= 1
-                st.session_state.start_time = time.time()
-
-        with col2:
-            if st.button("Next ➡") and i < 19:
+            # NEXT QUESTION AUTO
+            if st.session_state.q_index < 19:
                 st.session_state.q_index += 1
-                st.session_state.start_time = time.time()
+            else:
+                st.success(f"🏆 Final Score: {st.session_state.score}/20")
+                st.session_state.quiz_started = False
 
-        # -------------------------------
+        # ----------------------------
         # PROGRESS
-        # -------------------------------
-        attempted = len(st.session_state.answers)
-
-        st.info(f"📊 Attempted: {attempted}/20")
-        st.progress(attempted / 20)
-
-        # -------------------------------
-        # FINAL RESULT
-        # -------------------------------
-        if attempted == 20:
-            st.success(f"🏆 Final Score: {st.session_state.score}/20")
-
-            # LEADERBOARD (basic)
-            if "leaderboard" not in st.session_state:
-                st.session_state.leaderboard = []
-
-            st.session_state.leaderboard.append(
-                {"name": name, "score": st.session_state.score}
-            )
-
-            st.subheader("🏅 Leaderboard")
-
-            sorted_lb = sorted(
-                st.session_state.leaderboard,
-                key=lambda x: x["score"],
-                reverse=True
-            )
-
-            for rank, player in enumerate(sorted_lb, 1):
-                st.write(f"{rank}. {player['name']} - {player['score']}")
+        # ----------------------------
+        st.progress((i+1)/20)
+        st.write(f"📊 Score: {st.session_state.score}")
             
 # ---------------------------------------------------
 # ACCESSIBILITY
