@@ -235,42 +235,109 @@ elif feature == lang["dyslexia"]:
 # ---------------------------------------------------
 # QUIZ (KAHOOT STYLE + TIMER + LEADERBOARD)
 # ---------------------------------------------------
-if st.button("Generate Quiz"):
+elif feature == lang["quiz"]:
 
-    if "OPENAI_API_KEY" not in st.secrets:
+    import openai, json, time
 
-        st.warning("⚠️ Demo Mode (No API Key)")
+    st.header("❓ Kahoot Style AI Quiz")
 
-        st.session_state.quiz = [
-            {
-                "question": f"What is {topic}?",
-                "options": ["Definition", "Example", "Tool", "None"],
-                "answer": "Definition",
-                "explanation": f"{topic} is a concept, not a tool."
-            },
-            {
-                "question": f"Where is {topic} used?",
-                "options": ["Healthcare", "Sports", "Cooking", "None"],
-                "answer": "Healthcare",
-                "explanation": f"{topic} is widely used in healthcare."
-            }
-        ]
+    name = st.text_input("Enter Your Name")
+    topic = st.text_input("Enter Topic")
 
-    else:
-        openai.api_key = st.secrets["OPENAI_API_KEY"]
+    if st.button("🎯 Generate Quiz"):
 
-        try:
-            res = openai.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role":"user","content":prompt}]
-            )
+        if "OPENAI_API_KEY" not in st.secrets:
+            st.warning("Demo Quiz Mode")
 
-            quiz = json.loads(res.choices[0].message.content)
-            st.session_state.quiz = quiz
+            st.session_state.quiz = [
+                {
+                    "question": f"What is {topic}?",
+                    "options": ["Definition","Tool","Language","None"],
+                    "answer": "Definition",
+                    "explanation": f"{topic} is a concept."
+                },
+                {
+                    "question": f"Where is {topic} used?",
+                    "options": ["Healthcare","Cooking","Sports","None"],
+                    "answer": "Healthcare",
+                    "explanation": f"{topic} is widely used in healthcare."
+                }
+            ]
 
-        except Exception as e:
-            st.error("API Error — switching to demo quiz")
+        else:
+            try:
+                openai.api_key = st.secrets["OPENAI_API_KEY"]
 
+                prompt = f"""
+                Create 3 MCQs on {topic}.
+                Format JSON:
+                [{{"question":"","options":[],"answer":"","explanation":""}}]
+                """
+
+                res = openai.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[{"role":"user","content":prompt}]
+                )
+
+                st.session_state.quiz = json.loads(res.choices[0].message.content)
+                st.session_state.score = 0
+
+            except:
+                st.error("API failed → switching to demo")
+
+    # ---------------- QUIZ PLAY ---------------- #
+
+    if "quiz" in st.session_state:
+
+        for i, q in enumerate(st.session_state.quiz):
+
+            st.subheader(f"Q{i+1}: {q['question']}")
+
+            start_time = time.time()
+
+            ans = st.radio("Choose answer", q["options"], key=f"q{i}")
+
+            if st.button(f"Submit Q{i+1}", key=f"btn{i}"):
+
+                time_taken = int(time.time() - start_time)
+
+                if ans == q["answer"]:
+                    st.success(f"✅ Correct (⏱ {time_taken}s)")
+                    st.session_state.score += 1
+                else:
+                    st.error("❌ Wrong")
+                    st.write("✔ Correct:", q["answer"])
+                    st.write("🧠 Reason:", q["explanation"])
+
+            st.markdown("---")
+
+        # 🏁 FINAL SCORE
+        if st.button("🏁 Finish Quiz"):
+
+            st.success(f"Final Score: {st.session_state.score}")
+
+            if name:
+                if "leaderboard" not in st.session_state:
+                    st.session_state.leaderboard = []
+
+                st.session_state.leaderboard.append({
+                    "name": name,
+                    "score": st.session_state.score
+                })
+
+    # 🏆 LEADERBOARD
+    if "leaderboard" in st.session_state:
+
+        st.header("🏆 Leaderboard")
+
+        sorted_board = sorted(
+            st.session_state.leaderboard,
+            key=lambda x: x["score"],
+            reverse=True
+        )
+
+        for i, entry in enumerate(sorted_board):
+            st.write(f"{i+1}. {entry['name']} - {entry['score']}")
 # ---------------------------------------------------
 # ACCESSIBILITY
 # ---------------------------------------------------
