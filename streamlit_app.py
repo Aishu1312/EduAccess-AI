@@ -67,37 +67,29 @@ if feature == lang["home"]:
 
     st.subheader(lang["subtitle"])
 
-    st.write(lang["welcome"])
+    st.write(lang.get("welcome", "Welcome to EduAccess AI"))
 
     st.markdown("---")
 
-    st.header(lang["core_features"])
+    st.header(lang.get("core_features", "🌟 Core Features"))
 
     col1, col2 = st.columns(2)
 
     with col1:
 
         st.info("🧠 AI Notes Summarizer")
-        st.write("""
-Generate concise AI-powered summaries from educational notes.
-""")
+        st.write("Generate concise AI-powered summaries from educational notes.")
 
         st.success("🎤 Speech-to-Text")
-        st.write("""
-Convert spoken language into text using AI.
-""")
+        st.write("Convert spoken language into text using AI.")
 
     with col2:
 
         st.warning("📖 Dyslexia-Friendly Reading")
-        st.write("""
-Improve readability using accessibility-focused UI.
-""")
+        st.write("Improve readability using accessibility-focused UI.")
 
         st.error("❓ AI Quiz Generator")
-        st.write("""
-Generate exam-based AI quiz questions.
-""")
+        st.write("Generate exam-based AI quiz questions.")
 
     st.markdown("---")
 
@@ -111,13 +103,13 @@ Generate exam-based AI quiz questions.
 
     st.markdown("---")
 
-    st.header(lang["future_scope"])
+    st.header(lang.get("future_scope", "🚀 Future Scope"))
 
-    st.write(lang["future1"])
-    st.write(lang["future2"])
-    st.write(lang["future3"])
-    st.write(lang["future4"])
-    st.write(lang["future5"])
+    st.write(lang.get("future1", "🔹 Real-Time Sign Language Recognition"))
+    st.write(lang.get("future2", "🔹 AI Career Guidance"))
+    st.write(lang.get("future3", "🔹 Emotion-Aware Learning"))
+    st.write(lang.get("future4", "🔹 Personalized AI Tutor"))
+    st.write(lang.get("future5", "🔹 Multilingual Accessibility Support"))
 
 # ---------------------------------------------------
 # SUMMARIZER
