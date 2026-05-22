@@ -312,10 +312,12 @@ elif feature == lang["dyslexia"]:
     font_size = st.slider("Adjust Font Size", 20, 40, 30)
 
     # ✅ Use summary if available
-    display_text = st.session_state.get(
-        "summary",
-        "No summary generated yet. Please generate summary first."
-    )
+    display_text = st.session_state.get("summary", "")
+
+if not display_text:
+    st.warning("⚠️ Generate summary first in Summarizer section")
+else:
+    st.markdown(f""" ... """, unsafe_allow_html=True)
 
     st.markdown(f"""
     <div style="
