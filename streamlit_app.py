@@ -134,21 +134,20 @@ if feature_key == "home":
 # SUMMARIZER
 # ---------------------------------------------------
 
-elif feature == lang["summarizer"]:
+elif feature_key == "summarizer":
 
-    import openai
-    import tempfile
+    st.header("🧠 AI Notes Summarizer")
 
-    st.header("🧠 AI Notes Summarizer + Voice Assistant")
+    sample_text = """Despite its advantages, Artificial Intelligence also presents several challenges and ethical concerns. Issues such as data privacy, algorithmic bias, misinformation, unemployment due to automation, and lack of transparency are important challenges that must be addressed responsibly.
 
-    # ---------------- TEXT INPUT ---------------- #
+The future of Artificial Intelligence is extremely promising. AI is expected to revolutionize industries including healthcare, agriculture, robotics, and education. AI-powered accessibility platforms like EduAccess AI aim to make education inclusive for all students.
 
-    sample_text = """Artificial Intelligence is transforming education through accessibility and smart learning systems."""
+Such innovations demonstrate how technology can create a more equal and accessible future for everyone."""
 
     text = st.text_area(
         "Paste Notes Here",
         value=sample_text,
-        height=200
+        height=250
     )
 
     summary_length = st.selectbox(
@@ -156,46 +155,9 @@ elif feature == lang["summarizer"]:
         ["Short", "Medium", "Detailed"]
     )
 
-    # ---------------- VOICE INPUT ---------------- #
+    if st.button("Generate Summary"):
 
-    st.markdown("### 🎤 Ask Using Voice")
-
-    audio_value = st.audio_input("🎙️ Record Your Question")
-
-    voice_text = ""
-
-    if audio_value:
-
-        st.audio(audio_value)
-
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-            tmp.write(audio_value.read())
-            temp_path = tmp.name
-
-        try:
-            openai.api_key = st.secrets["OPENAI_API_KEY"]
-
-            with open(temp_path, "rb") as f:
-                transcript = openai.audio.transcriptions.create(
-                    model="gpt-4o-mini-transcribe",
-                    file=f
-                )
-
-            voice_text = transcript.text
-
-            st.success("✅ Voice Converted to Text")
-
-            st.write("📝 You said:")
-            st.write(voice_text)
-
-        except Exception as e:
-            st.error("Error in voice recognition")
-            st.write(str(e))
-
-    # ---------------- SUMMARIZER ---------------- #
-
-    if st.button(lang["summary_button"]):
-
+        # Clean sentences
         sentences = [s.strip() for s in text.split('.') if s.strip()]
 
         if summary_length == "Short":
@@ -217,44 +179,11 @@ elif feature == lang["summarizer"]:
             padding:15px;
             border-radius:10px;
             color:white;
+            font-size:16px;
         ">
         {summary}
         </div>
         """, unsafe_allow_html=True)
-
-    # ---------------- AI ANSWER FROM VOICE ---------------- #
-
-    if voice_text:
-
-        st.markdown("---")
-        st.subheader("🤖 AI Answer")
-
-        try:
-            response = openai.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": "You are a helpful AI tutor."},
-                    {"role": "user", "content": voice_text}
-                ]
-            )
-
-            answer = response.choices[0].message.content
-
-            st.markdown(f"""
-            <div style="
-                background-color:#1e3a8a;
-                padding:15px;
-                border-radius:10px;
-                color:white;
-            ">
-            {answer}
-            </div>
-            """, unsafe_allow_html=True)
-
-        except Exception as e:
-            st.error("AI response error")
-            st.write(str(e))
-
 # ---------------------------------------------------
 # SPEECH TO TEXT (REAL AI 🔥)
 # ---------------------------------------------------
