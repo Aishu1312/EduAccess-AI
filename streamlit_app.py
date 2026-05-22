@@ -232,28 +232,43 @@ through accessibility and smart learning systems.
 # SPEECH TO TEXT
 # ---------------------------------------------------
 
-elif feature == lang["speech"]:
+elif feature == tr("🎤 Speech-to-Text"):
 
-    st.header("🎤 Speech-to-Text")
+    import openai
+    import tempfile
 
-    st.write("""
-Convert voice into text using AI speech recognition.
-""")
+    st.header(tr("🎤 Speech-to-Text"))
 
-    audio_value = st.audio_input("🎙️ Record Voice")
+    st.write(tr("Upload audio file to convert speech into text"))
 
-    if audio_value:
+    audio_file = st.file_uploader(tr("Upload Audio"), type=["wav", "mp3", "m4a"])
 
-        st.success("✅ Audio Recorded Successfully")
+    if audio_file is not None:
 
-        st.audio(audio_value)
+        st.audio(audio_file)
 
-        st.subheader("📝 Transcribed Text")
+        # Save temp file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+            tmp.write(audio_file.read())
+            temp_path = tmp.name
 
-        st.write("""
-Hello, welcome to EduAccess AI.
-""")
+        try:
+            openai.api_key = st.secrets["OPENAI_API_KEY"]
 
+            with open(temp_path, "rb") as f:
+                transcript = openai.audio.transcriptions.create(
+                    model="gpt-4o-mini-transcribe",
+                    file=f
+                )
+
+            st.success(tr("✅ Transcription Successful"))
+            st.subheader(tr("📝 Transcribed Text"))
+
+            st.write(transcript.text)
+
+        except Exception as e:
+            st.error(tr("Error in transcription"))
+            st.write(str(e))
 # ---------------------------------------------------
 # DYSLEXIA MODE
 # ---------------------------------------------------
