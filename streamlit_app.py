@@ -294,115 +294,103 @@ elif feature == lang["dyslexia"]:
 # ---------------------------------------------------
 elif feature == lang["quiz"]:
 
+    import random
+
     st.header("❓ Smart Quiz Generator")
 
     topic = st.text_input("Enter Topic")
 
+    # 🎯 Generate quiz
     if st.button("Start Quiz"):
 
         quiz = []
 
-        # 🔹 BASIC (10)
-        basic_questions = [
-            ("What does AI stand for?", ["Artificial Intelligence", "Automated Input", "Advanced Interface", "None"], "Artificial Intelligence"),
-            ("Which language is popular for AI?", ["Python", "HTML", "CSS", "SQL"], "Python"),
-            ("AI is used in?", ["Healthcare", "Education", "Robotics", "All of the above"], "All of the above"),
-            ("Which is an AI assistant?", ["Siri", "Calculator", "Notepad", "Paint"], "Siri"),
-            ("AI works using?", ["Data", "Guessing", "Magic", "Luck"], "Data"),
+        # Templates to generate dynamic questions
+        templates = [
+            f"What is {topic}?",
+            f"Which of the following best describes {topic}?",
+            f"Where is {topic} commonly used?",
+            f"What is an example of {topic}?",
+            f"What is a key feature of {topic}?",
+            f"Why is {topic} important?",
+            f"What problem does {topic} solve?",
+            f"Which field uses {topic}?",
+            f"What is the benefit of {topic}?",
+            f"What is a limitation of {topic}?"
         ]
 
-        # 🔹 MEDIUM (5)
-        medium_questions = [
-            ("Machine Learning is a subset of?", ["AI", "Web Dev", "Networking", "Database"], "AI"),
-            ("Which library is used in Python for ML?", ["Scikit-learn", "Bootstrap", "React", "Flask"], "Scikit-learn"),
-            ("Supervised learning uses?", ["Labeled data", "No data", "Random data", "Images only"], "Labeled data"),
-            ("Which is not AI?", ["Calculator", "Chatbot", "Robot", "Voice Assistant"], "Calculator"),
-            ("Neural networks are inspired by?", ["Human brain", "Computer chips", "Internet", "Robots"], "Human brain"),
+        options_pool = [
+            ["Correct concept", "Wrong idea", "Irrelevant option", "None"],
+            ["Used in real world", "Not used anywhere", "Only theory", "None"],
+            ["Improves efficiency", "Slows systems", "No effect", "None"],
+            ["Widely used", "Never used", "Rarely useful", "None"],
+            ["Helps automation", "Stops automation", "Manual work only", "None"]
         ]
 
-        # 🔹 HARD (5)
-        hard_questions = [
-            ("What is overfitting?", [
-                "Model learns noise",
-                "Model is perfect",
-                "Model ignores data",
-                "None"
-            ], "Model learns noise"),
+        # Generate 20 questions
+        for i in range(20):
+            q = random.choice(templates)
+            opts = random.choice(options_pool)
 
-            ("Bias in AI means?", [
-                "Unfair results",
-                "Fast processing",
-                "Correct output",
-                "None"
-            ], "Unfair results"),
-
-            ("Deep Learning uses?", [
-                "Neural networks",
-                "HTML",
-                "Excel",
-                "PowerPoint"
-            ], "Neural networks"),
-
-            ("Which is NLP task?", [
-                "Text analysis",
-                "Image editing",
-                "Video rendering",
-                "None"
-            ], "Text analysis"),
-
-            ("AI ethics deals with?", [
-                "Fairness & safety",
-                "Coding speed",
-                "Hardware",
-                "None"
-            ], "Fairness & safety"),
-        ]
-
-        # 👉 Combine + add numbering
-        all_questions = basic_questions + medium_questions + hard_questions
-
-        for i, (q, opts, ans) in enumerate(all_questions):
             quiz.append({
                 "question": f"{i+1}. {q}",
                 "options": opts,
-                "answer": ans
+                "answer": opts[0],  # first option = correct
+                "user_answer": None
             })
 
-        st.session_state["quiz"] = quiz
-        st.session_state["q_index"] = 0
-        st.session_state["score"] = 0
+        st.session_state.quiz = quiz
+        st.session_state.q_index = 0
+        st.session_state.score = 0
 
-    # 🚀 RUN QUIZ
+    # 🧠 RUN QUIZ
     if "quiz" in st.session_state:
 
-        q_index = st.session_state["q_index"]
-        quiz = st.session_state["quiz"]
+        quiz = st.session_state.quiz
+        i = st.session_state.q_index
 
-        if q_index < len(quiz):
+        q = quiz[i]
 
-            q = quiz[q_index]
+        st.subheader(q["question"])
 
-            st.subheader(q["question"])
+        # retain previous answer
+        selected = st.radio(
+            "Choose Answer",
+            q["options"],
+            index=q["options"].index(q["user_answer"]) if q["user_answer"] else 0,
+            key=f"q_{i}"
+        )
 
-            user_ans = st.radio(
-                "Choose Answer",
-                q["options"],
-                key=f"q_{q_index}"
-            )
+        # ✅ SAVE ANSWER
+        if st.button("Submit Answer"):
+            st.session_state.quiz[i]["user_answer"] = selected
 
-            if st.button("Submit Answer"):
+            if selected == q["answer"]:
+                st.success("✅ Correct!")
+            else:
+                st.error("❌ Wrong")
+                st.write(f"✔ Correct Answer: {q['answer']}")
 
-                if user_ans == q["answer"]:
-                    st.success("✅ Correct!")
-                    st.session_state["score"] += 1
-                else:
-                    st.error("❌ Wrong")
-                    st.write(f"✔ Correct Answer: {q['answer']}")
+        # 🔁 NAVIGATION BUTTONS
+        col1, col2 = st.columns(2)
 
-                st.session_state["q_index"] += 1
+        with col1:
+            if st.button("⬅ Previous") and i > 0:
+                st.session_state.q_index -= 1
 
-        else:
-            st.success(f"🎉 Quiz Completed! Score: {st.session_state['score']}/20")
+        with col2:
+            if st.button("Next ➡") and i < len(quiz) - 1:
+                st.session_state.q_index += 1
+
+        # 🏁 FINAL SCORE
+        if st.button("Finish Quiz"):
+
+            score = 0
+            for q in quiz:
+                if q["user_answer"] == q["answer"]:
+                    score += 1
+
+            st.success(f"🎉 Final Score: {score}/20")
             
 # ---------------------------------------------------
 # ACCESSIBILITY
