@@ -3,52 +3,16 @@ from deep_translator import GoogleTranslator
 import tempfile
 import openai
 
-# ---------------------------------------------------
-# PAGE CONFIG
-# ---------------------------------------------------
+st.set_page_config(page_title="EduAccess AI", page_icon="🚀", layout="wide")
 
-st.set_page_config(
-    page_title="EduAccess AI",
-    page_icon="🚀",
-    layout="wide"
-)
+# ---------------- LANGUAGE ---------------- #
 
-# ---------------------------------------------------
-# LANGUAGE SETUP
-# ---------------------------------------------------
-
-languages = [
-    "English", "Hindi", "Marathi", "Tamil", "Telugu",
-    "Kannada", "Gujarati", "Punjabi", "Bengali",
-    "Malayalam", "Urdu", "French", "German",
-    "Spanish", "Chinese", "Japanese"
-]
-
-lang_codes = {
-    "English": "en", "Hindi": "hi", "Marathi": "mr",
-    "Tamil": "ta", "Telugu": "te", "Kannada": "kn",
-    "Gujarati": "gu", "Punjabi": "pa", "Bengali": "bn",
-    "Malayalam": "ml", "Urdu": "ur", "French": "fr",
-    "German": "de", "Spanish": "es", "Chinese": "zh-cn",
-    "Japanese": "ja"
-}
-
-# ---------------------------------------------------
-# SIDEBAR LANGUAGE
-# ---------------------------------------------------
+languages = ["English","Hindi","Marathi","Tamil","Telugu"]
+lang_codes = {"English":"en","Hindi":"hi","Marathi":"mr","Tamil":"ta","Telugu":"te"}
 
 st.sidebar.title("🌐 Language Settings")
-
-selected_language = st.sidebar.selectbox(
-    "Choose Dashboard Language",
-    languages
-)
-
-lang_code = lang_codes.get(selected_language, "en")
-
-# ---------------------------------------------------
-# TRANSLATION FUNCTION
-# ---------------------------------------------------
+selected_language = st.sidebar.selectbox("Choose Language", languages)
+lang_code = lang_codes.get(selected_language,"en")
 
 def tr(text):
     try:
@@ -56,186 +20,113 @@ def tr(text):
     except:
         return text
 
-# ---------------------------------------------------
-# FEATURE NAVIGATION (FIXED 🔥)
-# ---------------------------------------------------
+# ---------------- FEATURE NAV ---------------- #
 
 feature_options = {
-    "home": "🏠 Home",
-    "summarizer": "🧠 AI Notes Summarizer",
-    "speech": "🎤 Speech-to-Text",
-    "dyslexia": "📖 Dyslexia Mode",
-    "quiz": "❓ Quiz Generator",
-    "accessibility": "♿ Accessibility Support"
+    "home":"🏠 Home",
+    "summarizer":"🧠 AI Notes Summarizer",
+    "speech":"🎤 Speech-to-Text",
+    "dyslexia":"📖 Dyslexia Mode",
+    "quiz":"❓ Quiz Generator"
 }
 
 feature_key = st.sidebar.selectbox(
-    tr("Choose Feature"),
+    "Choose Feature",
     list(feature_options.keys()),
-    format_func=lambda x: tr(feature_options[x])
+    format_func=lambda x: feature_options[x]
 )
 
-# ---------------------------------------------------
-# ACCESSIBILITY SETTINGS
-# ---------------------------------------------------
-
-st.sidebar.markdown("### ♿ Accessibility")
-
-font_size = st.sidebar.slider(tr("Font Size"), 14, 30, 18)
-contrast = st.sidebar.checkbox(tr("High Contrast Mode"))
-
-bg = "#000000" if contrast else "#050816"
-text = "#FFFFFF" if contrast else "#E5E7EB"
-
-st.markdown(f"""
-<style>
-body {{
-    background-color: {bg};
-    color: {text};
-    font-size: {font_size}px;
-}}
-</style>
-""", unsafe_allow_html=True)
-
-# ---------------------------------------------------
-# HOME
-# ---------------------------------------------------
+# ---------------- HOME ---------------- #
 
 if feature_key == "home":
+    st.title("🚀 EduAccess AI")
+    st.write("AI-powered inclusive learning platform")
 
-    st.title(tr("🚀 EduAccess AI"))
-    st.subheader(tr("AI-Powered Accessibility Platform"))
-
-    st.write(tr(
-        "An inclusive platform for blind, deaf, speech-impaired, and physically challenged students."
-    ))
-
-    st.markdown("---")
-
-    st.header(tr("🌟 Core Features"))
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.info(tr("🧠 AI Notes Summarizer"))
-        st.write(tr("Generate summaries from notes"))
-
-        st.success(tr("🎤 Speech-to-Text"))
-        st.write(tr("Convert voice into text"))
-
-    with col2:
-        st.warning(tr("📖 Dyslexia Mode"))
-        st.write(tr("Easy reading UI"))
-
-        st.error(tr("❓ Quiz Generator"))
-        st.write(tr("Generate exam questions"))
-
-# ---------------------------------------------------
-# SUMMARIZER
-# ---------------------------------------------------
+# ---------------- SUMMARIZER ---------------- #
 
 elif feature_key == "summarizer":
 
     st.header("🧠 AI Notes Summarizer")
 
-    sample_text = """Despite its advantages, Artificial Intelligence also presents several challenges and ethical concerns. Issues such as data privacy, algorithmic bias, misinformation, unemployment due to automation, and lack of transparency are important challenges that must be addressed responsibly.
+    text = st.text_area("Paste Notes Here", height=200)
 
-The future of Artificial Intelligence is extremely promising. AI is expected to revolutionize industries including healthcare, agriculture, robotics, and education. AI-powered accessibility platforms like EduAccess AI aim to make education inclusive for all students.
-
-Such innovations demonstrate how technology can create a more equal and accessible future for everyone."""
-
-    text = st.text_area(
-        "Paste Notes Here",
-        value=sample_text,
-        height=250
-    )
-
-    summary_length = st.selectbox(
-        "Select Summary Length",
-        ["Short", "Medium", "Detailed"]
-    )
+    length = st.selectbox("Summary Length", ["Short","Medium","Detailed"])
 
     if st.button("Generate Summary"):
 
-        # Clean sentences
         sentences = [s.strip() for s in text.split('.') if s.strip()]
 
-        if summary_length == "Short":
-            num = max(2, len(sentences)//4)
-
-        elif summary_length == "Medium":
-            num = max(4, len(sentences)//2)
-
+        if length == "Short":
+            num = 2
+        elif length == "Medium":
+            num = 4
         else:
             num = len(sentences)
 
         summary = ". ".join(sentences[:num]) + "."
 
-        st.success("✅ Summary Generated")
+        # ✅ SAVE FOR DYSLEXIA
+        st.session_state["summary"] = summary
 
-        st.markdown(f"""
-        <div style="
-            background-color:#14532d;
-            padding:15px;
-            border-radius:10px;
-            color:white;
-            font-size:16px;
-        ">
-        {summary}
-        </div>
-        """, unsafe_allow_html=True)
-# ---------------------------------------------------
-# SPEECH TO TEXT (REAL AI 🔥)
-# ---------------------------------------------------
+        st.success("Summary Generated")
+        st.write(summary)
+
+# ---------------- SPEECH ---------------- #
 
 elif feature_key == "speech":
 
-    st.header(tr("🎤 Speech-to-Text"))
+    st.header("🎤 Speech-to-Text")
 
-    st.write(tr("Upload audio file to convert speech into text"))
+    st.subheader("🎙️ Record Voice")
+    audio_value = st.audio_input("Record")
 
-    audio_file = st.file_uploader(
-        tr("Upload Audio"),
-        type=["wav", "mp3", "m4a"]
-    )
+    st.subheader("📂 Upload Audio")
+    file = st.file_uploader("Upload", type=["wav","mp3"])
 
-    if audio_file is not None:
+    audio_source = None
 
-        st.audio(audio_file)
+    if audio_value:
+        audio_source = audio_value
+        st.audio(audio_value)
+
+    if file:
+        audio_source = file
+        st.audio(file)
+
+    if audio_source:
 
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-            tmp.write(audio_file.read())
+            tmp.write(audio_source.read())
             temp_path = tmp.name
 
         try:
             openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-            with open(temp_path, "rb") as f:
+            with open(temp_path,"rb") as f:
                 transcript = openai.audio.transcriptions.create(
                     model="gpt-4o-mini-transcribe",
                     file=f
                 )
 
-            st.success(tr("Transcription Successful"))
-            st.subheader(tr("📝 Transcribed Text"))
-
+            st.success("Transcribed")
             st.write(transcript.text)
 
         except Exception as e:
-            st.error(tr("Error in transcription"))
-            st.write(str(e))
+            st.error(str(e))
 
-# ---------------------------------------------------
-# DYSLEXIA MODE
-# ---------------------------------------------------
+# ---------------- DYSLEXIA ---------------- #
 
 elif feature_key == "dyslexia":
 
-    st.header(tr("📖 Dyslexia Mode"))
+    st.header("📖 Dyslexia Mode")
 
-    size = st.slider(tr("Adjust Font Size"), 20, 40, 30)
+    size = st.slider("Font Size",20,40,30)
 
-    text_display = tr("Artificial Intelligence improves accessible education.")
+    # ✅ USE SUMMARY
+    text_display = st.session_state.get(
+        "summary",
+        "No summary generated yet. Please generate summary first."
+    )
 
     st.markdown(f"""
     <div style="
@@ -250,41 +141,55 @@ elif feature_key == "dyslexia":
     </div>
     """, unsafe_allow_html=True)
 
-# ---------------------------------------------------
-# QUIZ
-# ---------------------------------------------------
+# ---------------- QUIZ ---------------- #
 
 elif feature_key == "quiz":
 
-    st.header(tr("❓ Quiz Generator"))
+    st.header("❓ Quiz Generator")
 
-    topic = st.text_input(tr("Enter Topic"))
+    topic = st.text_input("Enter Topic")
 
-    if st.button(tr("Generate Quiz")):
+    if st.button("Generate Quiz"):
 
-        questions = [
-            f"What is {topic}?",
-            f"Explain {topic}",
-            f"Advantages of {topic}",
-            f"Limitations of {topic}",
-            f"Applications of {topic}"
+        quiz = [
+            {
+                "q": f"What is {topic}?",
+                "options": ["Definition","Example","Tool","None"],
+                "answer": "Definition",
+                "explanation": f"{topic} refers to its definition."
+            },
+            {
+                "q": f"Where is {topic} used?",
+                "options": ["Healthcare","Sports","Cooking","None"],
+                "answer": "Healthcare",
+                "explanation": f"{topic} is widely used in healthcare."
+            }
         ]
 
-        for i, q in enumerate(questions):
-            st.write(f"{i+1}. {tr(q)}")
+        for i, item in enumerate(quiz):
 
-# ---------------------------------------------------
-# ACCESSIBILITY
-# ---------------------------------------------------
+            st.subheader(f"Q{i+1}: {item['q']}")
+
+            user_ans = st.radio(
+                "Choose answer",
+                item["options"],
+                key=f"q{i}"
+            )
+
+            if st.button(f"Submit Q{i+1}"):
+
+                if user_ans == item["answer"]:
+                    st.success("✅ Correct Answer")
+                else:
+                    st.error("❌ Wrong Answer")
+                    st.write(f"✔ Correct: {item['answer']}")
+                    st.write(f"🧠 Reason: {item['explanation']}")
+
+# ---------------- ACCESSIBILITY ---------------- #
 
 elif feature_key == "accessibility":
 
-    st.header(tr("♿ Accessibility Support"))
+    st.header("♿ Accessibility Support")
 
-    st.write(tr("Designed for all Divyang users"))
-
-    st.write(tr("👁️ Blind: Screen reader + audio"))
-    st.write(tr("👂 Deaf: Text-based UI"))
-    st.write(tr("🗣️ Mute: Text interaction"))
-    st.write(tr("🦽 Mobility: Large UI"))
-    st.write(tr("🧠 Learning disabilities support"))
+    st.write("Supports all Divyang users")
+    st.write("👁️ Blind | 👂 Deaf | 🗣️ Speech | 🦽 Mobility | 🧠 Cognitive")
