@@ -275,20 +275,19 @@ elif feature_key == "accessibility":
     st.write("EduAccess AI is designed for all Divyang users.")
 
     st.markdown("### 👁️ For Blind Users")
-    st.write("✔ Screen reader compatible")
-    st.write("✔ Audio learning support")
+    st.write("✔ Screen reader support")
+    st.write("✔ Audio-based learning")
 
     st.markdown("### 👂 For Deaf Users")
-    st.write("✔ Text-based communication")
-    st.write("✔ Quiz & notes support")
+    st.write("✔ Text-based interface")
+    st.write("✔ Quiz and notes support")
 
     st.markdown("### 🗣️ For Speech-Impaired Users")
-    st.write("✔ Text interaction system")
+    st.write("✔ Text communication system")
 
     st.markdown("### 🦽 For Mobility-Impaired Users")
-    st.write("✔ Large buttons")
-    st.write("✔ Simple navigation")
+    st.write("✔ Large buttons and simple navigation")
 
     st.markdown("### 🧠 Learning Disabilities")
-    st.write("✔ Dyslexia-friendly UI")
-    st.write("✔ Simplified summaries") Deaf | 🗣️ Speech | 🦽 Mobility | 🧠 Cognitive")
+    st.write("✔ Dyslexia-friendly mode")
+    st.write("✔ Simplified summaries")
