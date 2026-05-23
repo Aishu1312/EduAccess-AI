@@ -96,7 +96,7 @@ def translate_text(text):
 # ---------------------------------------------------
 
 base_text = {
-    "title": "🚀 EduAccess AI - Smart Accessibility Platform",
+   "title": "🚀 EduAccess AI",
     "subtitle": "AI-Powered Accessibility Platform",
     "choose_feature": "Choose Feature",
     "home": "🏠 Home",
