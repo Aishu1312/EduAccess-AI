@@ -368,177 +368,353 @@ through accessibility and smart learning systems.
         </div>
         """, unsafe_allow_html=True)
 
-# ---------------------------------------------------
-# SPEECH TO TEXT
-# ---------------------------------------------------
+# -----------------------------------------
+# SMART SUBJECT-BASED AI RESPONSE
+# -----------------------------------------
 
-elif feature == lang["speech"]:
+query = text.lower()
 
-    st.header(
-        translate_text("🎤 Speech-to-Text")
-    )
+# -----------------------------------------
+# EXCEL
+# -----------------------------------------
 
-    st.write(
-        translate_text(
-            "Convert speech into text and get AI-powered explanations."
-        )
-    )
+if "excel" in query:
 
-    # -----------------------------------------
-    # EXPLANATION TYPE
-    # -----------------------------------------
+    if answer_type == translate_text("Short"):
 
-    answer_type = st.selectbox(
-        translate_text("📚 Select Explanation Type"),
-        [
-            translate_text("Short"),
-            translate_text("Medium"),
-            translate_text("Detailed")
-        ]
-    )
-
-    # -----------------------------------------
-    # AUDIO INPUT
-    # -----------------------------------------
-
-    audio = st.audio_input(
-        translate_text("🎙️ Record Voice")
-    )
-
-    uploaded_file = st.file_uploader(
-        translate_text("📂 Upload Audio"),
-        type=["wav", "mp3", "m4a"]
-    )
-
-    source = audio if audio else uploaded_file
-
-    # -----------------------------------------
-    # PROCESS AUDIO
-    # -----------------------------------------
-
-    if source:
-
-        with tempfile.NamedTemporaryFile(
-            delete=False,
-            suffix=".wav"
-        ) as tmp:
-
-            tmp.write(source.read())
-            audio_path = tmp.name
-
-        recognizer = sr.Recognizer()
-
-        try:
-
-            with sr.AudioFile(audio_path) as src:
-
-                audio_data = recognizer.record(src)
-
-                text = recognizer.recognize_google(
-                    audio_data
-                )
-
-            # -----------------------------------------
-            # QUESTION
-            # -----------------------------------------
-
-            st.subheader(
-                translate_text("📝 Your Question")
-            )
-
-            st.info(text)
-
-        except:
-
-            text = ""
-
-            st.error(
-                translate_text(
-                    "❌ Could not understand audio."
-                )
-            )
-
-        # -----------------------------------------
-        # AI RESPONSE
-        # -----------------------------------------
-
-        if text:
-
-            st.subheader(
-                translate_text(
-                    "🤖 AI Explanation"
-                )
-            )
-
-            # SHORT
-            if answer_type == translate_text("Short"):
-
-                answer = f"""
-{text} is an important educational or technological concept.
+        answer = """
+Microsoft Excel is a spreadsheet software used for calculations, data analysis, charts, and tables.
 
 Real-world Example:
-{text} is used in schools, industries, healthcare, and smart applications.
+Companies use Excel for salary sheets and student result analysis.
 """
 
-            # MEDIUM
-            elif answer_type == translate_text("Medium"):
+    elif answer_type == translate_text("Medium"):
 
-                answer = f"""
-{text} is widely used in education, science, and technology.
+        answer = """
+Microsoft Excel is a spreadsheet application developed by Microsoft. It helps users organize, calculate, and analyze data efficiently.
 
-Key Points:
-• Improves learning and efficiency
-• Helps solve real-world problems
-• Supports innovation and automation
+Key Features:
+• Formulas and functions
+• Charts and graphs
+• Data filtering and sorting
+• Pivot tables
 
 Real-world Examples:
-• Smart learning platforms
-• Healthcare systems
-• AI applications
-• Banking technologies
+• School marksheets
+• Business reports
+• Budget planning
+• Attendance management
 """
 
-            # DETAILED
-            else:
+    else:
 
-                answer = f"""
-{text} is an important concept used in academics and modern industries.
+        answer = """
+Microsoft Excel is a powerful spreadsheet software developed by Microsoft and widely used for data management, calculations, analysis, and visualization.
+
+Excel allows users to:
+• Create tables and reports
+• Perform mathematical calculations
+• Analyze large datasets
+• Generate charts and graphs
+• Automate tasks using formulas
+
+Advantages:
+• Easy data organization
+• Fast calculations
+• Data visualization
+• Improved productivity
+
+Real-world Examples:
+• Banking and finance reports
+• Employee salary management
+• Student result systems
+• Inventory management
+• Business analytics dashboards
+
+Excel is one of the most important tools used in education, business, accounting, and data analytics.
+"""
+
+# -----------------------------------------
+# AI
+# -----------------------------------------
+
+elif "ai" in query or "artificial intelligence" in query:
+
+    if answer_type == translate_text("Short"):
+
+        answer = """
+Artificial Intelligence (AI) enables machines to think and make decisions like humans.
+
+Real-world Example:
+ChatGPT and Alexa use AI technology.
+"""
+
+    elif answer_type == translate_text("Medium"):
+
+        answer = """
+Artificial Intelligence (AI) is a technology that enables machines to learn, think, and solve problems intelligently.
+
+Applications:
+• Chatbots
+• Voice assistants
+• Healthcare systems
+• Self-driving cars
+
+Real-world Examples:
+• ChatGPT
+• Netflix recommendations
+• Google Assistant
+"""
+
+    else:
+
+        answer = """
+Artificial Intelligence (AI) is a branch of computer science that enables machines to simulate human intelligence.
+
+AI systems can:
+• Learn from data
+• Understand language
+• Recognize images
+• Make decisions
+
+Advantages:
+• Automation
+• Faster decision-making
+• Personalized learning
+• Improved accessibility
+
+Real-world Examples:
+• ChatGPT
+• Self-driving cars
+• Healthcare diagnosis systems
+• Smart assistants like Siri and Alexa
+
+AI is transforming education, healthcare, banking, and transportation industries worldwide.
+"""
+
+# -----------------------------------------
+# MACHINE LEARNING
+# -----------------------------------------
+
+elif "machine learning" in query:
+
+    if answer_type == translate_text("Short"):
+
+        answer = """
+Machine Learning allows systems to learn automatically from data.
+
+Real-world Example:
+Netflix movie recommendations use Machine Learning.
+"""
+
+    elif answer_type == translate_text("Medium"):
+
+        answer = """
+Machine Learning is a subset of AI that enables computers to learn patterns from data.
+
+Applications:
+• Recommendation systems
+• Spam filtering
+• Fraud detection
+
+Real-world Examples:
+• YouTube recommendations
+• Email spam detection
+"""
+
+    else:
+
+        answer = """
+Machine Learning (ML) is a branch of Artificial Intelligence where systems learn from data without explicit programming.
+
+Types:
+• Supervised Learning
+• Unsupervised Learning
+• Reinforcement Learning
+
+Applications:
+• Healthcare prediction
+• Stock market analysis
+• Voice recognition
+• Image classification
+
+Real-world Examples:
+• Netflix recommendations
+• Google Translate
+• Face recognition systems
+
+Machine Learning is widely used in AI applications and modern industries.
+"""
+
+# -----------------------------------------
+# PHOTOSYNTHESIS
+# -----------------------------------------
+
+elif "photosynthesis" in query:
+
+    if answer_type == translate_text("Short"):
+
+        answer = """
+Photosynthesis is the process by which plants make food using sunlight.
+
+Real-world Example:
+Green plants use photosynthesis to grow and release oxygen.
+"""
+
+    elif answer_type == translate_text("Medium"):
+
+        answer = """
+Photosynthesis is a biological process where green plants convert sunlight into food.
+
+Requirements:
+• Sunlight
+• Water
+• Carbon dioxide
+• Chlorophyll
+
+Real-world Example:
+Plants produce oxygen and food through photosynthesis.
+"""
+
+    else:
+
+        answer = """
+Photosynthesis is the process by which green plants prepare food using sunlight, water, and carbon dioxide in the presence of chlorophyll.
+
+Equation:
+Carbon Dioxide + Water + Sunlight → Glucose + Oxygen
+
+Importance:
+• Produces oxygen
+• Maintains food chain
+• Supports life on Earth
+
+Real-world Examples:
+• Crop growth
+• Forest ecosystems
+• Oxygen production
+
+Photosynthesis is one of the most important biological processes on Earth.
+"""
+
+# -----------------------------------------
+# CLOUD COMPUTING
+# -----------------------------------------
+
+elif "cloud computing" in query:
+
+    if answer_type == translate_text("Short"):
+
+        answer = """
+Cloud Computing provides computing services over the internet.
+
+Real-world Example:
+Google Drive stores files using cloud computing.
+"""
+
+    elif answer_type == translate_text("Medium"):
+
+        answer = """
+Cloud Computing allows users to access storage, software, and servers through the internet.
+
+Benefits:
+• Online storage
+• Remote access
+• Scalability
+
+Real-world Examples:
+• Google Drive
+• Dropbox
+• Microsoft Azure
+"""
+
+    else:
+
+        answer = """
+Cloud Computing is a technology that delivers computing services such as storage, databases, networking, and software over the internet.
+
+Advantages:
+• Cost-effective
+• Remote accessibility
+• Data backup
+• Scalability
+
+Types:
+• Public Cloud
+• Private Cloud
+• Hybrid Cloud
+
+Real-world Examples:
+• Google Drive
+• AWS
+• Microsoft Azure
+• Netflix cloud infrastructure
+
+Cloud computing is widely used in businesses, education, and modern web applications.
+"""
+
+# -----------------------------------------
+# DEFAULT ANSWER
+# -----------------------------------------
+
+else:
+
+    if answer_type == translate_text("Short"):
+
+        answer = f"""
+{text} is an important concept related to academics, science, or technology.
+
+Real-world Example:
+{text} is commonly used in education and modern industries.
+"""
+
+    elif answer_type == translate_text("Medium"):
+
+        answer = f"""
+{text} is an important topic used in education and real-world applications.
+
+Key Points:
+• Improves knowledge and understanding
+• Helps solve practical problems
+• Used in multiple industries
+
+Real-world Examples:
+• Educational platforms
+• Business systems
+• Modern technologies
+"""
+
+    else:
+
+        answer = f"""
+{text} is an important concept used in academics, science, and technology.
 
 Detailed Explanation:
-• Helps improve productivity
-• Supports automation and smart systems
-• Enhances problem-solving and learning
+• Helps improve learning and productivity
+• Supports innovation and automation
+• Enhances real-world problem-solving
 
 Advantages:
 • Better efficiency
-• Improved accessibility
-• Faster processing
 • Smart decision-making
+• Improved accessibility
 
 Real-world Examples:
-• Educational AI systems
-• Voice assistants
+• Educational platforms
+• AI systems
 • Healthcare technologies
-• Recommendation systems
-• Banking and finance platforms
+• Business applications
 
-Learning about {text} helps students understand how modern systems and technologies work in daily life.
+Understanding {text} helps students and professionals apply concepts in practical real-world situations.
 """
 
-            translated_answer = translate_text(answer)
+# -----------------------------------------
+# TRANSLATE ANSWER
+# -----------------------------------------
 
-            st.markdown(f"""
-            <div style="
-                background-color:#0f172a;
-                padding:20px;
-                border-radius:15px;
-                color:white;
-                font-size:{font_size}px;
-                line-height:2;
-            ">
-            {translated_answer}
-            </div>
-            """, unsafe_allow_html=True)
+translated_answer = translate_text(answer)
+
 # ---------------------------------------------------
 # DYSLEXIA MODE
 # ---------------------------------------------------
