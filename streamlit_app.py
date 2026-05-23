@@ -777,6 +777,26 @@ elif feature == lang["dyslexia"]:
         """, unsafe_allow_html=True)
 
 # ---------------------------------------------------
+# RESET QUIZ WHEN LEAVING QUIZ PAGE
+# ---------------------------------------------------
+
+if "last_feature" not in st.session_state:
+    st.session_state.last_feature = ""
+
+if (
+    st.session_state.last_feature == lang["quiz"]
+    and feature != lang["quiz"]
+):
+
+    st.session_state.quiz_started = False
+    st.session_state.quiz_score = 0
+    st.session_state.quiz_data = []
+    st.session_state.answer_feedback = {}
+    st.session_state.answered = {}
+
+st.session_state.last_feature = feature
+
+# ---------------------------------------------------
 # QUIZ GENERATOR
 # ---------------------------------------------------
 
@@ -785,6 +805,26 @@ elif feature == lang["quiz"]:
     st.header(
         translate_text("❓ AI Quiz Generator")
     )
+
+    # ---------------------------------------------------
+    # NEW QUIZ BUTTON
+    # ---------------------------------------------------
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        if st.button(
+            translate_text("🆕 New Quiz")
+        ):
+
+            st.session_state.quiz_started = False
+            st.session_state.quiz_score = 0
+            st.session_state.quiz_data = []
+            st.session_state.answer_feedback = {}
+            st.session_state.answered = {}
+
+            st.rerun()
 
     exam = st.text_input(
         translate_text("📝 Enter Exam Name")
@@ -801,9 +841,9 @@ elif feature == lang["quiz"]:
         5
     )
 
-    # -----------------------------------------
+    # ---------------------------------------------------
     # SESSION STATE
-    # -----------------------------------------
+    # ---------------------------------------------------
 
     if "quiz_started" not in st.session_state:
         st.session_state.quiz_started = False
@@ -820,9 +860,12 @@ elif feature == lang["quiz"]:
     if "answer_feedback" not in st.session_state:
         st.session_state.answer_feedback = {}
 
-    # -----------------------------------------
+    if "quiz_history" not in st.session_state:
+        st.session_state.quiz_history = []
+
+    # ---------------------------------------------------
     # GENERATE QUIZ
-    # -----------------------------------------
+    # ---------------------------------------------------
 
     if st.button(
         translate_text("🚀 Generate Quiz")
@@ -938,9 +981,9 @@ elif feature == lang["quiz"]:
 
             st.session_state.quiz_data.append(q)
 
-    # -----------------------------------------
+    # ---------------------------------------------------
     # DISPLAY QUIZ
-    # -----------------------------------------
+    # ---------------------------------------------------
 
     if st.session_state.quiz_started:
 
@@ -966,9 +1009,9 @@ elif feature == lang["quiz"]:
                 key=f"radio_{idx}"
             )
 
-            # -----------------------------------------
-            # SUBMIT BUTTON
-            # -----------------------------------------
+            # ---------------------------------------------------
+            # SUBMIT ANSWER
+            # ---------------------------------------------------
 
             if st.button(
                 translate_text(f"Submit Q{idx+1}"),
@@ -983,17 +1026,17 @@ elif feature == lang["quiz"]:
                     selected == correct_translated
                 )
 
-                # -----------------------------------------
+                # ---------------------------------------------------
                 # SCORE
-                # -----------------------------------------
+                # ---------------------------------------------------
 
                 if is_correct:
 
                     st.session_state.quiz_score += 2
 
-                # -----------------------------------------
+                # ---------------------------------------------------
                 # SAVE FEEDBACK
-                # -----------------------------------------
+                # ---------------------------------------------------
 
                 st.session_state.answer_feedback[idx] = {
 
@@ -1009,9 +1052,28 @@ elif feature == lang["quiz"]:
                     st.session_state.quiz_score
                 }
 
-            # -----------------------------------------
+                # ---------------------------------------------------
+                # SAVE HISTORY
+                # ---------------------------------------------------
+
+                st.session_state.quiz_history.append({
+
+                    "question":
+                    q["question"],
+
+                    "selected":
+                    selected,
+
+                    "correct":
+                    q["correct"],
+
+                    "reason":
+                    q["reason"]
+                })
+
+            # ---------------------------------------------------
             # SHOW FEEDBACK
-            # -----------------------------------------
+            # ---------------------------------------------------
 
             if idx in st.session_state.answer_feedback:
 
@@ -1064,6 +1126,44 @@ elif feature == lang["quiz"]:
                 f"🎯 Final Score: {st.session_state.quiz_score}/{total_score}"
             )
         )
+
+        # ---------------------------------------------------
+        # QUIZ HISTORY
+        # ---------------------------------------------------
+
+        st.markdown("---")
+
+        st.subheader(
+            translate_text("📘 Quiz History")
+        )
+
+        for item in reversed(
+            st.session_state.quiz_history
+        ):
+
+            st.info(
+                translate_text(
+                    f"Question: {item['question']}"
+                )
+            )
+
+            st.write(
+                translate_text(
+                    f"Your Answer: {item['selected']}"
+                )
+            )
+
+            st.success(
+                translate_text(
+                    f"Correct Answer: {item['correct']}"
+                )
+            )
+
+            st.warning(
+                translate_text(
+                    f"Reason: {item['reason']}"
+                )
+            )
         
 # ---------------------------------------------------
 # ACCESSIBILITY
