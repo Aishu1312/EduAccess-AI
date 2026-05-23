@@ -1,4 +1,5 @@
 streamlit
+SpeechRecognition
 deep-translator
 gTTS
 nltk
@@ -8,5 +9,4 @@ numpy
 requests
 python-dotenv
 pillow
-SpeechRecognition
 openai
