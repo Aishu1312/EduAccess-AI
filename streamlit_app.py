@@ -10,7 +10,7 @@ from deep_translator import GoogleTranslator
 # ---------------------------------------------------
 
 st.set_page_config(
-    page_title="EduAccess AI",
+    page_title="🚀 EduAccess AI - AI Powered Learning Platform",
     page_icon="🚀",
     layout="wide"
 )
@@ -73,12 +73,13 @@ LANGUAGES = {
 # LANGUAGE SELECTOR
 # ---------------------------------------------------
 
+st.sidebar.title(
+    translate_text("⚙ Settings")
+)
 selected_language = st.sidebar.selectbox(
-    "🌍 Choose Language",
+    translate_text("🌍 Choose Language"),
     list(LANGUAGES.keys())
 )
-
-target_lang = LANGUAGES[selected_language]
 
 # ---------------------------------------------------
 # TRANSLATION FUNCTION
@@ -100,7 +101,7 @@ def translate_text(text):
 # ---------------------------------------------------
 
 base_text = {
-    "title": "🚀 EduAccess AI",
+    "title": "🚀 EduAccess AI - AI Powered Learning Platform",
     "subtitle": "AI-Powered Accessibility Platform",
     "choose_feature": "Choose Feature",
     "home": "🏠 Home",
@@ -140,19 +141,16 @@ feature = st.sidebar.selectbox(
 # ACCESSIBILITY SETTINGS
 # ---------------------------------------------------
 
-st.sidebar.markdown("---")
-
 font_size = st.sidebar.slider(
-    "🔠 Font Size",
+    translate_text("🔠 Font Size"),
     16,
     40,
     22
 )
 
 high_contrast = st.sidebar.checkbox(
-    "🌗 High Contrast Mode"
+    translate_text("🌗 High Contrast Mode")
 )
-
 # ---------------------------------------------------
 # CUSTOM CSS
 # ---------------------------------------------------
