@@ -1,35 +1,46 @@
 import streamlit as st
-import time
-import openai
 import tempfile
-import json
+import random
+import speech_recognition as sr
+from googletrans import Translator
 
 # ---------------------------------------------------
 # PAGE CONFIG
 # ---------------------------------------------------
 
-st.set_page_config(page_title="EduAccess AI", page_icon="🚀", layout="wide")
+st.set_page_config(
+    page_title="EduAccess AI",
+    page_icon="🚀",
+    layout="wide"
+)
 
 # ---------------------------------------------------
-# SESSION STATE INIT
+# SESSION STATE
 # ---------------------------------------------------
 
 if "score" not in st.session_state:
     st.session_state.score = 0
 
-if "leaderboard" not in st.session_state:
-    st.session_state.leaderboard = []
+if "summary" not in st.session_state:
+    st.session_state.summary = ""
+
+if "started" not in st.session_state:
+    st.session_state.started = False
+
+if "q_no" not in st.session_state:
+    st.session_state.q_no = 1
+
+if "used_q" not in st.session_state:
+    st.session_state.used_q = []
 
 # ---------------------------------------------------
-# TRANSLATIONS (same as yours)
+# GOOGLE TRANSLATOR
 # ---------------------------------------------------
-
-from googletrans import Translator
 
 translator = Translator()
 
 # ---------------------------------------------------
-# MULTILINGUAL SUPPORT
+# 28 LANGUAGE SUPPORT
 # ---------------------------------------------------
 
 LANGUAGES = {
@@ -63,9 +74,9 @@ LANGUAGES = {
     "Indonesian": "id"
 }
 
-# ----------------------------
+# ---------------------------------------------------
 # LANGUAGE SELECTOR
-# ----------------------------
+# ---------------------------------------------------
 
 selected_language = st.sidebar.selectbox(
     "🌍 Choose Language",
@@ -75,7 +86,7 @@ selected_language = st.sidebar.selectbox(
 target_lang = LANGUAGES[selected_language]
 
 # ---------------------------------------------------
-# DEFAULT ENGLISH TEXT
+# UI TEXT
 # ---------------------------------------------------
 
 base_text = {
@@ -84,72 +95,32 @@ base_text = {
     "choose_feature": "Choose Feature",
     "home": "🏠 Home",
     "summarizer": "🧠 AI Notes Summarizer",
-    "speech": "🎤 Speech-to-Text",
+    "speech": "🎤 Speech Assistant",
     "dyslexia": "📖 Dyslexia Mode",
     "quiz": "❓ Quiz Generator",
     "accessibility": "♿ Accessibility Support",
-    "summary_button": "Generate Summary",
     "welcome": "Welcome to EduAccess AI",
-    "core_features": "🌟 Core Features",
-    "future_scope": "🚀 Future Scope"
+    "future": "🚀 Future Scope"
 }
-
-# ---------------------------------------------------
-# AUTO TRANSLATE UI
-# ---------------------------------------------------
 
 lang = {}
 
 for key, value in base_text.items():
 
     try:
-        translated = translator.translate(
+        lang[key] = translator.translate(
             value,
             dest=target_lang
         ).text
 
-        lang[key] = translated
-
     except:
         lang[key] = value
 
-LANGUAGES = {
-    "English": "en",
-    "Hindi": "hi",
-    "Marathi": "mr",
-    "Gujarati": "gu",
-    "Punjabi": "pa",
-    "Bengali": "bn",
-    "Tamil": "ta",
-    "Telugu": "te",
-    "Kannada": "kn",
-    "Malayalam": "ml",
-    "Urdu": "ur",
-    "Odia": "or",
-    "Assamese": "as",
-    "Sanskrit": "sa",
-    "Nepali": "ne",
-    "Spanish": "es",
-    "French": "fr",
-    "German": "de",
-    "Italian": "it",
-    "Portuguese": "pt",
-    "Russian": "ru",
-    "Japanese": "ja",
-    "Korean": "ko",
-    "Chinese": "zh-cn",
-    "Arabic": "ar",
-    "Turkish": "tr",
-    "Thai": "th",
-    "Indonesian": "id"
-}
+# ---------------------------------------------------
+# SIDEBAR
+# ---------------------------------------------------
 
-selected_language = st.sidebar.selectbox(
-    "🌍 Choose Language",
-    list(LANGUAGES.keys())
-)
-
-target_lang = LANGUAGES[selected_language]
+st.sidebar.title("⚙ Settings")
 
 feature = st.sidebar.selectbox(
     lang["choose_feature"],
@@ -164,6 +135,38 @@ feature = st.sidebar.selectbox(
 )
 
 # ---------------------------------------------------
+# ACCESSIBILITY SETTINGS
+# ---------------------------------------------------
+
+st.sidebar.markdown("---")
+
+font_size = st.sidebar.slider(
+    "🔠 Font Size",
+    16,
+    40,
+    22
+)
+
+high_contrast = st.sidebar.checkbox(
+    "🌗 High Contrast Mode"
+)
+
+# ---------------------------------------------------
+# CUSTOM CSS
+# ---------------------------------------------------
+
+if high_contrast:
+
+    st.markdown("""
+    <style>
+    body {
+        background-color: black;
+        color: white;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# ---------------------------------------------------
 # HOME
 # ---------------------------------------------------
 
@@ -173,49 +176,89 @@ if feature == lang["home"]:
 
     st.subheader(lang["subtitle"])
 
-    st.write(lang.get("welcome", "Welcome to EduAccess AI"))
+    st.success(lang["welcome"])
 
     st.markdown("---")
 
-    st.header(lang.get("core_features", "🌟 Core Features"))
+    st.header("🌟 Core Features")
 
     col1, col2 = st.columns(2)
 
     with col1:
 
         st.info("🧠 AI Notes Summarizer")
-        st.write("Generate concise AI-powered summaries from educational notes.")
+        st.write(
+            "Generate AI-powered educational summaries."
+        )
 
-        st.success("🎤 Speech-to-Text")
-        st.write("Convert spoken language into text using AI.")
+        st.success("🎤 Speech Assistant")
+        st.write(
+            "Convert speech into text with AI."
+        )
 
     with col2:
 
-        st.warning("📖 Dyslexia-Friendly Reading")
-        st.write("Improve readability using accessibility-focused UI.")
+        st.warning("📖 Dyslexia Reading Mode")
+        st.write(
+            "Accessibility-focused reading support."
+        )
 
-        st.error("❓ AI Quiz Generator")
-        st.write("Generate exam-based AI quiz questions.")
-
-    st.markdown("---")
-
-    st.header("♿ Accessibility Support")
-
-    st.write("✅ Dyslexia Support")
-    st.write("✅ Speech Assistance")
-    st.write("✅ Large Readable Fonts")
-    st.write("✅ AI Learning Assistance")
-    st.write("✅ Multilingual Support")
+        st.error("❓ Smart Quiz Generator")
+        st.write(
+            "Generate intelligent quiz questions."
+        )
 
     st.markdown("---")
 
-    st.header(lang.get("future_scope", "🚀 Future Scope"))
+    st.header("♿ Accessibility Features")
 
-    st.write(lang.get("future1", "🔹 Real-Time Sign Language Recognition"))
-    st.write(lang.get("future2", "🔹 AI Career Guidance"))
-    st.write(lang.get("future3", "🔹 Emotion-Aware Learning"))
-    st.write(lang.get("future4", "🔹 Personalized AI Tutor"))
-    st.write(lang.get("future5", "🔹 Multilingual Accessibility Support"))
+    features = [
+        "👁️ Blind Support → Audio + Screen Reader",
+        "👂 Deaf Support → Text Interface",
+        "🗣️ Speech Assistance",
+        "📖 Dyslexia-Friendly Reading",
+        "🌍 28-Language Support",
+        "🔠 Adjustable Font Size",
+        "🌗 High Contrast Mode"
+    ]
+
+    for item in features:
+
+        try:
+            translated = translator.translate(
+                item,
+                dest=target_lang
+            ).text
+
+            st.write(translated)
+
+        except:
+            st.write(item)
+
+    st.markdown("---")
+
+    st.header(lang["future"])
+
+    future = [
+        "🔹 Real-Time Sign Language Recognition",
+        "🔹 AI Career Guidance",
+        "🔹 Personalized AI Tutor",
+        "🔹 Emotion-Aware Learning",
+        "🔹 Offline Learning Support"
+    ]
+
+    for item in future:
+
+        try:
+            translated = translator.translate(
+                item,
+                dest=target_lang
+            ).text
+
+            st.write(translated)
+
+        except:
+            st.write(item)
 
 # ---------------------------------------------------
 # SUMMARIZER
@@ -225,7 +268,10 @@ elif feature == lang["summarizer"]:
 
     st.header("🧠 AI Notes Summarizer")
 
-    sample_text = """Artificial Intelligence is transforming education through accessibility and smart learning systems."""
+    sample_text = """
+Artificial Intelligence is transforming education
+through accessibility and smart learning systems.
+"""
 
     text = st.text_area(
         "📌 Paste Notes Here",
@@ -234,317 +280,285 @@ elif feature == lang["summarizer"]:
     )
 
     summary_length = st.selectbox(
-        "Select Summary Length",
+        "📏 Select Summary Length",
         ["Short", "Medium", "Detailed"]
     )
 
-    if st.button("Generate Summary"):
+    if st.button("🚀 Generate Summary"):
 
-        sentences = [s.strip() for s in text.split('.') if s.strip()]
+        sentences = [
+            s.strip()
+            for s in text.split('.')
+            if s.strip()
+        ]
 
         if summary_length == "Short":
             num = max(2, len(sentences)//4)
+
         elif summary_length == "Medium":
             num = max(4, len(sentences)//2)
+
         else:
             num = len(sentences)
 
         summary = ". ".join(sentences[:num]) + "."
 
-        # ✅ store summary globally
-        st.session_state["summary"] = summary
+        try:
+            summary = translator.translate(
+                summary,
+                dest=target_lang
+            ).text
+
+        except:
+            pass
+
+        st.session_state.summary = summary
 
         st.success("✅ Summary Generated")
 
         st.markdown(f"""
         <div style="
             background-color:#14532d;
-            padding:15px;
-            border-radius:10px;
+            padding:20px;
+            border-radius:12px;
             color:white;
+            font-size:{font_size}px;
+            line-height:2;
         ">
         {summary}
         </div>
         """, unsafe_allow_html=True)
-    
+
 # ---------------------------------------------------
-# SPEECH TO TEXT + AI ANSWER
+# SPEECH ASSISTANT
 # ---------------------------------------------------
 
 elif feature == lang["speech"]:
 
-    import speech_recognition as sr
-    import tempfile
+    st.header("🎤 AI Voice Assistant")
 
-    st.header("🎤 Voice Assistant (No API Required)")
-
-    # 🎙️ MIC INPUT
     audio = st.audio_input("🎙️ Record Voice")
 
-    # 📂 FILE UPLOAD (ADDED ✅)
-    uploaded_file = st.file_uploader("📂 Upload Audio", type=["wav", "mp3", "m4a"])
+    uploaded_file = st.file_uploader(
+        "📂 Upload Audio",
+        type=["wav", "mp3", "m4a"]
+    )
 
     source = audio if audio else uploaded_file
 
     if source:
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+        with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=".wav"
+        ) as tmp:
+
             tmp.write(source.read())
             audio_path = tmp.name
 
         recognizer = sr.Recognizer()
 
         try:
+
             with sr.AudioFile(audio_path) as src:
+
                 audio_data = recognizer.record(src)
-                text = recognizer.recognize_google(audio_data)
+
+                text = recognizer.recognize_google(
+                    audio_data
+                )
 
             st.subheader("📝 Your Question")
             st.write(text)
 
         except:
-            text = ""
-            st.error("❌ Could not understand audio. Speak clearly.")
 
-        # 🤖 DETAILED AI ANSWER (NO API)
+            text = ""
+
+            st.error(
+                "❌ Could not understand audio."
+            )
+
         if text:
 
-            st.subheader("🤖 AI Answer")
+            st.subheader("🤖 AI Response")
 
-            text_lower = text.lower()
+            if "ai" in text.lower():
 
-            if "ai" in text_lower:
-                st.success("""
-Artificial Intelligence (AI) refers to machines that can mimic human intelligence.
+                answer = """
+Artificial Intelligence enables machines to think and learn like humans.
 
-👉 Example:
-- Chatbots like ChatGPT
+Examples:
+- ChatGPT
 - Self-driving cars
+- Alexa
+"""
 
-👉 Real Life Use:
-- Healthcare diagnosis
-- Smart assistants like Alexa
-""")
+            elif "education" in text.lower():
 
-            elif "machine learning" in text_lower:
-                st.success("""
-Machine Learning is a part of AI where systems learn from data.
-
-👉 Example:
-- Netflix recommendations
-- Spam email detection
-
-👉 How it works:
-System learns patterns from past data and predicts future outcomes.
-""")
-
-            elif "education" in text_lower:
-                st.success("""
-AI is transforming education by making learning personalized and accessible.
-
-👉 Example:
-- AI tutors
-- Voice-based learning for blind students
-
-👉 Benefits:
-- Learn anytime
-- Learn at your own pace
-""")
+                answer = """
+AI improves education through:
+- Personalized learning
+- Accessibility tools
+- Smart tutoring systems
+"""
 
             else:
-                st.success(f"""
-Your Question: {text}
 
-👉 Explanation:
-This is an intelligent response system. Based on your query, here's a simple explanation:
+                answer = f"""
+Your Question:
+{text}
 
-- The topic relates to general knowledge or academics
-- Try asking about AI, ML, Science, or Education
+This is an educational AI assistant.
+Try asking about:
+- AI
+- Machine Learning
+- Education
+"""
 
-👉 Example:
-Ask: "What is AI?" or "Explain Machine Learning"
-""")
-            
+            try:
+
+                answer = translator.translate(
+                    answer,
+                    dest=target_lang
+                ).text
+
+            except:
+                pass
+
+            st.success(answer)
+
 # ---------------------------------------------------
 # DYSLEXIA MODE
 # ---------------------------------------------------
 
 elif feature == lang["dyslexia"]:
 
-    st.header("📖 Dyslexia-Friendly Reading Mode")
+    st.header("📖 Dyslexia-Friendly Reading")
 
-    font_size = st.slider("Adjust Font Size", 20, 40, 30)
-
-    display_text = st.session_state.get("summary", "")
+    display_text = st.session_state.summary
 
     if not display_text:
-        st.warning("⚠️ Generate summary first in Summarizer section")
+
+        st.warning(
+            "⚠️ Generate summary first."
+        )
 
     else:
+
         st.markdown(f"""
         <div style="
-            font-size: {font_size}px;
-            line-height: 2.5;
-            letter-spacing: 2px;
-            background-color: #f4f4f4;
-            padding: 20px;
-            border-radius: 10px;
-            color: black;
+            font-size:{font_size}px;
+            line-height:2.5;
+            letter-spacing:2px;
+            background-color:#f4f4f4;
+            padding:25px;
+            border-radius:15px;
+            color:black;
         ">
         {display_text}
         </div>
         """, unsafe_allow_html=True)
-        
+
 # ---------------------------------------------------
-# QUIZ (KAHOOT STYLE + TIMER + LEADERBOARD)
+# QUIZ
 # ---------------------------------------------------
+
 elif feature == lang["quiz"]:
 
-    import random
-    import speech_recognition as sr
-    import tempfile
+    st.header("🎯 Smart AI Quiz")
 
-    st.header("🎯 KBC Style Smart Quiz (No Repeat)")
+    name = st.text_input("👤 Enter Name")
 
-    name = st.text_input("👤 Enter Your Name")
     topic = st.text_input("📘 Enter Topic")
 
-    # SESSION
-    if "started" not in st.session_state:
-        st.session_state.started = False
-    if "q_no" not in st.session_state:
-        st.session_state.q_no = 1
-    if "score" not in st.session_state:
-        st.session_state.score = 0
-    if "used_q" not in st.session_state:
-        st.session_state.used_q = []
-
-    # ---------------------------
-    # LARGE QUESTION BANK (DYNAMIC)
-    # ---------------------------
     def generate_question(topic):
 
-        question_types = [
+        questions = [
 
-            f"What is the primary purpose of {topic}?",
-            f"Which of the following best defines {topic}?",
-            f"How is {topic} used in real-world applications?",
-            f"What makes {topic} important in modern systems?",
-            f"Which scenario is an example of {topic}?",
-            f"What is a limitation of {topic}?",
-            f"How does {topic} improve efficiency?",
-            f"Which field benefits the most from {topic}?",
-            f"What distinguishes {topic} from traditional approaches?",
-            f"Why is {topic} widely adopted today?",
-            f"What is a key component of {topic}?",
-            f"What problem does {topic} solve?",
-            f"Which statement about {topic} is correct?",
-            f"What happens when {topic} is applied?",
-            f"What is the future scope of {topic}?",
-            f"Which industry uses {topic} the most?",
-            f"What is the role of data in {topic}?",
-            f"How does {topic} impact decision making?",
-            f"What is a real-life example of {topic}?",
-            f"What is the biggest advantage of {topic}?"
+            f"What is the purpose of {topic}?",
+
+            f"Why is {topic} important?",
+
+            f"What is an application of {topic}?",
+
+            f"Which industry uses {topic}?"
         ]
 
-        # REMOVE USED QUESTIONS
-        remaining = list(set(question_types) - set(st.session_state.used_q))
+        q_text = random.choice(questions)
 
-        if not remaining:
-            st.session_state.used_q = []
-            remaining = question_types
+        correct = f"{topic} improves intelligent automation"
 
-        q_text = random.choice(remaining)
-        st.session_state.used_q.append(q_text)
-
-        # SMART OPTIONS (CONFUSING)
-        correct = f"{topic} enables intelligent and automated decision-making"
-
-        distractors = [
-            f"{topic} works only manually without automation",
-            f"{topic} has no practical real-world use",
-            f"{topic} completely replaces human intelligence"
+        options = [
+            correct,
+            f"{topic} removes all human jobs",
+            f"{topic} has no practical use",
+            f"{topic} works only offline"
         ]
 
-        options = [correct] + distractors
         random.shuffle(options)
 
         return q_text, options, correct
 
-    # ---------------------------
-    # START QUIZ
-    # ---------------------------
-    if st.button("🚀 Start Quiz") and topic and name:
+    if st.button("🚀 Start Quiz"):
 
         st.session_state.started = True
         st.session_state.q_no = 1
         st.session_state.score = 0
-        st.session_state.used_q = []
 
-    # ---------------------------
-    # QUIZ FLOW
-    # ---------------------------
     if st.session_state.started:
 
-        if st.session_state.q_no > 15:
-            st.success(f"🏆 Final Score: {st.session_state.score}/15")
+        if st.session_state.q_no > 10:
+
+            st.success(
+                f"🏆 Final Score: {st.session_state.score}/10"
+            )
+
             st.session_state.started = False
+
             st.stop()
 
         q_text, options, correct = generate_question(topic)
 
-        st.markdown(f"### 🎤 Question {st.session_state.q_no}/20")
-        st.subheader(q_text)
+        st.subheader(
+            f"Question {st.session_state.q_no}/10"
+        )
 
-        selected = st.radio("Choose Answer", options)
+        st.write(q_text)
 
-        # 🎙️ VOICE
-        st.markdown("🎙️ Speak Answer (Optional)")
-        audio = st.audio_input("Record")
+        selected = st.radio(
+            "Choose Answer",
+            options
+        )
 
-        spoken = ""
-
-        if audio:
-            with tempfile.NamedTemporaryFile(delete=False) as tmp:
-                tmp.write(audio.read())
-                path = tmp.name
-
-            r = sr.Recognizer()
-
-            try:
-                with sr.AudioFile(path) as source:
-                    data = r.record(source)
-                    spoken = r.recognize_google(data)
-
-                st.info(f"🗣️ You said: {spoken}")
-
-            except:
-                st.warning("Voice not clear")
-
-        # SUBMIT
         if st.button("✅ Submit"):
 
-            final = selected
+            if selected == correct:
 
-            for opt in options:
-                if opt.lower() in spoken.lower():
-                    final = opt
+                st.success("✅ Correct")
 
-            if final == correct:
-                st.success("✅ Correct!")
                 st.session_state.score += 1
+
             else:
+
                 st.error("❌ Wrong")
-                st.write(f"✔ Correct: {correct}")
+
+                st.write(
+                    f"Correct Answer: {correct}"
+                )
 
             st.session_state.q_no += 1
+
             st.rerun()
 
-        # PROGRESS
-        st.progress(st.session_state.q_no / 15)
-        st.write(f"📊 Score: {st.session_state.score}")
-            
+        st.progress(
+            st.session_state.q_no / 10
+        )
+
+        st.write(
+            f"📊 Score: {st.session_state.score}"
+        )
+
 # ---------------------------------------------------
 # ACCESSIBILITY
 # ---------------------------------------------------
@@ -553,7 +567,33 @@ elif feature == lang["accessibility"]:
 
     st.header("♿ Accessibility Support")
 
-    st.write("👁️ Blind → Audio + screen reader")
-    st.write("👂 Deaf → Text UI")
-    st.write("🗣️ Speech impaired → Text input")
-    st.write("🦽 Mobility → Large UI")
+    accessibility_features = [
+
+        "👁️ Blind → Audio Support",
+
+        "👂 Deaf → Text Interface",
+
+        "🗣️ Speech Impaired → Text Input",
+
+        "🦽 Mobility Support → Large UI",
+
+        "📖 Dyslexia-Friendly Reading",
+
+        "🌍 28 Language Translation",
+
+        "🔠 Adjustable Fonts"
+    ]
+
+    for item in accessibility_features:
+
+        try:
+
+            translated = translator.translate(
+                item,
+                dest=target_lang
+            ).text
+
+            st.write(translated)
+
+        except:
+            st.write(item)
