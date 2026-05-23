@@ -940,7 +940,7 @@ elif feature == lang["quiz"]:
 
             st.session_state.quiz_data.append(q)
 
-    # -----------------------------------------
+# -----------------------------------------
 # DISPLAY QUIZ
 # -----------------------------------------
 
@@ -1068,10 +1068,10 @@ if st.session_state.quiz_started:
     ) * 2
 
     st.header(
-        translate_text(
-            f"🎯 Final Score: {st.session_state.quiz_score}/{total_score}"
-        )
-    )        )
+    translate_text(
+        f"🎯 Final Score: {st.session_state.quiz_score}/{total_score}"
+    )
+)
         
 # ---------------------------------------------------
 # ACCESSIBILITY
