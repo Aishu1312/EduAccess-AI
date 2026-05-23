@@ -368,87 +368,177 @@ through accessibility and smart learning systems.
         </div>
         """, unsafe_allow_html=True)
 
-# -----------------------------------------
-# SMART UNIVERSAL AI RESPONSE
-# -----------------------------------------
+# ---------------------------------------------------
+# SPEECH TO TEXT
+# ---------------------------------------------------
 
-if answer_type == translate_text("Short"):
+elif feature == lang["speech"]:
 
-    answer = f"""
-Question:
-{text}
+    st.header(
+        translate_text("🎤 Speech-to-Text")
+    )
 
-Answer:
-{text} is an important concept related to education, science, or technology.
+    st.write(
+        translate_text(
+            "Convert speech into text and get AI-powered explanations."
+        )
+    )
 
-It helps improve understanding, problem-solving, and practical applications in real life.
+    # -----------------------------------------
+    # EXPLANATION TYPE
+    # -----------------------------------------
+
+    answer_type = st.selectbox(
+        translate_text("📚 Select Explanation Type"),
+        [
+            translate_text("Short"),
+            translate_text("Medium"),
+            translate_text("Detailed")
+        ]
+    )
+
+    # -----------------------------------------
+    # AUDIO INPUT
+    # -----------------------------------------
+
+    audio = st.audio_input(
+        translate_text("🎙️ Record Voice")
+    )
+
+    uploaded_file = st.file_uploader(
+        translate_text("📂 Upload Audio"),
+        type=["wav", "mp3", "m4a"]
+    )
+
+    source = audio if audio else uploaded_file
+
+    # -----------------------------------------
+    # PROCESS AUDIO
+    # -----------------------------------------
+
+    if source:
+
+        with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=".wav"
+        ) as tmp:
+
+            tmp.write(source.read())
+            audio_path = tmp.name
+
+        recognizer = sr.Recognizer()
+
+        try:
+
+            with sr.AudioFile(audio_path) as src:
+
+                audio_data = recognizer.record(src)
+
+                text = recognizer.recognize_google(
+                    audio_data
+                )
+
+            # -----------------------------------------
+            # QUESTION
+            # -----------------------------------------
+
+            st.subheader(
+                translate_text("📝 Your Question")
+            )
+
+            st.info(text)
+
+        except:
+
+            text = ""
+
+            st.error(
+                translate_text(
+                    "❌ Could not understand audio."
+                )
+            )
+
+        # -----------------------------------------
+        # AI RESPONSE
+        # -----------------------------------------
+
+        if text:
+
+            st.subheader(
+                translate_text(
+                    "🤖 AI Explanation"
+                )
+            )
+
+            # SHORT
+            if answer_type == translate_text("Short"):
+
+                answer = f"""
+{text} is an important educational or technological concept.
 
 Real-world Example:
-Students and professionals use {text} concepts in schools, industries, healthcare, business, and modern technology systems.
+{text} is used in schools, industries, healthcare, and smart applications.
 """
 
-elif answer_type == translate_text("Medium"):
+            # MEDIUM
+            elif answer_type == translate_text("Medium"):
 
-    answer = f"""
-Question:
-{text}
-
-Answer:
-{text} is a widely used concept in academics and real-world applications. It plays an important role in improving efficiency, learning, automation, and decision-making.
+                answer = f"""
+{text} is widely used in education, science, and technology.
 
 Key Points:
-• Helps solve practical problems
-• Improves productivity
-• Used in multiple industries
-• Supports innovation and smart systems
+• Improves learning and efficiency
+• Helps solve real-world problems
+• Supports innovation and automation
 
 Real-world Examples:
-• Education platforms
-• Smart applications
+• Smart learning platforms
 • Healthcare systems
-• Banking and finance
-• Communication technologies
-
-Understanding {text} helps students build stronger conceptual and technical knowledge.
+• AI applications
+• Banking technologies
 """
 
-else:
+            # DETAILED
+            else:
 
-    answer = f"""
-Question:
-{text}
-
-Answer:
-{text} is an important topic that contributes significantly to modern education, science, engineering, and technology. It is used to improve human efficiency, automate tasks, enhance learning experiences, and solve complex real-world problems.
+                answer = f"""
+{text} is an important concept used in academics and modern industries.
 
 Detailed Explanation:
-• It supports innovation and smart decision-making
-• It improves productivity and accessibility
-• It is widely applied in industries and academics
-• It enhances automation and digital transformation
+• Helps improve productivity
+• Supports automation and smart systems
+• Enhances problem-solving and learning
 
 Advantages:
-• Faster problem-solving
-• Better learning support
+• Better efficiency
 • Improved accessibility
-• Real-time assistance and automation
+• Faster processing
+• Smart decision-making
 
 Real-world Examples:
-• AI-powered educational platforms
-• Smart healthcare systems
-• Banking and online transactions
-• Voice assistants like Alexa and Siri
-• Recommendation systems like YouTube and Netflix
+• Educational AI systems
+• Voice assistants
+• Healthcare technologies
+• Recommendation systems
+• Banking and finance platforms
 
-Learning about {text} helps students understand how modern technologies and systems work in everyday life.
+Learning about {text} helps students understand how modern systems and technologies work in daily life.
 """
 
-# -----------------------------------------
-# TRANSLATE ANSWER
-# -----------------------------------------
+            translated_answer = translate_text(answer)
 
-translated_answer = translate_text(answer)
-
+            st.markdown(f"""
+            <div style="
+                background-color:#0f172a;
+                padding:20px;
+                border-radius:15px;
+                color:white;
+                font-size:{font_size}px;
+                line-height:2;
+            ">
+            {translated_answer}
+            </div>
+            """, unsafe_allow_html=True)
 # ---------------------------------------------------
 # DYSLEXIA MODE
 # ---------------------------------------------------
