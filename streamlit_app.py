@@ -803,22 +803,25 @@ elif feature == lang["quiz"]:
         5
     )
 
-    # -----------------------------------------
-    # SESSION STATE
-    # -----------------------------------------
+   # -----------------------------------------
+# SESSION STATE
+# -----------------------------------------
 
-    if "quiz_started" not in st.session_state:
-        st.session_state.quiz_started = False
+if "quiz_started" not in st.session_state:
+    st.session_state.quiz_started = False
 
-    if "quiz_score" not in st.session_state:
-        st.session_state.quiz_score = 0
+if "quiz_score" not in st.session_state:
+    st.session_state.quiz_score = 0
 
-    if "quiz_data" not in st.session_state:
-        st.session_state.quiz_data = []
+if "quiz_data" not in st.session_state:
+    st.session_state.quiz_data = []
 
-    if "answer_feedback" not in st.session_state:
+if "answered" not in st.session_state:
+    st.session_state.answered = {}
+
+if "answer_feedback" not in st.session_state:
     st.session_state.answer_feedback = {}
-
+    
     # -----------------------------------------
     # GENERATE QUIZ
     # -----------------------------------------
