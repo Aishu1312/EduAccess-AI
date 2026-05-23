@@ -980,8 +980,6 @@ if idx in st.session_state.answer_feedback:
             )
         )
 
-        st.balloons()
-
     else:
 
         st.error(
@@ -1007,28 +1005,16 @@ if idx in st.session_state.answer_feedback:
             f"🏆 Points Achieved: {feedback['score']}"
         )
     )
-            
-            selected = st.radio(
-                translate_text("Choose Answer"),
-                translated_options,
-                key=f"radio_{idx}"
-            )
 
-            if st.button(
-    translate_text(f"✅ Submit Answer {idx+1}"),
-    key=f"submit_{idx}"
-):
+# -----------------------------------------
+# ANSWER OPTIONS
+# -----------------------------------------
 
-    if idx not in st.session_state.answered:
-
-        correct_translated = translate_text(
-            q["correct"]
-        )
-
-        is_correct = (
-            selected == correct_translated
-        )
-
+selected = st.radio(
+    translate_text("Choose Answer"),
+    translated_options,
+    key=f"radio_{idx}"
+)
         # ---------------------------------
         # SCORE
         # ---------------------------------
