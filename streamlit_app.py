@@ -18,20 +18,24 @@ st.set_page_config(
 # SESSION STATE
 # ---------------------------------------------------
 
-if "score" not in st.session_state:
-    st.session_state.score = 0
+session_defaults = {
+    "summary": "",
+    "quiz_started": False,
+    "quiz_score": 0,
+    "quiz_data": [],
+    "answer_feedback": {},
+    "quiz_history": [],
+    "last_feature": "",
+    "notes_history": [],
+    "speech_history": []
+}
 
-if "summary" not in st.session_state:
-    st.session_state.summary = ""
-
-if "started" not in st.session_state:
-    st.session_state.started = False
-
-if "q_no" not in st.session_state:
-    st.session_state.q_no = 1
+for key, value in session_defaults.items():
+    if key not in st.session_state:
+        st.session_state[key] = value
 
 # ---------------------------------------------------
-# 28 LANGUAGES
+# LANGUAGES
 # ---------------------------------------------------
 
 LANGUAGES = {
@@ -96,12 +100,12 @@ def translate_text(text):
 # ---------------------------------------------------
 
 base_text = {
-   "title": "🚀 EduAccess AI",
+    "title": "🚀 EduAccess AI",
     "subtitle": "AI-Powered Accessibility Platform",
     "choose_feature": "Choose Feature",
     "home": "🏠 Home",
     "summarizer": "🧠 AI Notes Summarizer",
-    "speech": "🎤 Speech Assistant",
+    "speech": "🎤 Speech-to-Text",
     "dyslexia": "📖 Dyslexia Mode",
     "quiz": "❓ Quiz Generator",
     "accessibility": "♿ Accessibility Support",
@@ -144,6 +148,22 @@ feature = st.sidebar.selectbox(
         lang["accessibility"]
     ]
 )
+
+# ---------------------------------------------------
+# RESET QUIZ WHEN LEAVING QUIZ PAGE
+# ---------------------------------------------------
+
+if (
+    st.session_state.last_feature == lang["quiz"]
+    and feature != lang["quiz"]
+):
+
+    st.session_state.quiz_started = False
+    st.session_state.quiz_score = 0
+    st.session_state.quiz_data = []
+    st.session_state.answer_feedback = {}
+
+st.session_state.last_feature = feature
 
 # ---------------------------------------------------
 # HIGH CONTRAST MODE
@@ -196,7 +216,7 @@ if feature == lang["home"]:
 
         st.success(
             translate_text(
-                "🎤 Speech Assistant"
+                "🎤 Speech-to-Text"
             )
         )
 
@@ -232,58 +252,6 @@ if feature == lang["home"]:
             )
         )
 
-    st.markdown("---")
-
-    st.header(
-        translate_text(
-            "♿ Accessibility Features"
-        )
-    )
-
-    features = [
-
-        "👁️ Blind Support → Audio + Screen Reader",
-
-        "👂 Deaf Support → Text Interface",
-
-        "🗣️ Speech Assistance",
-
-        "📖 Dyslexia-Friendly Reading",
-
-        "🌍 28 Language Support",
-
-        "🔠 Adjustable Font Size",
-
-        "🌗 High Contrast Mode"
-    ]
-
-    for item in features:
-        st.write(
-            translate_text(item)
-        )
-
-    st.markdown("---")
-
-    st.header(lang["future"])
-
-    future = [
-
-        "🔹 Real-Time Sign Language Recognition",
-
-        "🔹 AI Career Guidance",
-
-        "🔹 Personalized AI Tutor",
-
-        "🔹 Emotion-Aware Learning",
-
-        "🔹 Offline Learning Support"
-    ]
-
-    for item in future:
-        st.write(
-            translate_text(item)
-        )
-
 # ---------------------------------------------------
 # SUMMARIZER
 # ---------------------------------------------------
@@ -291,10 +259,19 @@ if feature == lang["home"]:
 elif feature == lang["summarizer"]:
 
     st.header(
-        translate_text(
-            "🧠 AI Notes Summarizer"
-        )
+        translate_text("🧠 AI Notes Summarizer")
     )
+
+    col1, col2 = st.columns([1, 1])
+
+    with col1:
+
+        if st.button(
+            translate_text("🆕 New Notes")
+        ):
+
+            st.session_state.summary = ""
+            st.rerun()
 
     sample_text = """
 Artificial Intelligence is transforming education
@@ -302,28 +279,18 @@ through accessibility and smart learning systems.
 """
 
     text = st.text_area(
-        translate_text(
-            "📌 Paste Notes Here"
-        ),
+        translate_text("📌 Paste Notes Here"),
         value=sample_text,
         height=250
     )
 
     summary_length = st.selectbox(
-        translate_text(
-            "📏 Select Summary Length"
-        ),
-        [
-            "Short",
-            "Medium",
-            "Detailed"
-        ]
+        translate_text("📏 Select Summary Length"),
+        ["Short", "Medium", "Detailed"]
     )
 
     if st.button(
-        translate_text(
-            "🚀 Generate Summary"
-        )
+        translate_text("🚀 Generate Summary")
     ):
 
         sentences = [
@@ -341,18 +308,18 @@ through accessibility and smart learning systems.
         else:
             num = len(sentences)
 
-        summary = ". ".join(
-            sentences[:num]
-        ) + "."
+        summary = ". ".join(sentences[:num]) + "."
 
-        summary = translate_text(summary)
+        translated_summary = translate_text(summary)
 
-        st.session_state.summary = summary
+        st.session_state.summary = translated_summary
+
+        st.session_state.notes_history.append(
+            translated_summary
+        )
 
         st.success(
-            translate_text(
-                "✅ Summary Generated"
-            )
+            translate_text("✅ Summary Generated")
         )
 
         st.markdown(f"""
@@ -364,9 +331,23 @@ through accessibility and smart learning systems.
             font-size:{font_size}px;
             line-height:2;
         ">
-        {summary}
+        {translated_summary}
         </div>
         """, unsafe_allow_html=True)
+
+    if st.session_state.notes_history:
+
+        st.markdown("---")
+
+        st.subheader(
+            translate_text("📘 Notes History")
+        )
+
+        for item in reversed(
+            st.session_state.notes_history
+        ):
+
+            st.info(item)
 
 # ---------------------------------------------------
 # SPEECH TO TEXT
@@ -378,28 +359,20 @@ elif feature == lang["speech"]:
         translate_text("🎤 Speech-to-Text")
     )
 
-    st.write(
-        translate_text(
-            "Convert speech into text and get smart AI explanations."
-        )
-    )
+    col1, col2 = st.columns([1, 1])
 
-    # -----------------------------------------
-    # EXPLANATION TYPE
-    # -----------------------------------------
+    with col1:
+
+        if st.button(
+            translate_text("🆕 New Speech")
+        ):
+
+            st.rerun()
 
     answer_type = st.selectbox(
         translate_text("📚 Select Explanation Type"),
-        [
-            "Short",
-            "Medium",
-            "Detailed"
-        ]
+        ["Short", "Medium", "Detailed"]
     )
-
-    # -----------------------------------------
-    # AUDIO INPUT
-    # -----------------------------------------
 
     audio = st.audio_input(
         translate_text("🎙️ Record Voice")
@@ -411,10 +384,6 @@ elif feature == lang["speech"]:
     )
 
     source = audio if audio else uploaded_file
-
-    # -----------------------------------------
-    # PROCESS AUDIO
-    # -----------------------------------------
 
     if source:
 
@@ -454,278 +423,63 @@ elif feature == lang["speech"]:
                 )
             )
 
-        # -----------------------------------------
-        # SMART AI ANSWER
-        # -----------------------------------------
-
         if text:
 
             st.subheader(
-                translate_text(
-                    "🤖 AI Explanation"
-                )
+                translate_text("🤖 AI Explanation")
             )
 
-            query = text.lower()
+            if answer_type == "Short":
 
-            # -----------------------------------------
-            # EXCEL
-            # -----------------------------------------
-
-            if "excel" in query:
-
-                if answer_type == "Short":
-
-                    answer = """
-Microsoft Excel is a spreadsheet software used for calculations and data analysis.
+                answer = f"""
+{text} is an important topic.
 
 Real-world Example:
-Companies use Excel for salary sheets and reports.
+Used in education, business, and technology.
 """
 
-                elif answer_type == "Medium":
+            elif answer_type == "Medium":
 
-                    answer = """
-Microsoft Excel is a spreadsheet application used to organize, calculate, and analyze data.
-
-Features:
-• Formulas
-• Charts
-• Tables
-• Data analysis
-
-Real-world Examples:
-• Student marksheets
-• Budget planning
-• Attendance records
-"""
-
-                else:
-
-                    answer = """
-Microsoft Excel is a powerful spreadsheet software developed by Microsoft used for calculations, reporting, data analysis, and visualization.
-
-Advantages:
-• Fast calculations
-• Data organization
-• Graphs and charts
-• Business analytics
-
-Real-world Examples:
-• Banking reports
-• Salary management
-• Inventory tracking
-• Educational result systems
-
-Excel is widely used in education, accounting, business, and data analytics.
-"""
-
-            # -----------------------------------------
-            # AI
-            # -----------------------------------------
-
-            elif "ai" in query or "artificial intelligence" in query:
-
-                if answer_type == "Short":
-
-                    answer = """
-Artificial Intelligence enables machines to think and learn like humans.
-
-Real-world Example:
-ChatGPT and Alexa use AI technology.
-"""
-
-                elif answer_type == "Medium":
-
-                    answer = """
-Artificial Intelligence (AI) allows machines to perform tasks that normally require human intelligence.
-
-Applications:
-• Chatbots
-• Voice assistants
-• Healthcare systems
-
-Real-world Examples:
-• Siri
-• Netflix recommendations
-• Self-driving cars
-"""
-
-                else:
-
-                    answer = """
-Artificial Intelligence (AI) is a branch of computer science that enables machines to simulate human intelligence.
-
-AI systems can:
-• Learn from data
-• Solve problems
-• Recognize speech
-• Make decisions
-
-Advantages:
-• Automation
-• Faster processing
-• Smart learning
-• Better accessibility
-
-Real-world Examples:
-• ChatGPT
-• Alexa
-• Medical diagnosis systems
-• Autonomous vehicles
-
-AI is transforming education, healthcare, banking, and transportation industries.
-"""
-
-            # -----------------------------------------
-            # PHOTOSYNTHESIS
-            # -----------------------------------------
-
-            elif "photosynthesis" in query:
-
-                if answer_type == "Short":
-
-                    answer = """
-Photosynthesis is the process by which plants make food using sunlight.
-
-Real-world Example:
-Plants produce oxygen through photosynthesis.
-"""
-
-                elif answer_type == "Medium":
-
-                    answer = """
-Photosynthesis is a biological process where plants convert sunlight into food.
-
-Requirements:
-• Sunlight
-• Water
-• Carbon dioxide
-
-Real-world Example:
-Plants help maintain oxygen balance on Earth.
-"""
-
-                else:
-
-                    answer = """
-Photosynthesis is the process by which green plants prepare food using sunlight, water, and carbon dioxide.
-
-Importance:
-• Produces oxygen
-• Supports food chains
-• Maintains ecosystem balance
-
-Real-world Examples:
-• Crop growth
-• Forest ecosystems
-• Oxygen production
-
-Photosynthesis is essential for life on Earth.
-"""
-
-            # -----------------------------------------
-            # CLOUD COMPUTING
-            # -----------------------------------------
-
-            elif "cloud computing" in query:
-
-                if answer_type == "Short":
-
-                    answer = """
-Cloud Computing provides online storage and computing services.
-
-Real-world Example:
-Google Drive uses cloud computing.
-"""
-
-                elif answer_type == "Medium":
-
-                    answer = """
-Cloud Computing delivers storage, software, and services through the internet.
-
-Advantages:
-• Remote access
-• Online backup
-• Scalability
-
-Real-world Examples:
-• Google Drive
-• Dropbox
-• AWS
-"""
-
-                else:
-
-                    answer = """
-Cloud Computing is a technology that provides servers, storage, databases, and software over the internet.
-
-Benefits:
-• Cost efficiency
-• Scalability
-• Data backup
-• Remote accessibility
-
-Real-world Examples:
-• Google Drive
-• Microsoft Azure
-• Amazon Web Services
-• Netflix infrastructure
-
-Cloud computing is widely used in businesses, education, and modern applications.
-"""
-
-            # -----------------------------------------
-            # DEFAULT
-            # -----------------------------------------
-
-            else:
-
-                if answer_type == "Short":
-
-                    answer = f"""
-{text} is an important concept related to education or technology.
-
-Real-world Example:
-{text} is used in real-world learning and applications.
-"""
-
-                elif answer_type == "Medium":
-
-                    answer = f"""
-{text} is an important topic used in academics and industries.
+                answer = f"""
+{text} is an important concept used in academics and industries.
 
 Key Points:
-• Improves understanding
+• Improves learning
 • Helps solve problems
 • Used in modern systems
 
 Real-world Examples:
 • Education
-• Business applications
-• Smart technologies
+• Healthcare
+• Business technologies
 """
 
-                else:
+            else:
 
-                    answer = f"""
-{text} is an important concept used in academics, science, and technology.
+                answer = f"""
+{text} is an important concept used in science, education, and technology.
 
 Advantages:
 • Better learning
 • Improved productivity
-• Smart problem-solving
+• Smart automation
+• Problem-solving
 
 Real-world Examples:
 • Educational systems
 • AI platforms
 • Healthcare technologies
-• Business software
+• Banking software
 
-Understanding {text} helps students and professionals apply knowledge in practical situations.
+Understanding {text} helps students and professionals apply concepts practically.
 """
 
             translated_answer = translate_text(answer)
+
+            st.session_state.speech_history.append({
+                "question": text,
+                "answer": translated_answer
+            })
 
             st.markdown(f"""
             <div style="
@@ -740,6 +494,26 @@ Understanding {text} helps students and professionals apply knowledge in practic
             </div>
             """, unsafe_allow_html=True)
 
+    if st.session_state.speech_history:
+
+        st.markdown("---")
+
+        st.subheader(
+            translate_text("📜 Speech History")
+        )
+
+        for item in reversed(
+            st.session_state.speech_history
+        ):
+
+            st.info(
+                translate_text(
+                    f"Question: {item['question']}"
+                )
+            )
+
+            st.success(item["answer"])
+
 # ---------------------------------------------------
 # DYSLEXIA MODE
 # ---------------------------------------------------
@@ -747,9 +521,7 @@ Understanding {text} helps students and professionals apply knowledge in practic
 elif feature == lang["dyslexia"]:
 
     st.header(
-        translate_text(
-            "📖 Dyslexia-Friendly Reading"
-        )
+        translate_text("📖 Dyslexia-Friendly Reading")
     )
 
     if not st.session_state.summary:
@@ -777,26 +549,6 @@ elif feature == lang["dyslexia"]:
         """, unsafe_allow_html=True)
 
 # ---------------------------------------------------
-# RESET QUIZ WHEN LEAVING QUIZ PAGE
-# ---------------------------------------------------
-
-if "last_feature" not in st.session_state:
-    st.session_state.last_feature = ""
-
-if (
-    st.session_state.last_feature == lang["quiz"]
-    and feature != lang["quiz"]
-):
-
-    st.session_state.quiz_started = False
-    st.session_state.quiz_score = 0
-    st.session_state.quiz_data = []
-    st.session_state.answer_feedback = {}
-    st.session_state.answered = {}
-
-st.session_state.last_feature = feature
-
-# ---------------------------------------------------
 # QUIZ GENERATOR
 # ---------------------------------------------------
 
@@ -805,10 +557,6 @@ elif feature == lang["quiz"]:
     st.header(
         translate_text("❓ AI Quiz Generator")
     )
-
-    # ---------------------------------------------------
-    # NEW QUIZ BUTTON
-    # ---------------------------------------------------
 
     col1, col2 = st.columns(2)
 
@@ -822,8 +570,6 @@ elif feature == lang["quiz"]:
             st.session_state.quiz_score = 0
             st.session_state.quiz_data = []
             st.session_state.answer_feedback = {}
-            st.session_state.answered = {}
-
             st.rerun()
 
     exam = st.text_input(
@@ -841,137 +587,41 @@ elif feature == lang["quiz"]:
         5
     )
 
-    # ---------------------------------------------------
-    # SESSION STATE
-    # ---------------------------------------------------
-
-    if "quiz_started" not in st.session_state:
-        st.session_state.quiz_started = False
-
-    if "quiz_score" not in st.session_state:
-        st.session_state.quiz_score = 0
-
-    if "quiz_data" not in st.session_state:
-        st.session_state.quiz_data = []
-
-    if "answered" not in st.session_state:
-        st.session_state.answered = {}
-
-    if "answer_feedback" not in st.session_state:
-        st.session_state.answer_feedback = {}
-
-    if "quiz_history" not in st.session_state:
-        st.session_state.quiz_history = []
-
-    # ---------------------------------------------------
-    # GENERATE QUIZ
-    # ---------------------------------------------------
-
     if st.button(
         translate_text("🚀 Generate Quiz")
     ):
 
         st.session_state.quiz_started = True
         st.session_state.quiz_score = 0
-        st.session_state.answered = {}
         st.session_state.answer_feedback = {}
 
-        question_bank = [
+        question_bank = []
 
-            {
+        for i in range(15):
+
+            question_bank.append({
+
                 "question":
-                f"What is the primary purpose of {topic}?",
+                f"What is the importance of {topic}?",
 
                 "correct":
-                f"{topic} improves efficiency and automation",
+                f"{topic} supports smart digital systems",
 
                 "wrong": [
-                    f"{topic} decreases productivity",
                     f"{topic} has no practical use",
-                    f"{topic} only works manually"
+                    f"{topic} decreases productivity",
+                    f"{topic} removes innovation"
                 ],
 
                 "reason":
-                f"{topic} helps improve productivity and smart decision-making."
-            },
-
-            {
-                "question":
-                f"What is a real-world example of {topic}?",
-
-                "correct":
-                f"{topic} applications in modern industries",
-
-                "wrong": [
-                    "Stone-age communication",
-                    "No practical applications",
-                    "Only handwritten systems"
-                ],
-
-                "reason":
-                f"{topic} is widely used in education, healthcare, business, and technology."
-            },
-
-            {
-                "question":
-                f"What is an advantage of {topic}?",
-
-                "correct":
-                "Improved efficiency and accuracy",
-
-                "wrong": [
-                    "Reduced performance",
-                    "No accessibility",
-                    "Manual-only operation"
-                ],
-
-                "reason":
-                f"{topic} improves productivity and reduces human effort."
-            },
-
-            {
-                "question":
-                f"Why is {topic} important today?",
-
-                "correct":
-                "It supports smart digital systems",
-
-                "wrong": [
-                    "It removes innovation",
-                    "It has no modern use",
-                    "It reduces automation"
-                ],
-
-                "reason":
-                f"{topic} is important for automation and digital transformation."
-            },
-
-            {
-                "question":
-                f"What challenge exists in {topic}?",
-
-                "correct":
-                "Implementation and maintenance",
-
-                "wrong": [
-                    "No challenges exist",
-                    "It works perfectly everywhere",
-                    "No resources are needed"
-                ],
-
-                "reason":
-                f"Every technology requires maintenance and proper implementation."
-            }
-
-        ]
+                f"{topic} improves automation, productivity, and modern learning."
+            })
 
         random.shuffle(question_bank)
 
-        selected_questions = question_bank[:num_questions]
+        st.session_state.quiz_data = question_bank[:num_questions]
 
-        st.session_state.quiz_data = []
-
-        for q in selected_questions:
+        for q in st.session_state.quiz_data:
 
             options = [q["correct"]] + q["wrong"]
 
@@ -979,15 +629,11 @@ elif feature == lang["quiz"]:
 
             q["options"] = options
 
-            st.session_state.quiz_data.append(q)
-
-    # ---------------------------------------------------
-    # DISPLAY QUIZ
-    # ---------------------------------------------------
-
     if st.session_state.quiz_started:
 
-        for idx, q in enumerate(st.session_state.quiz_data):
+        for idx, q in enumerate(
+            st.session_state.quiz_data
+        ):
 
             st.markdown("---")
 
@@ -995,23 +641,16 @@ elif feature == lang["quiz"]:
                 f"Q{idx+1}. {translate_text(q['question'])}"
             )
 
-            translated_options = []
-
-            for opt in q["options"]:
-
-                translated_options.append(
-                    translate_text(opt)
-                )
+            translated_options = [
+                translate_text(opt)
+                for opt in q["options"]
+            ]
 
             selected = st.radio(
                 translate_text("Choose Answer"),
                 translated_options,
                 key=f"radio_{idx}"
             )
-
-            # ---------------------------------------------------
-            # SUBMIT ANSWER
-            # ---------------------------------------------------
 
             if st.button(
                 translate_text(f"Submit Q{idx+1}"),
@@ -1026,54 +665,25 @@ elif feature == lang["quiz"]:
                     selected == correct_translated
                 )
 
-                # ---------------------------------------------------
-                # SCORE
-                # ---------------------------------------------------
-
                 if is_correct:
 
                     st.session_state.quiz_score += 2
 
-                # ---------------------------------------------------
-                # SAVE FEEDBACK
-                # ---------------------------------------------------
-
                 st.session_state.answer_feedback[idx] = {
 
                     "correct": is_correct,
-
-                    "correct_answer":
-                    q["correct"],
-
-                    "reason":
-                    q["reason"],
-
-                    "score":
-                    st.session_state.quiz_score
+                    "correct_answer": q["correct"],
+                    "reason": q["reason"],
+                    "points": 2 if is_correct else 0
                 }
-
-                # ---------------------------------------------------
-                # SAVE HISTORY
-                # ---------------------------------------------------
 
                 st.session_state.quiz_history.append({
 
-                    "question":
-                    q["question"],
-
-                    "selected":
-                    selected,
-
-                    "correct":
-                    q["correct"],
-
-                    "reason":
-                    q["reason"]
+                    "question": q["question"],
+                    "selected": selected,
+                    "correct": q["correct"],
+                    "reason": q["reason"]
                 })
-
-            # ---------------------------------------------------
-            # SHOW FEEDBACK
-            # ---------------------------------------------------
 
             if idx in st.session_state.answer_feedback:
 
@@ -1111,7 +721,7 @@ elif feature == lang["quiz"]:
 
                 st.success(
                     translate_text(
-                        f"🏆 Points Achieved: {feedback['score']}"
+                        f"🏆 Points Achieved: {feedback['points']}"
                     )
                 )
 
@@ -1126,10 +736,6 @@ elif feature == lang["quiz"]:
                 f"🎯 Final Score: {st.session_state.quiz_score}/{total_score}"
             )
         )
-
-        # ---------------------------------------------------
-        # QUIZ HISTORY
-        # ---------------------------------------------------
 
         st.markdown("---")
 
@@ -1164,7 +770,7 @@ elif feature == lang["quiz"]:
                     f"Reason: {item['reason']}"
                 )
             )
-        
+
 # ---------------------------------------------------
 # ACCESSIBILITY
 # ---------------------------------------------------
@@ -1180,17 +786,11 @@ elif feature == lang["accessibility"]:
     accessibility_features = [
 
         "👁️ Blind → Audio Support",
-
         "👂 Deaf → Text Interface",
-
         "🗣️ Speech Impaired → Text Input",
-
         "🦽 Mobility Support → Large UI",
-
         "📖 Dyslexia-Friendly Reading",
-
         "🌍 28 Language Translation",
-
         "🔠 Adjustable Fonts"
     ]
 
