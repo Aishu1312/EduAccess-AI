@@ -782,8 +782,6 @@ elif feature == lang["dyslexia"]:
 
 elif feature == lang["quiz"]:
 
-    import random
-
     st.header(
         translate_text("❓ AI Quiz Generator")
     )
@@ -851,7 +849,7 @@ elif feature == lang["quiz"]:
                 ],
 
                 "reason":
-                f"{topic} helps improve productivity, automation, and smart decision-making."
+                f"{topic} helps improve productivity and smart decision-making."
             },
 
             {
@@ -940,138 +938,132 @@ elif feature == lang["quiz"]:
 
             st.session_state.quiz_data.append(q)
 
-# -----------------------------------------
-# DISPLAY QUIZ
-# -----------------------------------------
+    # -----------------------------------------
+    # DISPLAY QUIZ
+    # -----------------------------------------
 
-if st.session_state.quiz_started:
+    if st.session_state.quiz_started:
 
-    for idx, q in enumerate(st.session_state.quiz_data):
+        for idx, q in enumerate(st.session_state.quiz_data):
 
-        st.markdown("---")
+            st.markdown("---")
 
-        st.subheader(
-            f"Q{idx+1}. {translate_text(q['question'])}"
-        )
-
-        translated_options = []
-
-        for opt in q["options"]:
-
-            translated_options.append(
-                translate_text(opt)
+            st.subheader(
+                f"Q{idx+1}. {translate_text(q['question'])}"
             )
 
-        # -----------------------------------------
-        # ANSWER OPTIONS
-        # -----------------------------------------
+            translated_options = []
 
-        selected = st.radio(
-            translate_text("Choose Answer"),
-            translated_options,
-            key=f"radio_{idx}"
-        )
+            for opt in q["options"]:
 
-        # -----------------------------------------
-        # SUBMIT BUTTON
-        # -----------------------------------------
+                translated_options.append(
+                    translate_text(opt)
+                )
 
-        if st.button(
-            translate_text(f"Submit Q{idx+1}"),
-            key=f"submit_{idx}"
-        ):
-
-            correct_translated = translate_text(
-                q["correct"]
-            )
-
-            is_correct = (
-                selected == correct_translated
+            selected = st.radio(
+                translate_text("Choose Answer"),
+                translated_options,
+                key=f"radio_{idx}"
             )
 
             # -----------------------------------------
-            # SCORE
+            # SUBMIT BUTTON
             # -----------------------------------------
 
-            if is_correct:
+            if st.button(
+                translate_text(f"Submit Q{idx+1}"),
+                key=f"submit_{idx}"
+            ):
 
-                st.session_state.quiz_score += 2
+                correct_translated = translate_text(
+                    q["correct"]
+                )
+
+                is_correct = (
+                    selected == correct_translated
+                )
+
+                # -----------------------------------------
+                # SCORE
+                # -----------------------------------------
+
+                if is_correct:
+
+                    st.session_state.quiz_score += 2
+
+                # -----------------------------------------
+                # SAVE FEEDBACK
+                # -----------------------------------------
+
+                st.session_state.answer_feedback[idx] = {
+
+                    "correct": is_correct,
+
+                    "correct_answer":
+                    q["correct"],
+
+                    "reason":
+                    q["reason"],
+
+                    "score":
+                    st.session_state.quiz_score
+                }
 
             # -----------------------------------------
-            # SAVE FEEDBACK
+            # SHOW FEEDBACK
             # -----------------------------------------
 
-            st.session_state.answer_feedback[idx] = {
+            if idx in st.session_state.answer_feedback:
 
-                "correct": is_correct,
+                feedback = st.session_state.answer_feedback[idx]
 
-                "correct_answer":
-                q["correct"],
+                if feedback["correct"]:
 
-                "reason":
-                q["reason"],
+                    st.success(
+                        translate_text(
+                            "✅ Correct Answer"
+                        )
+                    )
 
-                "score":
-                st.session_state.quiz_score
-            }
+                    st.balloons()
 
-            st.session_state.answered[idx] = True
+                else:
 
-        # -----------------------------------------
-        # SHOW FEEDBACK BELOW OPTIONS
-        # -----------------------------------------
+                    st.error(
+                        translate_text(
+                            "❌ Wrong Answer"
+                        )
+                    )
 
-        if idx in st.session_state.answer_feedback:
+                st.info(
+                    translate_text(
+                        f"✔ Correct Answer: {feedback['correct_answer']}"
+                    )
+                )
 
-            feedback = st.session_state.answer_feedback[idx]
-
-            if feedback["correct"]:
+                st.warning(
+                    translate_text(
+                        f"📖 Reason: {feedback['reason']}"
+                    )
+                )
 
                 st.success(
                     translate_text(
-                        "✅ Correct Answer"
+                        f"🏆 Points Achieved: {feedback['score']}"
                     )
                 )
 
-                st.balloons()
+        st.markdown("---")
 
-            else:
+        total_score = len(
+            st.session_state.quiz_data
+        ) * 2
 
-                st.error(
-                    translate_text(
-                        "❌ Wrong Answer"
-                    )
-                )
-
-            st.info(
-                translate_text(
-                    f"✔ Correct Answer: {feedback['correct_answer']}"
-                )
+        st.header(
+            translate_text(
+                f"🎯 Final Score: {st.session_state.quiz_score}/{total_score}"
             )
-
-            st.warning(
-                translate_text(
-                    f"📖 Reason: {feedback['reason']}"
-                )
-            )
-
-            st.success(
-                translate_text(
-                    f"🏆 Points Achieved: {feedback['score']}"
-                )
-            )
-
-    st.markdown("---")
-
-    total_score = len(
-        st.session_state.quiz_data
-    ) * 2
-
-    st.header(
-    translate_text(
-        f"🎯 Final Score: {st.session_state.quiz_score}/{total_score}"
-    )
-)
+        )
         
 # ---------------------------------------------------
 # ACCESSIBILITY
