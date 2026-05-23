@@ -9,5 +9,4 @@ requests
 python-dotenv
 pillow
 SpeechRecognition
-streamlit
 openai
