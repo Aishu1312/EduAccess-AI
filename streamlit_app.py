@@ -941,143 +941,137 @@ elif feature == lang["quiz"]:
             st.session_state.quiz_data.append(q)
 
     # -----------------------------------------
-    # DISPLAY QUIZ
-    # -----------------------------------------
-
-    if st.session_state.quiz_started:
-
-        for idx, q in enumerate(
-            st.session_state.quiz_data
-        ):
-
-            st.markdown("---")
-
-            st.subheader(
-                f"Q{idx+1}. {translate_text(q['question'])}"
-            )
-
-            translated_options = []
-
-            for opt in q["options"]:
-
-                translated_options.append(
-                    translate_text(opt)
-                )
-
-            # -----------------------------------------
-            # SHOW PREVIOUS FEEDBACK
-            # -----------------------------------------
-
-           selected = st.radio(
-    translate_text("Choose Answer"),
-    translated_options,
-    key=f"radio_{idx}"
-)
-
-# -----------------------------------------
-# SHOW FEEDBACK BELOW OPTIONS
+# DISPLAY QUIZ
 # -----------------------------------------
 
-if idx in st.session_state.answer_feedback:
+if st.session_state.quiz_started:
 
-    feedback = st.session_state.answer_feedback[idx]
-
-    if feedback["correct"]:
-
-        st.success(
-            translate_text(
-                "✅ Correct Answer"
-            )
-        )
-
-        st.balloons()
-
-    else:
-
-        st.error(
-            translate_text(
-                "❌ Wrong Answer"
-            )
-        )
-
-    st.info(
-        translate_text(
-            f"✔ Correct Answer: {feedback['correct_answer']}"
-        )
-    )
-
-    st.warning(
-        translate_text(
-            f"📖 Reason: {feedback['reason']}"
-        )
-    )
-
-    st.success(
-        translate_text(
-            f"🏆 Points Achieved: {feedback['score']}"
-        )
-    )
-                translate_text("Choose Answer"),
-                translated_options,
-                key=f"radio_{idx}"
-            )
-
-            # -----------------------------------------
-            # SUBMIT ANSWER
-            # -----------------------------------------
-
-            if st.button(
-                translate_text(
-                    f"✅ Submit Answer {idx+1}"
-                ),
-                key=f"submit_{idx}"
-            ):
-
-                if idx not in st.session_state.answered:
-
-                    correct_translated = translate_text(
-                        q["correct"]
-                    )
-
-                    is_correct = (
-                        selected == correct_translated
-                    )
-
-                    # UPDATE SCORE
-
-                    if is_correct:
-
-                        st.session_state.quiz_score += 2
-
-                    # SAVE FEEDBACK
-
-                    st.session_state.answer_feedback[idx] = {
-
-                        "correct": is_correct,
-
-                        "correct_answer":
-                        q["correct"],
-
-                        "reason":
-                        q["reason"],
-
-                        "score":
-                        st.session_state.quiz_score
-                    }
-
-                    st.session_state.answered[idx] = True
+    for idx, q in enumerate(st.session_state.quiz_data):
 
         st.markdown("---")
 
-      total_score = len(
-    st.session_state.quiz_data
-) * 2
-
-        st.header(
-            translate_text(
-                f"🎯 Final Score: {st.session_state.quiz_score}/{total_score}"
-            )
+        st.subheader(
+            f"Q{idx+1}. {translate_text(q['question'])}"
         )
+
+        translated_options = []
+
+        for opt in q["options"]:
+
+            translated_options.append(
+                translate_text(opt)
+            )
+
+        # -----------------------------------------
+        # ANSWER OPTIONS
+        # -----------------------------------------
+
+        selected = st.radio(
+            translate_text("Choose Answer"),
+            translated_options,
+            key=f"radio_{idx}"
+        )
+
+        # -----------------------------------------
+        # SUBMIT BUTTON
+        # -----------------------------------------
+
+        if st.button(
+            translate_text(f"Submit Q{idx+1}"),
+            key=f"submit_{idx}"
+        ):
+
+            correct_translated = translate_text(
+                q["correct"]
+            )
+
+            is_correct = (
+                selected == correct_translated
+            )
+
+            # -----------------------------------------
+            # SCORE
+            # -----------------------------------------
+
+            if is_correct:
+
+                st.session_state.quiz_score += 2
+
+            # -----------------------------------------
+            # SAVE FEEDBACK
+            # -----------------------------------------
+
+            st.session_state.answer_feedback[idx] = {
+
+                "correct": is_correct,
+
+                "correct_answer":
+                q["correct"],
+
+                "reason":
+                q["reason"],
+
+                "score":
+                st.session_state.quiz_score
+            }
+
+            st.session_state.answered[idx] = True
+
+        # -----------------------------------------
+        # SHOW FEEDBACK BELOW OPTIONS
+        # -----------------------------------------
+
+        if idx in st.session_state.answer_feedback:
+
+            feedback = st.session_state.answer_feedback[idx]
+
+            if feedback["correct"]:
+
+                st.success(
+                    translate_text(
+                        "✅ Correct Answer"
+                    )
+                )
+
+                st.balloons()
+
+            else:
+
+                st.error(
+                    translate_text(
+                        "❌ Wrong Answer"
+                    )
+                )
+
+            st.info(
+                translate_text(
+                    f"✔ Correct Answer: {feedback['correct_answer']}"
+                )
+            )
+
+            st.warning(
+                translate_text(
+                    f"📖 Reason: {feedback['reason']}"
+                )
+            )
+
+            st.success(
+                translate_text(
+                    f"🏆 Points Achieved: {feedback['score']}"
+                )
+            )
+
+    st.markdown("---")
+
+    total_score = len(
+        st.session_state.quiz_data
+    ) * 2
+
+    st.header(
+        translate_text(
+            f"🎯 Final Score: {st.session_state.quiz_score}/{total_score}"
+        )
+    )        )
         
 # ---------------------------------------------------
 # ACCESSIBILITY
