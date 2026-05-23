@@ -968,51 +968,55 @@ elif feature == lang["quiz"]:
             # SHOW PREVIOUS FEEDBACK
             # -----------------------------------------
 
-            if idx in st.session_state.answer_feedback:
+           selected = st.radio(
+    translate_text("Choose Answer"),
+    translated_options,
+    key=f"radio_{idx}"
+)
 
-                feedback = st.session_state.answer_feedback[idx]
+# -----------------------------------------
+# SHOW FEEDBACK BELOW OPTIONS
+# -----------------------------------------
 
-                if feedback["correct"]:
+if idx in st.session_state.answer_feedback:
 
-                    st.success(
-                        translate_text(
-                            "✅ Correct Answer"
-                        )
-                    )
+    feedback = st.session_state.answer_feedback[idx]
 
-                    st.balloons()
+    if feedback["correct"]:
 
-                else:
+        st.success(
+            translate_text(
+                "✅ Correct Answer"
+            )
+        )
 
-                    st.error(
-                        translate_text(
-                            "❌ Wrong Answer"
-                        )
-                    )
+        st.balloons()
 
-                st.info(
-                    translate_text(
-                        f"✔ Correct Answer: {feedback['correct_answer']}"
-                    )
-                )
+    else:
 
-                st.warning(
-                    translate_text(
-                        f"📖 Reason: {feedback['reason']}"
-                    )
-                )
+        st.error(
+            translate_text(
+                "❌ Wrong Answer"
+            )
+        )
 
-                st.success(
-                    translate_text(
-                        f"🏆 Points Achieved: {feedback['score']}"
-                    )
-                )
+    st.info(
+        translate_text(
+            f"✔ Correct Answer: {feedback['correct_answer']}"
+        )
+    )
 
-            # -----------------------------------------
-            # ANSWER OPTIONS
-            # -----------------------------------------
+    st.warning(
+        translate_text(
+            f"📖 Reason: {feedback['reason']}"
+        )
+    )
 
-            selected = st.radio(
+    st.success(
+        translate_text(
+            f"🏆 Points Achieved: {feedback['score']}"
+        )
+    )
                 translate_text("Choose Answer"),
                 translated_options,
                 key=f"radio_{idx}"
@@ -1043,7 +1047,7 @@ elif feature == lang["quiz"]:
 
                     if is_correct:
 
-                        st.session_state.quiz_score += 10
+                        st.session_state.quiz_score += 2
 
                     # SAVE FEEDBACK
 
@@ -1065,9 +1069,9 @@ elif feature == lang["quiz"]:
 
         st.markdown("---")
 
-        total_score = len(
-            st.session_state.quiz_data
-        ) * 10
+      total_score = len(
+    st.session_state.quiz_data
+) * 2
 
         st.header(
             translate_text(
