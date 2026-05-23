@@ -2,7 +2,8 @@ import streamlit as st
 import tempfile
 import random
 import speech_recognition as sr
-from googletrans import Translator
+
+from deep_translator import GoogleTranslator
 
 # ---------------------------------------------------
 # PAGE CONFIG
@@ -34,12 +35,6 @@ if "used_q" not in st.session_state:
     st.session_state.used_q = []
 
 # ---------------------------------------------------
-# GOOGLE TRANSLATOR
-# ---------------------------------------------------
-
-translator = Translator()
-
-# ---------------------------------------------------
 # 28 LANGUAGE SUPPORT
 # ---------------------------------------------------
 
@@ -67,7 +62,7 @@ LANGUAGES = {
     "Russian": "ru",
     "Japanese": "ja",
     "Korean": "ko",
-    "Chinese": "zh-cn",
+    "Chinese": "zh-CN",
     "Arabic": "ar",
     "Turkish": "tr",
     "Thai": "th",
@@ -84,6 +79,21 @@ selected_language = st.sidebar.selectbox(
 )
 
 target_lang = LANGUAGES[selected_language]
+
+# ---------------------------------------------------
+# TRANSLATION FUNCTION
+# ---------------------------------------------------
+
+def translate_text(text):
+
+    try:
+        return GoogleTranslator(
+            source='auto',
+            target=target_lang
+        ).translate(text)
+
+    except:
+        return text
 
 # ---------------------------------------------------
 # UI TEXT
@@ -106,15 +116,7 @@ base_text = {
 lang = {}
 
 for key, value in base_text.items():
-
-    try:
-        lang[key] = translator.translate(
-            value,
-            dest=target_lang
-        ).text
-
-    except:
-        lang[key] = value
+    lang[key] = translate_text(value)
 
 # ---------------------------------------------------
 # SIDEBAR
@@ -159,7 +161,7 @@ if high_contrast:
 
     st.markdown("""
     <style>
-    body {
+    .stApp {
         background-color: black;
         color: white;
     }
@@ -180,37 +182,59 @@ if feature == lang["home"]:
 
     st.markdown("---")
 
-    st.header("🌟 Core Features")
+    st.header(translate_text("🌟 Core Features"))
 
     col1, col2 = st.columns(2)
 
     with col1:
 
-        st.info("🧠 AI Notes Summarizer")
+        st.info(translate_text("🧠 AI Notes Summarizer"))
+
         st.write(
-            "Generate AI-powered educational summaries."
+            translate_text(
+                "Generate AI-powered educational summaries."
+            )
         )
 
-        st.success("🎤 Speech Assistant")
+        st.success(translate_text("🎤 Speech Assistant"))
+
         st.write(
-            "Convert speech into text with AI."
+            translate_text(
+                "Convert speech into text with AI."
+            )
         )
 
     with col2:
 
-        st.warning("📖 Dyslexia Reading Mode")
-        st.write(
-            "Accessibility-focused reading support."
+        st.warning(
+            translate_text(
+                "📖 Dyslexia Reading Mode"
+            )
         )
 
-        st.error("❓ Smart Quiz Generator")
         st.write(
-            "Generate intelligent quiz questions."
+            translate_text(
+                "Accessibility-focused reading support."
+            )
+        )
+
+        st.error(
+            translate_text(
+                "❓ Smart Quiz Generator"
+            )
+        )
+
+        st.write(
+            translate_text(
+                "Generate intelligent quiz questions."
+            )
         )
 
     st.markdown("---")
 
-    st.header("♿ Accessibility Features")
+    st.header(
+        translate_text("♿ Accessibility Features")
+    )
 
     features = [
         "👁️ Blind Support → Audio + Screen Reader",
@@ -223,17 +247,7 @@ if feature == lang["home"]:
     ]
 
     for item in features:
-
-        try:
-            translated = translator.translate(
-                item,
-                dest=target_lang
-            ).text
-
-            st.write(translated)
-
-        except:
-            st.write(item)
+        st.write(translate_text(item))
 
     st.markdown("---")
 
@@ -248,17 +262,7 @@ if feature == lang["home"]:
     ]
 
     for item in future:
-
-        try:
-            translated = translator.translate(
-                item,
-                dest=target_lang
-            ).text
-
-            st.write(translated)
-
-        except:
-            st.write(item)
+        st.write(translate_text(item))
 
 # ---------------------------------------------------
 # SUMMARIZER
@@ -266,7 +270,9 @@ if feature == lang["home"]:
 
 elif feature == lang["summarizer"]:
 
-    st.header("🧠 AI Notes Summarizer")
+    st.header(
+        translate_text("🧠 AI Notes Summarizer")
+    )
 
     sample_text = """
 Artificial Intelligence is transforming education
@@ -274,17 +280,23 @@ through accessibility and smart learning systems.
 """
 
     text = st.text_area(
-        "📌 Paste Notes Here",
+        translate_text("📌 Paste Notes Here"),
         value=sample_text,
         height=250
     )
 
     summary_length = st.selectbox(
-        "📏 Select Summary Length",
-        ["Short", "Medium", "Detailed"]
+        translate_text("📏 Select Summary Length"),
+        [
+            translate_text("Short"),
+            translate_text("Medium"),
+            translate_text("Detailed")
+        ]
     )
 
-    if st.button("🚀 Generate Summary"):
+    if st.button(
+        translate_text("🚀 Generate Summary")
+    ):
 
         sentences = [
             s.strip()
@@ -292,10 +304,10 @@ through accessibility and smart learning systems.
             if s.strip()
         ]
 
-        if summary_length == "Short":
+        if "Short" in summary_length:
             num = max(2, len(sentences)//4)
 
-        elif summary_length == "Medium":
+        elif "Medium" in summary_length:
             num = max(4, len(sentences)//2)
 
         else:
@@ -303,18 +315,13 @@ through accessibility and smart learning systems.
 
         summary = ". ".join(sentences[:num]) + "."
 
-        try:
-            summary = translator.translate(
-                summary,
-                dest=target_lang
-            ).text
-
-        except:
-            pass
+        summary = translate_text(summary)
 
         st.session_state.summary = summary
 
-        st.success("✅ Summary Generated")
+        st.success(
+            translate_text("✅ Summary Generated")
+        )
 
         st.markdown(f"""
         <div style="
@@ -335,12 +342,16 @@ through accessibility and smart learning systems.
 
 elif feature == lang["speech"]:
 
-    st.header("🎤 AI Voice Assistant")
+    st.header(
+        translate_text("🎤 AI Voice Assistant")
+    )
 
-    audio = st.audio_input("🎙️ Record Voice")
+    audio = st.audio_input(
+        translate_text("🎙️ Record Voice")
+    )
 
     uploaded_file = st.file_uploader(
-        "📂 Upload Audio",
+        translate_text("📂 Upload Audio"),
         type=["wav", "mp3", "m4a"]
     )
 
@@ -354,6 +365,7 @@ elif feature == lang["speech"]:
         ) as tmp:
 
             tmp.write(source.read())
+
             audio_path = tmp.name
 
         recognizer = sr.Recognizer()
@@ -368,7 +380,10 @@ elif feature == lang["speech"]:
                     audio_data
                 )
 
-            st.subheader("📝 Your Question")
+            st.subheader(
+                translate_text("📝 Your Question")
+            )
+
             st.write(text)
 
         except:
@@ -376,17 +391,22 @@ elif feature == lang["speech"]:
             text = ""
 
             st.error(
-                "❌ Could not understand audio."
+                translate_text(
+                    "❌ Could not understand audio."
+                )
             )
 
         if text:
 
-            st.subheader("🤖 AI Response")
+            st.subheader(
+                translate_text("🤖 AI Response")
+            )
 
             if "ai" in text.lower():
 
                 answer = """
-Artificial Intelligence enables machines to think and learn like humans.
+Artificial Intelligence enables machines
+to think and learn like humans.
 
 Examples:
 - ChatGPT
@@ -410,21 +430,14 @@ Your Question:
 {text}
 
 This is an educational AI assistant.
+
 Try asking about:
 - AI
 - Machine Learning
 - Education
 """
 
-            try:
-
-                answer = translator.translate(
-                    answer,
-                    dest=target_lang
-                ).text
-
-            except:
-                pass
+            answer = translate_text(answer)
 
             st.success(answer)
 
@@ -434,14 +447,20 @@ Try asking about:
 
 elif feature == lang["dyslexia"]:
 
-    st.header("📖 Dyslexia-Friendly Reading")
+    st.header(
+        translate_text(
+            "📖 Dyslexia-Friendly Reading"
+        )
+    )
 
     display_text = st.session_state.summary
 
     if not display_text:
 
         st.warning(
-            "⚠️ Generate summary first."
+            translate_text(
+                "⚠️ Generate summary first."
+            )
         )
 
     else:
@@ -466,11 +485,17 @@ elif feature == lang["dyslexia"]:
 
 elif feature == lang["quiz"]:
 
-    st.header("🎯 Smart AI Quiz")
+    st.header(
+        translate_text("🎯 Smart AI Quiz")
+    )
 
-    name = st.text_input("👤 Enter Name")
+    name = st.text_input(
+        translate_text("👤 Enter Name")
+    )
 
-    topic = st.text_input("📘 Enter Topic")
+    topic = st.text_input(
+        translate_text("📘 Enter Topic")
+    )
 
     def generate_question(topic):
 
@@ -487,7 +512,9 @@ elif feature == lang["quiz"]:
 
         q_text = random.choice(questions)
 
-        correct = f"{topic} improves intelligent automation"
+        correct = (
+            f"{topic} improves intelligent automation"
+        )
 
         options = [
             correct,
@@ -500,7 +527,9 @@ elif feature == lang["quiz"]:
 
         return q_text, options, correct
 
-    if st.button("🚀 Start Quiz"):
+    if st.button(
+        translate_text("🚀 Start Quiz")
+    ):
 
         st.session_state.started = True
         st.session_state.q_no = 1
@@ -511,7 +540,9 @@ elif feature == lang["quiz"]:
         if st.session_state.q_no > 10:
 
             st.success(
-                f"🏆 Final Score: {st.session_state.score}/10"
+                translate_text(
+                    f"🏆 Final Score: {st.session_state.score}/10"
+                )
             )
 
             st.session_state.started = False
@@ -521,30 +552,47 @@ elif feature == lang["quiz"]:
         q_text, options, correct = generate_question(topic)
 
         st.subheader(
-            f"Question {st.session_state.q_no}/10"
+            translate_text(
+                f"Question {st.session_state.q_no}/10"
+            )
         )
 
-        st.write(q_text)
+        st.write(translate_text(q_text))
+
+        translated_options = [
+            translate_text(opt)
+            for opt in options
+        ]
 
         selected = st.radio(
-            "Choose Answer",
-            options
+            translate_text("Choose Answer"),
+            translated_options
         )
 
-        if st.button("✅ Submit"):
+        if st.button(
+            translate_text("✅ Submit")
+        ):
 
-            if selected == correct:
+            correct_translated = translate_text(correct)
 
-                st.success("✅ Correct")
+            if selected == correct_translated:
+
+                st.success(
+                    translate_text("✅ Correct")
+                )
 
                 st.session_state.score += 1
 
             else:
 
-                st.error("❌ Wrong")
+                st.error(
+                    translate_text("❌ Wrong")
+                )
 
                 st.write(
-                    f"Correct Answer: {correct}"
+                    translate_text(
+                        f"Correct Answer: {correct}"
+                    )
                 )
 
             st.session_state.q_no += 1
@@ -556,7 +604,9 @@ elif feature == lang["quiz"]:
         )
 
         st.write(
-            f"📊 Score: {st.session_state.score}"
+            translate_text(
+                f"📊 Score: {st.session_state.score}"
+            )
         )
 
 # ---------------------------------------------------
@@ -565,7 +615,11 @@ elif feature == lang["quiz"]:
 
 elif feature == lang["accessibility"]:
 
-    st.header("♿ Accessibility Support")
+    st.header(
+        translate_text(
+            "♿ Accessibility Support"
+        )
+    )
 
     accessibility_features = [
 
@@ -585,15 +639,4 @@ elif feature == lang["accessibility"]:
     ]
 
     for item in accessibility_features:
-
-        try:
-
-            translated = translator.translate(
-                item,
-                dest=target_lang
-            ).text
-
-            st.write(translated)
-
-        except:
-            st.write(item)
+        st.write(translate_text(item))
