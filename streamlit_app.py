@@ -368,352 +368,377 @@ through accessibility and smart learning systems.
         </div>
         """, unsafe_allow_html=True)
 
-# -----------------------------------------
-# SMART SUBJECT-BASED AI RESPONSE
-# -----------------------------------------
+# ---------------------------------------------------
+# SPEECH TO TEXT
+# ---------------------------------------------------
 
-query = text.lower()
+elif feature == lang["speech"]:
 
-# -----------------------------------------
-# EXCEL
-# -----------------------------------------
+    st.header(
+        translate_text("🎤 Speech-to-Text")
+    )
 
-if "excel" in query:
+    st.write(
+        translate_text(
+            "Convert speech into text and get smart AI explanations."
+        )
+    )
 
-    if answer_type == translate_text("Short"):
+    # -----------------------------------------
+    # EXPLANATION TYPE
+    # -----------------------------------------
 
-        answer = """
-Microsoft Excel is a spreadsheet software used for calculations, data analysis, charts, and tables.
+    answer_type = st.selectbox(
+        translate_text("📚 Select Explanation Type"),
+        [
+            "Short",
+            "Medium",
+            "Detailed"
+        ]
+    )
+
+    # -----------------------------------------
+    # AUDIO INPUT
+    # -----------------------------------------
+
+    audio = st.audio_input(
+        translate_text("🎙️ Record Voice")
+    )
+
+    uploaded_file = st.file_uploader(
+        translate_text("📂 Upload Audio"),
+        type=["wav", "mp3", "m4a"]
+    )
+
+    source = audio if audio else uploaded_file
+
+    # -----------------------------------------
+    # PROCESS AUDIO
+    # -----------------------------------------
+
+    if source:
+
+        with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=".wav"
+        ) as tmp:
+
+            tmp.write(source.read())
+            audio_path = tmp.name
+
+        recognizer = sr.Recognizer()
+
+        try:
+
+            with sr.AudioFile(audio_path) as src:
+
+                audio_data = recognizer.record(src)
+
+                text = recognizer.recognize_google(
+                    audio_data
+                )
+
+            st.subheader(
+                translate_text("📝 Your Question")
+            )
+
+            st.info(text)
+
+        except:
+
+            text = ""
+
+            st.error(
+                translate_text(
+                    "❌ Could not understand audio."
+                )
+            )
+
+        # -----------------------------------------
+        # SMART AI ANSWER
+        # -----------------------------------------
+
+        if text:
+
+            st.subheader(
+                translate_text(
+                    "🤖 AI Explanation"
+                )
+            )
+
+            query = text.lower()
+
+            # -----------------------------------------
+            # EXCEL
+            # -----------------------------------------
+
+            if "excel" in query:
+
+                if answer_type == "Short":
+
+                    answer = """
+Microsoft Excel is a spreadsheet software used for calculations and data analysis.
 
 Real-world Example:
-Companies use Excel for salary sheets and student result analysis.
+Companies use Excel for salary sheets and reports.
 """
 
-    elif answer_type == translate_text("Medium"):
+                elif answer_type == "Medium":
 
-        answer = """
-Microsoft Excel is a spreadsheet application developed by Microsoft. It helps users organize, calculate, and analyze data efficiently.
+                    answer = """
+Microsoft Excel is a spreadsheet application used to organize, calculate, and analyze data.
 
-Key Features:
-• Formulas and functions
-• Charts and graphs
-• Data filtering and sorting
-• Pivot tables
+Features:
+• Formulas
+• Charts
+• Tables
+• Data analysis
 
 Real-world Examples:
-• School marksheets
-• Business reports
+• Student marksheets
 • Budget planning
-• Attendance management
+• Attendance records
 """
 
-    else:
+                else:
 
-        answer = """
-Microsoft Excel is a powerful spreadsheet software developed by Microsoft and widely used for data management, calculations, analysis, and visualization.
-
-Excel allows users to:
-• Create tables and reports
-• Perform mathematical calculations
-• Analyze large datasets
-• Generate charts and graphs
-• Automate tasks using formulas
+                    answer = """
+Microsoft Excel is a powerful spreadsheet software developed by Microsoft used for calculations, reporting, data analysis, and visualization.
 
 Advantages:
-• Easy data organization
 • Fast calculations
-• Data visualization
-• Improved productivity
+• Data organization
+• Graphs and charts
+• Business analytics
 
 Real-world Examples:
-• Banking and finance reports
-• Employee salary management
-• Student result systems
-• Inventory management
-• Business analytics dashboards
+• Banking reports
+• Salary management
+• Inventory tracking
+• Educational result systems
 
-Excel is one of the most important tools used in education, business, accounting, and data analytics.
+Excel is widely used in education, accounting, business, and data analytics.
 """
 
-# -----------------------------------------
-# AI
-# -----------------------------------------
+            # -----------------------------------------
+            # AI
+            # -----------------------------------------
 
-elif "ai" in query or "artificial intelligence" in query:
+            elif "ai" in query or "artificial intelligence" in query:
 
-    if answer_type == translate_text("Short"):
+                if answer_type == "Short":
 
-        answer = """
-Artificial Intelligence (AI) enables machines to think and make decisions like humans.
+                    answer = """
+Artificial Intelligence enables machines to think and learn like humans.
 
 Real-world Example:
 ChatGPT and Alexa use AI technology.
 """
 
-    elif answer_type == translate_text("Medium"):
+                elif answer_type == "Medium":
 
-        answer = """
-Artificial Intelligence (AI) is a technology that enables machines to learn, think, and solve problems intelligently.
+                    answer = """
+Artificial Intelligence (AI) allows machines to perform tasks that normally require human intelligence.
 
 Applications:
 • Chatbots
 • Voice assistants
 • Healthcare systems
-• Self-driving cars
 
 Real-world Examples:
-• ChatGPT
+• Siri
 • Netflix recommendations
-• Google Assistant
+• Self-driving cars
 """
 
-    else:
+                else:
 
-        answer = """
+                    answer = """
 Artificial Intelligence (AI) is a branch of computer science that enables machines to simulate human intelligence.
 
 AI systems can:
 • Learn from data
-• Understand language
-• Recognize images
+• Solve problems
+• Recognize speech
 • Make decisions
 
 Advantages:
 • Automation
-• Faster decision-making
-• Personalized learning
-• Improved accessibility
+• Faster processing
+• Smart learning
+• Better accessibility
 
 Real-world Examples:
 • ChatGPT
-• Self-driving cars
-• Healthcare diagnosis systems
-• Smart assistants like Siri and Alexa
+• Alexa
+• Medical diagnosis systems
+• Autonomous vehicles
 
-AI is transforming education, healthcare, banking, and transportation industries worldwide.
+AI is transforming education, healthcare, banking, and transportation industries.
 """
 
-# -----------------------------------------
-# MACHINE LEARNING
-# -----------------------------------------
+            # -----------------------------------------
+            # PHOTOSYNTHESIS
+            # -----------------------------------------
 
-elif "machine learning" in query:
+            elif "photosynthesis" in query:
 
-    if answer_type == translate_text("Short"):
+                if answer_type == "Short":
 
-        answer = """
-Machine Learning allows systems to learn automatically from data.
-
-Real-world Example:
-Netflix movie recommendations use Machine Learning.
-"""
-
-    elif answer_type == translate_text("Medium"):
-
-        answer = """
-Machine Learning is a subset of AI that enables computers to learn patterns from data.
-
-Applications:
-• Recommendation systems
-• Spam filtering
-• Fraud detection
-
-Real-world Examples:
-• YouTube recommendations
-• Email spam detection
-"""
-
-    else:
-
-        answer = """
-Machine Learning (ML) is a branch of Artificial Intelligence where systems learn from data without explicit programming.
-
-Types:
-• Supervised Learning
-• Unsupervised Learning
-• Reinforcement Learning
-
-Applications:
-• Healthcare prediction
-• Stock market analysis
-• Voice recognition
-• Image classification
-
-Real-world Examples:
-• Netflix recommendations
-• Google Translate
-• Face recognition systems
-
-Machine Learning is widely used in AI applications and modern industries.
-"""
-
-# -----------------------------------------
-# PHOTOSYNTHESIS
-# -----------------------------------------
-
-elif "photosynthesis" in query:
-
-    if answer_type == translate_text("Short"):
-
-        answer = """
+                    answer = """
 Photosynthesis is the process by which plants make food using sunlight.
 
 Real-world Example:
-Green plants use photosynthesis to grow and release oxygen.
+Plants produce oxygen through photosynthesis.
 """
 
-    elif answer_type == translate_text("Medium"):
+                elif answer_type == "Medium":
 
-        answer = """
-Photosynthesis is a biological process where green plants convert sunlight into food.
+                    answer = """
+Photosynthesis is a biological process where plants convert sunlight into food.
 
 Requirements:
 • Sunlight
 • Water
 • Carbon dioxide
-• Chlorophyll
 
 Real-world Example:
-Plants produce oxygen and food through photosynthesis.
+Plants help maintain oxygen balance on Earth.
 """
 
-    else:
+                else:
 
-        answer = """
-Photosynthesis is the process by which green plants prepare food using sunlight, water, and carbon dioxide in the presence of chlorophyll.
-
-Equation:
-Carbon Dioxide + Water + Sunlight → Glucose + Oxygen
+                    answer = """
+Photosynthesis is the process by which green plants prepare food using sunlight, water, and carbon dioxide.
 
 Importance:
 • Produces oxygen
-• Maintains food chain
-• Supports life on Earth
+• Supports food chains
+• Maintains ecosystem balance
 
 Real-world Examples:
 • Crop growth
 • Forest ecosystems
 • Oxygen production
 
-Photosynthesis is one of the most important biological processes on Earth.
+Photosynthesis is essential for life on Earth.
 """
 
-# -----------------------------------------
-# CLOUD COMPUTING
-# -----------------------------------------
+            # -----------------------------------------
+            # CLOUD COMPUTING
+            # -----------------------------------------
 
-elif "cloud computing" in query:
+            elif "cloud computing" in query:
 
-    if answer_type == translate_text("Short"):
+                if answer_type == "Short":
 
-        answer = """
-Cloud Computing provides computing services over the internet.
+                    answer = """
+Cloud Computing provides online storage and computing services.
 
 Real-world Example:
-Google Drive stores files using cloud computing.
+Google Drive uses cloud computing.
 """
 
-    elif answer_type == translate_text("Medium"):
+                elif answer_type == "Medium":
 
-        answer = """
-Cloud Computing allows users to access storage, software, and servers through the internet.
+                    answer = """
+Cloud Computing delivers storage, software, and services through the internet.
 
-Benefits:
-• Online storage
+Advantages:
 • Remote access
+• Online backup
 • Scalability
 
 Real-world Examples:
 • Google Drive
 • Dropbox
-• Microsoft Azure
+• AWS
 """
 
-    else:
+                else:
 
-        answer = """
-Cloud Computing is a technology that delivers computing services such as storage, databases, networking, and software over the internet.
+                    answer = """
+Cloud Computing is a technology that provides servers, storage, databases, and software over the internet.
 
-Advantages:
-• Cost-effective
-• Remote accessibility
-• Data backup
+Benefits:
+• Cost efficiency
 • Scalability
-
-Types:
-• Public Cloud
-• Private Cloud
-• Hybrid Cloud
+• Data backup
+• Remote accessibility
 
 Real-world Examples:
 • Google Drive
-• AWS
 • Microsoft Azure
-• Netflix cloud infrastructure
+• Amazon Web Services
+• Netflix infrastructure
 
-Cloud computing is widely used in businesses, education, and modern web applications.
+Cloud computing is widely used in businesses, education, and modern applications.
 """
 
-# -----------------------------------------
-# DEFAULT ANSWER
-# -----------------------------------------
+            # -----------------------------------------
+            # DEFAULT
+            # -----------------------------------------
 
-else:
+            else:
 
-    if answer_type == translate_text("Short"):
+                if answer_type == "Short":
 
-        answer = f"""
-{text} is an important concept related to academics, science, or technology.
+                    answer = f"""
+{text} is an important concept related to education or technology.
 
 Real-world Example:
-{text} is commonly used in education and modern industries.
+{text} is used in real-world learning and applications.
 """
 
-    elif answer_type == translate_text("Medium"):
+                elif answer_type == "Medium":
 
-        answer = f"""
-{text} is an important topic used in education and real-world applications.
+                    answer = f"""
+{text} is an important topic used in academics and industries.
 
 Key Points:
-• Improves knowledge and understanding
-• Helps solve practical problems
-• Used in multiple industries
+• Improves understanding
+• Helps solve problems
+• Used in modern systems
 
 Real-world Examples:
-• Educational platforms
-• Business systems
-• Modern technologies
+• Education
+• Business applications
+• Smart technologies
 """
 
-    else:
+                else:
 
-        answer = f"""
+                    answer = f"""
 {text} is an important concept used in academics, science, and technology.
 
-Detailed Explanation:
-• Helps improve learning and productivity
-• Supports innovation and automation
-• Enhances real-world problem-solving
-
 Advantages:
-• Better efficiency
-• Smart decision-making
-• Improved accessibility
+• Better learning
+• Improved productivity
+• Smart problem-solving
 
 Real-world Examples:
-• Educational platforms
-• AI systems
+• Educational systems
+• AI platforms
 • Healthcare technologies
-• Business applications
+• Business software
 
-Understanding {text} helps students and professionals apply concepts in practical real-world situations.
+Understanding {text} helps students and professionals apply knowledge in practical situations.
 """
 
-# -----------------------------------------
-# TRANSLATE ANSWER
-# -----------------------------------------
+            translated_answer = translate_text(answer)
 
-translated_answer = translate_text(answer)
+            st.markdown(f"""
+            <div style="
+                background-color:#0f172a;
+                padding:20px;
+                border-radius:15px;
+                color:white;
+                font-size:{font_size}px;
+                line-height:2;
+            ">
+            {translated_answer}
+            </div>
+            """, unsafe_allow_html=True)
 
 # ---------------------------------------------------
 # DYSLEXIA MODE
