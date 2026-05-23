@@ -368,347 +368,87 @@ through accessibility and smart learning systems.
         </div>
         """, unsafe_allow_html=True)
 
-# ---------------------------------------------------
-# SPEECH TO TEXT + SMART AI ANSWER
-# ---------------------------------------------------
+# -----------------------------------------
+# SMART UNIVERSAL AI RESPONSE
+# -----------------------------------------
 
-elif feature == lang["speech"]:
+if answer_type == translate_text("Short"):
 
-    st.header(
-        translate_text(
-            "🎤 Speech-to-Text"
-        )
-    )
+    answer = f"""
+Question:
+{text}
 
-    st.write(
-        translate_text(
-            "Convert speech into text and get AI-powered educational explanations."
-        )
-    )
+Answer:
+{text} is an important concept related to education, science, or technology.
 
-    # -----------------------------------------
-    # ANSWER STYLE
-    # -----------------------------------------
-
-    answer_type = st.selectbox(
-        translate_text(
-            "📚 Select Explanation Type"
-        ),
-        [
-            translate_text("Short"),
-            translate_text("Medium"),
-            translate_text("Detailed")
-        ]
-    )
-
-    # -----------------------------------------
-    # AUDIO INPUT
-    # -----------------------------------------
-
-    audio = st.audio_input(
-        translate_text(
-            "🎙️ Record Voice"
-        )
-    )
-
-    uploaded_file = st.file_uploader(
-        translate_text(
-            "📂 Upload Audio"
-        ),
-        type=["wav", "mp3", "m4a"]
-    )
-
-    source = audio if audio else uploaded_file
-
-    # -----------------------------------------
-    # PROCESS AUDIO
-    # -----------------------------------------
-
-    if source:
-
-        with tempfile.NamedTemporaryFile(
-            delete=False,
-            suffix=".wav"
-        ) as tmp:
-
-            tmp.write(source.read())
-
-            audio_path = tmp.name
-
-        recognizer = sr.Recognizer()
-
-        try:
-
-            with sr.AudioFile(audio_path) as src:
-
-                audio_data = recognizer.record(src)
-
-                text = recognizer.recognize_google(
-                    audio_data
-                )
-
-            # -----------------------------------------
-            # SHOW QUESTION
-            # -----------------------------------------
-
-            st.subheader(
-                translate_text(
-                    "📝 Your Question"
-                )
-            )
-
-            st.info(text)
-
-        except:
-
-            text = ""
-
-            st.error(
-                translate_text(
-                    "❌ Could not understand audio. Please speak clearly."
-                )
-            )
-
-        # -----------------------------------------
-        # AI ANSWER SECTION
-        # -----------------------------------------
-
-        if text:
-
-            st.subheader(
-                translate_text(
-                    "🤖 AI Explanation"
-                )
-            )
-
-            query = text.lower()
-
-            # -----------------------------------------
-            # AI TOPIC RESPONSES
-            # -----------------------------------------
-
-            if "artificial intelligence" in query or "ai" in query:
-
-                if answer_type == translate_text("Short"):
-
-                    answer = """
-Artificial Intelligence (AI) enables machines to mimic human intelligence.
+It helps improve understanding, problem-solving, and practical applications in real life.
 
 Real-world Example:
-ChatGPT and Alexa use AI to answer questions and assist users.
+Students and professionals use {text} concepts in schools, industries, healthcare, business, and modern technology systems.
 """
 
-                elif answer_type == translate_text("Medium"):
+elif answer_type == translate_text("Medium"):
 
-                    answer = """
-Artificial Intelligence (AI) is a technology that allows machines to think, learn, and make decisions similar to humans.
+    answer = f"""
+Question:
+{text}
 
-AI systems analyze data, recognize patterns, and automate tasks.
+Answer:
+{text} is a widely used concept in academics and real-world applications. It plays an important role in improving efficiency, learning, automation, and decision-making.
+
+Key Points:
+• Helps solve practical problems
+• Improves productivity
+• Used in multiple industries
+• Supports innovation and smart systems
 
 Real-world Examples:
-• ChatGPT for conversations
-• Self-driving cars
-• Netflix recommendation system
-• Face recognition in smartphones
+• Education platforms
+• Smart applications
+• Healthcare systems
+• Banking and finance
+• Communication technologies
+
+Understanding {text} helps students build stronger conceptual and technical knowledge.
 """
 
-                else:
+else:
 
-                    answer = """
-Artificial Intelligence (AI) is a branch of computer science that enables machines to perform tasks requiring human intelligence such as learning, reasoning, problem-solving, and decision-making.
+    answer = f"""
+Question:
+{text}
 
-AI works using algorithms, machine learning, and large datasets. Modern AI systems can understand language, recognize images, and generate intelligent responses.
+Answer:
+{text} is an important topic that contributes significantly to modern education, science, engineering, and technology. It is used to improve human efficiency, automate tasks, enhance learning experiences, and solve complex real-world problems.
 
-Advantages of AI:
-• Automation of repetitive tasks
-• Faster decision-making
-• Personalized learning
-• Improved accessibility
-
-Real-world Examples:
-• ChatGPT for education and communication
-• Google Assistant and Alexa
-• Medical diagnosis systems
-• AI-based recommendation systems
-• Smart traffic management
-
-AI is transforming industries like healthcare, education, banking, and transportation.
-"""
-
-            # -----------------------------------------
-            # MACHINE LEARNING
-            # -----------------------------------------
-
-            elif "machine learning" in query:
-
-                if answer_type == translate_text("Short"):
-
-                    answer = """
-Machine Learning allows computers to learn from data.
-
-Real-world Example:
-Netflix movie recommendations.
-"""
-
-                elif answer_type == translate_text("Medium"):
-
-                    answer = """
-Machine Learning is a subset of AI where systems learn patterns from data and improve automatically.
-
-Real-world Examples:
-• YouTube recommendations
-• Spam email filtering
-• Fraud detection systems
-"""
-
-                else:
-
-                    answer = """
-Machine Learning (ML) is a branch of Artificial Intelligence that enables systems to learn from data without being explicitly programmed.
-
-ML models analyze patterns and make predictions or decisions.
-
-Types of Machine Learning:
-• Supervised Learning
-• Unsupervised Learning
-• Reinforcement Learning
-
-Applications:
-• Healthcare diagnosis
-• Recommendation systems
-• Stock market prediction
-• Speech recognition
-
-Real-world Examples:
-• Netflix recommendations
-• Google Translate
-• Face recognition
-• Chatbots
-"""
-
-            # -----------------------------------------
-            # EDUCATION
-            # -----------------------------------------
-
-            elif "education" in query:
-
-                if answer_type == translate_text("Short"):
-
-                    answer = """
-AI improves education through personalized learning.
-
-Example:
-AI tutors help students learn at their own pace.
-"""
-
-                elif answer_type == translate_text("Medium"):
-
-                    answer = """
-AI in education provides personalized learning experiences and accessibility support.
-
-Benefits:
-• Smart tutoring
-• Automated quizzes
-• Voice learning support
-
-Real-world Example:
-Duolingo uses AI for language learning.
-"""
-
-                else:
-
-                    answer = """
-Artificial Intelligence is transforming education by making learning smarter, more interactive, and accessible.
-
-AI helps students through:
-• Personalized learning paths
-• AI tutors
-• Voice assistants
-• Smart quiz generation
-• Accessibility tools for disabilities
+Detailed Explanation:
+• It supports innovation and smart decision-making
+• It improves productivity and accessibility
+• It is widely applied in industries and academics
+• It enhances automation and digital transformation
 
 Advantages:
-• Learn anytime
-• Adaptive learning speed
-• Better student engagement
+• Faster problem-solving
+• Better learning support
+• Improved accessibility
+• Real-time assistance and automation
 
 Real-world Examples:
-• Duolingo language learning
-• ChatGPT educational support
-• AI-powered virtual classrooms
+• AI-powered educational platforms
+• Smart healthcare systems
+• Banking and online transactions
+• Voice assistants like Alexa and Siri
+• Recommendation systems like YouTube and Netflix
+
+Learning about {text} helps students understand how modern technologies and systems work in everyday life.
 """
 
-            # -----------------------------------------
-            # DEFAULT ANSWER
-            # -----------------------------------------
+# -----------------------------------------
+# TRANSLATE ANSWER
+# -----------------------------------------
 
-            else:
+translated_answer = translate_text(answer)
 
-                if answer_type == translate_text("Short"):
-
-                    answer = f"""
-This topic relates to educational or general knowledge concepts.
-
-Real-world Example:
-Technology is widely used in modern education and industry.
-"""
-
-                elif answer_type == translate_text("Medium"):
-
-                    answer = f"""
-Your question is related to educational concepts and modern technology applications.
-
-AI systems help students learn faster through smart assistance and automation.
-
-Real-world Examples:
-• Online learning platforms
-• AI chatbots
-• Smart assistants
-"""
-
-                else:
-
-                    answer = f"""
-Your question explores concepts related to education, technology, or intelligent systems.
-
-Modern AI-based platforms provide:
-• Personalized learning
-• Accessibility support
-• Smart tutoring
-• Voice assistance
-• Automated content generation
-
-Real-world Examples:
-• ChatGPT
-• Google Assistant
-• AI tutors
-• Smart classrooms
-
-These technologies improve learning efficiency and accessibility worldwide.
-"""
-
-            # -----------------------------------------
-            # TRANSLATE ANSWER
-            # -----------------------------------------
-
-            translated_answer = translate_text(answer)
-
-            # -----------------------------------------
-            # DISPLAY ANSWER
-            # -----------------------------------------
-
-            st.markdown(f"""
-            <div style="
-                background-color:#0f172a;
-                padding:20px;
-                border-radius:15px;
-                color:white;
-                font-size:{font_size}px;
-                line-height:2;
-            ">
-            {translated_answer}
-            </div>
-            """, unsafe_allow_html=True)
 # ---------------------------------------------------
 # DYSLEXIA MODE
 # ---------------------------------------------------
