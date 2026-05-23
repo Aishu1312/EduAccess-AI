@@ -815,11 +815,17 @@ elif feature == lang["quiz"]:
     # SESSION STATE
     # -----------------------------------------
 
+    if "quiz_started" not in st.session_state:
+        st.session_state.quiz_started = False
+
     if "quiz_score" not in st.session_state:
         st.session_state.quiz_score = 0
 
-    if "submitted_questions" not in st.session_state:
-        st.session_state.submitted_questions = []
+    if "quiz_data" not in st.session_state:
+        st.session_state.quiz_data = []
+
+    if "answered" not in st.session_state:
+        st.session_state.answered = {}
 
     # -----------------------------------------
     # GENERATE QUIZ
@@ -831,18 +837,9 @@ elif feature == lang["quiz"]:
         )
     ):
 
+        st.session_state.quiz_started = True
         st.session_state.quiz_score = 0
-        st.session_state.submitted_questions = []
-
-        st.subheader(
-            translate_text(
-                "📚 Generated Questions"
-            )
-        )
-
-        # -----------------------------------------
-        # QUESTION BANK
-        # -----------------------------------------
+        st.session_state.answered = {}
 
         question_bank = [
 
@@ -860,41 +857,7 @@ elif feature == lang["quiz"]:
                 ],
 
                 "reason":
-                f"{topic} helps improve productivity, automation, and smart decision-making in real-world applications."
-            },
-
-            {
-                "question":
-                f"Which industry commonly uses {topic}?",
-
-                "correct":
-                "Education, healthcare, and technology industries",
-
-                "wrong": [
-                    "Only sports industries",
-                    "Only agriculture fields",
-                    "Only transportation systems"
-                ],
-
-                "reason":
-                f"{topic} is widely used in modern industries including education, healthcare, finance, and IT."
-            },
-
-            {
-                "question":
-                f"What is a major advantage of {topic}?",
-
-                "correct":
-                "Improved efficiency and accuracy",
-
-                "wrong": [
-                    "Reduced accessibility",
-                    "Slower performance",
-                    "No real-world applications"
-                ],
-
-                "reason":
-                f"{topic} improves efficiency, reduces manual work, and increases system accuracy."
+                f"{topic} helps improve productivity, automation, and smart decision-making."
             },
 
             {
@@ -902,16 +865,33 @@ elif feature == lang["quiz"]:
                 f"What is a real-world example of {topic}?",
 
                 "correct":
-                f"{topic} applications in modern technology systems",
+                f"{topic} applications in modern industries",
 
                 "wrong": [
-                    "Stone-age communication methods",
-                    "Traditional paper-only systems",
-                    "No modern applications"
+                    "Stone-age communication",
+                    "No practical applications",
+                    "Only handwritten systems"
                 ],
 
                 "reason":
-                f"{topic} is actively used in AI systems, industries, education platforms, and business applications."
+                f"{topic} is widely used in education, healthcare, business, and technology."
+            },
+
+            {
+                "question":
+                f"What is an advantage of {topic}?",
+
+                "correct":
+                "Improved efficiency and accuracy",
+
+                "wrong": [
+                    "Reduced performance",
+                    "No accessibility",
+                    "Manual-only operation"
+                ],
+
+                "reason":
+                f"{topic} improves productivity and reduces human effort."
             },
 
             {
@@ -919,118 +899,79 @@ elif feature == lang["quiz"]:
                 f"Why is {topic} important today?",
 
                 "correct":
-                "It supports smart and digital transformation",
+                "It supports smart digital systems",
 
                 "wrong": [
-                    "It reduces innovation",
-                    "It removes automation",
-                    "It has no importance"
+                    "It removes innovation",
+                    "It has no modern use",
+                    "It reduces automation"
                 ],
 
                 "reason":
-                f"{topic} plays an important role in automation, smart systems, and modern digital infrastructure."
+                f"{topic} is important for automation and digital transformation."
             },
 
             {
                 "question":
-                f"What challenge is associated with {topic}?",
+                f"What challenge exists in {topic}?",
 
                 "correct":
-                "Implementation and resource management",
+                "Implementation and maintenance",
 
                 "wrong": [
                     "No challenges exist",
                     "It works perfectly everywhere",
-                    "It requires no maintenance"
+                    "No resources are needed"
                 ],
 
                 "reason":
-                f"Like every technology, {topic} requires proper implementation, maintenance, and resources."
-            },
-
-            {
-                "question":
-                f"What is the future scope of {topic}?",
-
-                "correct":
-                "Automation, AI integration, and innovation",
-
-                "wrong": [
-                    "Technology removal",
-                    "No future applications",
-                    "Decrease in development"
-                ],
-
-                "reason":
-                f"The future of {topic} includes smart automation, AI integration, and improved accessibility."
-            },
-
-            {
-                "question":
-                f"How does {topic} help students?",
-
-                "correct":
-                "By improving learning and accessibility",
-
-                "wrong": [
-                    "By reducing education quality",
-                    "By removing digital systems",
-                    "By increasing complexity only"
-                ],
-
-                "reason":
-                f"{topic} improves smart learning, accessibility, and personalized educational experiences."
+                f"Every technology requires maintenance and proper implementation."
             }
 
         ]
-
-        # -----------------------------------------
-        # RANDOM QUESTIONS
-        # -----------------------------------------
 
         random.shuffle(question_bank)
 
         selected_questions = question_bank[:num_questions]
 
-        # -----------------------------------------
-        # DISPLAY QUESTIONS
-        # -----------------------------------------
+        # STORE QUESTIONS
+        st.session_state.quiz_data = []
 
-        for idx, q in enumerate(selected_questions):
+        for q in selected_questions:
 
-            st.markdown("---")
-
-            question = translate_text(
-                q["question"]
-            )
-
-            correct = translate_text(
-                q["correct"]
-            )
-
-            wrong_options = [
-                translate_text(opt)
-                for opt in q["wrong"]
-            ]
-
-            reason = translate_text(
-                q["reason"]
-            )
-
-            options = [correct] + wrong_options
+            options = [q["correct"]] + q["wrong"]
 
             random.shuffle(options)
 
+            q["options"] = options
+
+            st.session_state.quiz_data.append(q)
+
+    # -----------------------------------------
+    # DISPLAY QUIZ
+    # -----------------------------------------
+
+    if st.session_state.quiz_started:
+
+        for idx, q in enumerate(
+            st.session_state.quiz_data
+        ):
+
+            st.markdown("---")
+
             st.subheader(
-                f"Q{idx+1}. {question}"
+                f"Q{idx+1}. {translate_text(q['question'])}"
             )
 
-            selected_answer = st.radio(
+            selected = st.radio(
                 translate_text(
                     "Choose Answer"
                 ),
-                options,
-                key=f"question_{idx}"
+                [
+                    translate_text(opt)
+                    for opt in q["options"]
+                ],
+                key=f"radio_{idx}"
             )
 
             if st.button(
@@ -1040,9 +981,13 @@ elif feature == lang["quiz"]:
                 key=f"submit_{idx}"
             ):
 
-                if idx not in st.session_state.submitted_questions:
+                if idx not in st.session_state.answered:
 
-                    if selected_answer == correct:
+                    correct_translated = translate_text(
+                        q["correct"]
+                    )
+
+                    if selected == correct_translated:
 
                         st.success(
                             translate_text(
@@ -1062,48 +1007,36 @@ elif feature == lang["quiz"]:
                             )
                         )
 
-                    # -----------------------------------------
                     # SHOW CORRECT ANSWER
-                    # -----------------------------------------
-
                     st.info(
                         translate_text(
-                            f"✔ Correct Answer: {correct}"
+                            f"✔ Correct Answer: {q['correct']}"
                         )
                     )
 
-                    # -----------------------------------------
                     # SHOW REASON
-                    # -----------------------------------------
-
                     st.warning(
                         translate_text(
-                            f"📖 Reason: {reason}"
+                            f"📖 Reason: {q['reason']}"
                         )
                     )
 
-                    # -----------------------------------------
-                    # SHOW SCORE
-                    # -----------------------------------------
-
+                    # SCORE
                     st.success(
                         translate_text(
-                            f"🏆 Current Score: {st.session_state.quiz_score}"
+                            f"🏆 Points Achieved: {st.session_state.quiz_score}"
                         )
                     )
 
-                    st.session_state.submitted_questions.append(idx)
-
-        # -----------------------------------------
-        # FINAL SCORE
-        # -----------------------------------------
+                    st.session_state.answered[idx] = True
 
         st.markdown("---")
 
         st.header(
             translate_text(
-                f"🎯 Final Score: {st.session_state.quiz_score}/{num_questions * 10}"
+                f"🎯 Final Score: {st.session_state.quiz_score}/{len(st.session_state.quiz_data)*10}"
             )
+        )
         )
 # ---------------------------------------------------
 # ACCESSIBILITY
