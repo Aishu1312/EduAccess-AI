@@ -35,51 +35,15 @@ if "used_q" not in st.session_state:
     st.session_state.used_q = []
 
 # ---------------------------------------------------
-# 28 LANGUAGE SUPPORT
-# ---------------------------------------------------
-
-LANGUAGES = {
-    "English": "en",
-    "Hindi": "hi",
-    "Marathi": "mr",
-    "Gujarati": "gu",
-    "Punjabi": "pa",
-    "Bengali": "bn",
-    "Tamil": "ta",
-    "Telugu": "te",
-    "Kannada": "kn",
-    "Malayalam": "ml",
-    "Urdu": "ur",
-    "Odia": "or",
-    "Assamese": "as",
-    "Sanskrit": "sa",
-    "Nepali": "ne",
-    "Spanish": "es",
-    "French": "fr",
-    "German": "de",
-    "Italian": "it",
-    "Portuguese": "pt",
-    "Russian": "ru",
-    "Japanese": "ja",
-    "Korean": "ko",
-    "Chinese": "zh-CN",
-    "Arabic": "ar",
-    "Turkish": "tr",
-    "Thai": "th",
-    "Indonesian": "id"
-}
-
-# ---------------------------------------------------
 # LANGUAGE SELECTOR
 # ---------------------------------------------------
 
-st.sidebar.title(
-    translate_text("⚙ Settings")
-)
 selected_language = st.sidebar.selectbox(
-    translate_text("🌍 Choose Language"),
+    "🌍 Choose Language",
     list(LANGUAGES.keys())
 )
+
+target_lang = LANGUAGES[selected_language]
 
 # ---------------------------------------------------
 # TRANSLATION FUNCTION
@@ -95,6 +59,14 @@ def translate_text(text):
 
     except:
         return text
+
+# ---------------------------------------------------
+# SIDEBAR
+# ---------------------------------------------------
+
+st.sidebar.title(
+    translate_text("⚙ Settings")
+)
 
 # ---------------------------------------------------
 # UI TEXT
