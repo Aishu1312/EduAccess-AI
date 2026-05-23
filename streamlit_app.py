@@ -785,27 +785,19 @@ elif feature == lang["quiz"]:
     import random
 
     st.header(
-        translate_text(
-            "❓ AI Quiz Generator"
-        )
+        translate_text("❓ AI Quiz Generator")
     )
 
     exam = st.text_input(
-        translate_text(
-            "📝 Enter Exam Name"
-        )
+        translate_text("📝 Enter Exam Name")
     )
 
     topic = st.text_input(
-        translate_text(
-            "📘 Enter Topic"
-        )
+        translate_text("📘 Enter Topic")
     )
 
     num_questions = st.slider(
-        translate_text(
-            "📊 Select Number of Questions"
-        ),
+        translate_text("📊 Select Number of Questions"),
         1,
         10,
         5
@@ -832,9 +824,7 @@ elif feature == lang["quiz"]:
     # -----------------------------------------
 
     if st.button(
-        translate_text(
-            "🚀 Generate Quiz"
-        )
+        translate_text("🚀 Generate Quiz")
     ):
 
         st.session_state.quiz_started = True
@@ -963,21 +953,22 @@ elif feature == lang["quiz"]:
                 f"Q{idx+1}. {translate_text(q['question'])}"
             )
 
-            selected = st.radio(
-                translate_text(
-                    "Choose Answer"
-                ),
-                [
+            translated_options = []
+
+            for opt in q["options"]:
+
+                translated_options.append(
                     translate_text(opt)
-                    for opt in q["options"]
-                ],
+                )
+
+            selected = st.radio(
+                translate_text("Choose Answer"),
+                translated_options,
                 key=f"radio_{idx}"
             )
 
             if st.button(
-                translate_text(
-                    f"✅ Submit Answer {idx+1}"
-                ),
+                translate_text(f"✅ Submit Answer {idx+1}"),
                 key=f"submit_{idx}"
             ):
 
@@ -1007,14 +998,16 @@ elif feature == lang["quiz"]:
                             )
                         )
 
-                    # SHOW CORRECT ANSWER
+                    # CORRECT ANSWER
+
                     st.info(
                         translate_text(
                             f"✔ Correct Answer: {q['correct']}"
                         )
                     )
 
-                    # SHOW REASON
+                    # REASON
+
                     st.warning(
                         translate_text(
                             f"📖 Reason: {q['reason']}"
@@ -1022,6 +1015,7 @@ elif feature == lang["quiz"]:
                     )
 
                     # SCORE
+
                     st.success(
                         translate_text(
                             f"🏆 Points Achieved: {st.session_state.quiz_score}"
@@ -1032,12 +1026,16 @@ elif feature == lang["quiz"]:
 
         st.markdown("---")
 
+        total_score = len(
+            st.session_state.quiz_data
+        ) * 10
+
         st.header(
             translate_text(
-                f"🎯 Final Score: {st.session_state.quiz_score}/{len(st.session_state.quiz_data)*10}"
+                f"🎯 Final Score: {st.session_state.quiz_score}/{total_score}"
             )
         )
-        )
+        
 # ---------------------------------------------------
 # ACCESSIBILITY
 # ---------------------------------------------------
