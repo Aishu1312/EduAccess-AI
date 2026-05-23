@@ -24,20 +24,94 @@ if "leaderboard" not in st.session_state:
 # TRANSLATIONS (same as yours)
 # ---------------------------------------------------
 
-translations = {
-    "English": {
-        "title": "🚀 EduAccess AI",
-        "subtitle": "AI-Powered Accessibility Platform",
-        "choose_feature": "Choose Feature",
-        "home": "🏠 Home",
-        "summarizer": "🧠 AI Notes Summarizer",
-        "speech": "🎤 Speech-to-Text",
-        "dyslexia": "📖 Dyslexia Mode",
-        "quiz": "❓ Quiz Generator",
-        "accessibility": "♿ Accessibility Support",
-        "summary_button": "Generate Summary"
-    }
+from googletrans import Translator
+
+translator = Translator()
+
+# ---------------------------------------------------
+# MULTILINGUAL SUPPORT
+# ---------------------------------------------------
+
+LANGUAGES = {
+    "English": "en",
+    "Hindi": "hi",
+    "Marathi": "mr",
+    "Gujarati": "gu",
+    "Punjabi": "pa",
+    "Bengali": "bn",
+    "Tamil": "ta",
+    "Telugu": "te",
+    "Kannada": "kn",
+    "Malayalam": "ml",
+    "Urdu": "ur",
+    "Odia": "or",
+    "Assamese": "as",
+    "Sanskrit": "sa",
+    "Nepali": "ne",
+    "Spanish": "es",
+    "French": "fr",
+    "German": "de",
+    "Italian": "it",
+    "Portuguese": "pt",
+    "Russian": "ru",
+    "Japanese": "ja",
+    "Korean": "ko",
+    "Chinese": "zh-cn",
+    "Arabic": "ar",
+    "Turkish": "tr",
+    "Thai": "th",
+    "Indonesian": "id"
 }
+
+# ----------------------------
+# LANGUAGE SELECTOR
+# ----------------------------
+
+selected_language = st.sidebar.selectbox(
+    "🌍 Choose Language",
+    list(LANGUAGES.keys())
+)
+
+target_lang = LANGUAGES[selected_language]
+
+# ---------------------------------------------------
+# DEFAULT ENGLISH TEXT
+# ---------------------------------------------------
+
+base_text = {
+    "title": "🚀 EduAccess AI",
+    "subtitle": "AI-Powered Accessibility Platform",
+    "choose_feature": "Choose Feature",
+    "home": "🏠 Home",
+    "summarizer": "🧠 AI Notes Summarizer",
+    "speech": "🎤 Speech-to-Text",
+    "dyslexia": "📖 Dyslexia Mode",
+    "quiz": "❓ Quiz Generator",
+    "accessibility": "♿ Accessibility Support",
+    "summary_button": "Generate Summary",
+    "welcome": "Welcome to EduAccess AI",
+    "core_features": "🌟 Core Features",
+    "future_scope": "🚀 Future Scope"
+}
+
+# ---------------------------------------------------
+# AUTO TRANSLATE UI
+# ---------------------------------------------------
+
+lang = {}
+
+for key, value in base_text.items():
+
+    try:
+        translated = translator.translate(
+            value,
+            dest=target_lang
+        ).text
+
+        lang[key] = translated
+
+    except:
+        lang[key] = value
 
 LANGUAGES = {
     "English": "en",
