@@ -777,14 +777,20 @@ elif feature == lang["dyslexia"]:
         """, unsafe_allow_html=True)
 
 # ---------------------------------------------------
-# QUIZ
+# QUIZ GENERATOR
 # ---------------------------------------------------
 
 elif feature == lang["quiz"]:
 
     st.header(
         translate_text(
-            "🎯 Smart AI Quiz"
+            "❓ AI Quiz Generator"
+        )
+    )
+
+    exam = st.text_input(
+        translate_text(
+            "📝 Enter Exam Name"
         )
     )
 
@@ -794,115 +800,257 @@ elif feature == lang["quiz"]:
         )
     )
 
-    def generate_question(topic):
-
-        questions = [
-
-            f"What is the purpose of {topic}?",
-
-            f"Why is {topic} important?",
-
-            f"What is an application of {topic}?"
-        ]
-
-        q_text = random.choice(questions)
-
-        correct = (
-            f"{topic} improves automation"
-        )
-
-        options = [
-            correct,
-            f"{topic} has no use",
-            f"{topic} removes humans",
-            f"{topic} works offline only"
-        ]
-
-        random.shuffle(options)
-
-        return q_text, options, correct
+    num_questions = st.slider(
+        translate_text(
+            "📊 Select Number of Questions"
+        ),
+        1,
+        10,
+        5
+    )
 
     if st.button(
         translate_text(
-            "🚀 Start Quiz"
+            "🚀 Generate Quiz"
         )
     ):
 
-        st.session_state.started = True
-        st.session_state.q_no = 1
-        st.session_state.score = 0
-
-    if st.session_state.started:
-
-        if st.session_state.q_no > 10:
-
-            st.success(
-                translate_text(
-                    f"🏆 Final Score: {st.session_state.score}/10"
-                )
-            )
-
-            st.stop()
-
-        q_text, options, correct = generate_question(topic)
-
         st.subheader(
             translate_text(
-                f"Question {st.session_state.q_no}/10"
+                "📚 Generated Questions"
             )
         )
 
-        translated_options = [
-            translate_text(opt)
-            for opt in options
+        # -----------------------------------------
+        # QUESTION BANK
+        # -----------------------------------------
+
+        question_templates = [
+
+            {
+                "question":
+                f"What is the primary purpose of {topic}?",
+
+                "correct":
+                f"{topic} improves efficiency and problem-solving",
+
+                "wrong": [
+                    f"{topic} has no practical use",
+                    f"{topic} only works manually",
+                    f"{topic} decreases productivity"
+                ]
+            },
+
+            {
+                "question":
+                f"Which field commonly uses {topic}?",
+
+                "correct":
+                "Education, healthcare, and technology industries",
+
+                "wrong": [
+                    "Only farming industries",
+                    "Only sports activities",
+                    "Only transportation systems"
+                ]
+            },
+
+            {
+                "question":
+                f"What is an advantage of {topic}?",
+
+                "correct":
+                "Automation and improved productivity",
+
+                "wrong": [
+                    "Slower performance",
+                    "No real-world applications",
+                    "Increased manual work"
+                ]
+            },
+
+            {
+                "question":
+                f"How does {topic} help society?",
+
+                "correct":
+                "It improves efficiency and accessibility",
+
+                "wrong": [
+                    "It removes all technology",
+                    "It increases errors",
+                    "It reduces innovation"
+                ]
+            },
+
+            {
+                "question":
+                f"What is a real-world example of {topic}?",
+
+                "correct":
+                f"{topic} applications in education and industries",
+
+                "wrong": [
+                    "Stone-age communication",
+                    "Traditional handwritten storage only",
+                    "No modern usage"
+                ]
+            },
+
+            {
+                "question":
+                f"What is the future scope of {topic}?",
+
+                "correct":
+                "Smart automation and innovation",
+
+                "wrong": [
+                    "Technology removal",
+                    "Reduced development",
+                    "No future applications"
+                ]
+            },
+
+            {
+                "question":
+                f"Why is {topic} important today?",
+
+                "correct":
+                "It supports modern digital systems",
+
+                "wrong": [
+                    "It is outdated",
+                    "It reduces efficiency",
+                    "It has no applications"
+                ]
+            },
+
+            {
+                "question":
+                f"What challenge is associated with {topic}?",
+
+                "correct":
+                "Implementation and resource management",
+
+                "wrong": [
+                    "No challenges exist",
+                    "It works perfectly everywhere",
+                    "It removes all human effort instantly"
+                ]
+            },
+
+            {
+                "question":
+                f"Which statement about {topic} is correct?",
+
+                "correct":
+                f"{topic} is useful in modern industries",
+
+                "wrong": [
+                    f"{topic} has no importance",
+                    f"{topic} only works offline",
+                    f"{topic} is never used practically"
+                ]
+            },
+
+            {
+                "question":
+                f"How does {topic} improve learning?",
+
+                "correct":
+                "By making systems smarter and interactive",
+
+                "wrong": [
+                    "By reducing accessibility",
+                    "By removing automation",
+                    "By slowing down communication"
+                ]
+            }
         ]
 
-        st.write(
-            translate_text(q_text)
-        )
+        # -----------------------------------------
+        # RANDOM QUESTIONS
+        # -----------------------------------------
 
-        selected = st.radio(
-            translate_text(
-                "Choose Answer"
-            ),
-            translated_options
-        )
+        random.shuffle(question_templates)
 
-        if st.button(
-            translate_text(
-                "✅ Submit"
+        selected_questions = question_templates[:num_questions]
+
+        # -----------------------------------------
+        # DISPLAY QUESTIONS
+        # -----------------------------------------
+
+        score = 0
+
+        for idx, q in enumerate(selected_questions):
+
+            st.markdown("---")
+
+            question = translate_text(
+                q["question"]
             )
-        ):
 
-            if selected == translate_text(correct):
+            correct = translate_text(
+                q["correct"]
+            )
 
-                st.success(
-                    translate_text(
-                        "✅ Correct"
+            wrong_options = [
+                translate_text(opt)
+                for opt in q["wrong"]
+            ]
+
+            options = [correct] + wrong_options
+
+            random.shuffle(options)
+
+            st.subheader(
+                f"{idx+1}. {question}"
+            )
+
+            user_answer = st.radio(
+                translate_text(
+                    "Choose Answer"
+                ),
+                options,
+                key=f"quiz_{idx}"
+            )
+
+            if st.button(
+                translate_text(
+                    f"✅ Submit Question {idx+1}"
+                ),
+                key=f"submit_{idx}"
+            ):
+
+                if user_answer == correct:
+
+                    st.success(
+                        translate_text(
+                            "✅ Correct Answer"
+                        )
                     )
-                )
 
-                st.session_state.score += 1
+                    score += 1
 
-            else:
+                else:
 
-                st.error(
-                    translate_text(
-                        "❌ Wrong"
+                    st.error(
+                        translate_text(
+                            "❌ Wrong Answer"
+                        )
                     )
-                )
 
-            st.session_state.q_no += 1
+                    st.info(
+                        translate_text(
+                            f"Correct Answer: {correct}"
+                        )
+                    )
 
-            st.rerun()
+        st.markdown("---")
 
-        st.progress(
-            st.session_state.q_no / 10
-        )
-
-        st.write(
+        st.success(
             translate_text(
-                f"📊 Score: {st.session_state.score}"
+                "🎉 Quiz Generated Successfully"
             )
         )
 
