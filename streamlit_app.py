@@ -15,27 +15,7 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------
-# SESSION STATE
-# ---------------------------------------------------
-
-session_defaults = {
-    "summary": "",
-    "quiz_started": False,
-    "quiz_score": 0,
-    "quiz_data": [],
-    "answer_feedback": {},
-    "quiz_history": [],
-    "last_feature": "",
-    "notes_history": [],
-    "speech_history": []
-}
-
-for key, value in session_defaults.items():
-    if key not in st.session_state:
-        st.session_state[key] = value
-
-# ---------------------------------------------------
-# LANGUAGES
+# LANGUAGE SUPPORT
 # ---------------------------------------------------
 
 LANGUAGES = {
@@ -70,7 +50,7 @@ LANGUAGES = {
 }
 
 # ---------------------------------------------------
-# LANGUAGE SELECTOR
+# SIDEBAR LANGUAGE
 # ---------------------------------------------------
 
 selected_language = st.sidebar.selectbox(
@@ -81,19 +61,37 @@ selected_language = st.sidebar.selectbox(
 target_lang = LANGUAGES[selected_language]
 
 # ---------------------------------------------------
-# TRANSLATION FUNCTION
+# TRANSLATOR
 # ---------------------------------------------------
 
 def translate_text(text):
-
     try:
         return GoogleTranslator(
             source='auto',
             target=target_lang
         ).translate(text)
-
     except:
         return text
+
+# ---------------------------------------------------
+# SESSION STATES
+# ---------------------------------------------------
+
+session_defaults = {
+    "summary": "",
+    "quiz_started": False,
+    "quiz_score": 0,
+    "quiz_data": [],
+    "answer_feedback": {},
+    "quiz_history": [],
+    "summary_history": [],
+    "speech_history": [],
+    "dyslexia_history": []
+}
+
+for key, value in session_defaults.items():
+    if key not in st.session_state:
+        st.session_state[key] = value
 
 # ---------------------------------------------------
 # UI TEXT
@@ -106,11 +104,9 @@ base_text = {
     "home": "🏠 Home",
     "summarizer": "🧠 AI Notes Summarizer",
     "speech": "🎤 Speech-to-Text",
-    "dyslexia": "📖 Dyslexia Mode",
-    "quiz": "❓ Quiz Generator",
-    "accessibility": "♿ Accessibility Support",
-    "welcome": "Welcome to EduAccess AI",
-    "future": "🚀 Future Scope"
+    "dyslexia": "📖 Dyslexia-Friendly Reading",
+    "quiz": "❓ AI Quiz Generator",
+    "accessibility": "♿ Accessibility Support"
 }
 
 lang = {}
@@ -150,35 +146,21 @@ feature = st.sidebar.selectbox(
 )
 
 # ---------------------------------------------------
-# RESET QUIZ WHEN LEAVING QUIZ PAGE
-# ---------------------------------------------------
-
-if (
-    st.session_state.last_feature == lang["quiz"]
-    and feature != lang["quiz"]
-):
-
-    st.session_state.quiz_started = False
-    st.session_state.quiz_score = 0
-    st.session_state.quiz_data = []
-    st.session_state.answer_feedback = {}
-
-st.session_state.last_feature = feature
-
-# ---------------------------------------------------
 # HIGH CONTRAST MODE
 # ---------------------------------------------------
 
 if high_contrast:
-
-    st.markdown("""
-    <style>
-    .stApp {
-        background-color: black;
-        color: white;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+    st.markdown(
+        """
+        <style>
+        .stApp {
+            background-color: black;
+            color: white;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
 # ---------------------------------------------------
 # HOME
@@ -186,11 +168,19 @@ if high_contrast:
 
 if feature == lang["home"]:
 
-    st.title(lang["title"])
+    st.title(translate_text("🚀 EduAccess AI"))
 
-    st.subheader(lang["subtitle"])
+    st.subheader(
+        translate_text(
+            "AI-Powered Accessibility Platform"
+        )
+    )
 
-    st.success(lang["welcome"])
+    st.success(
+        translate_text(
+            "Welcome to EduAccess AI"
+        )
+    )
 
     st.markdown("---")
 
@@ -201,16 +191,9 @@ if feature == lang["home"]:
     col1, col2 = st.columns(2)
 
     with col1:
-
         st.info(
             translate_text(
                 "🧠 AI Notes Summarizer"
-            )
-        )
-
-        st.write(
-            translate_text(
-                "Generate AI-powered educational summaries."
             )
         )
 
@@ -220,35 +203,16 @@ if feature == lang["home"]:
             )
         )
 
-        st.write(
-            translate_text(
-                "Convert speech into text with AI."
-            )
-        )
-
     with col2:
-
         st.warning(
             translate_text(
-                "📖 Dyslexia Reading Mode"
-            )
-        )
-
-        st.write(
-            translate_text(
-                "Accessibility-focused reading support."
+                "📖 Dyslexia-Friendly Reading"
             )
         )
 
         st.error(
             translate_text(
-                "❓ Smart Quiz Generator"
-            )
-        )
-
-        st.write(
-            translate_text(
-                "Generate intelligent quiz questions."
+                "❓ AI Quiz Generator"
             )
         )
 
@@ -265,22 +229,30 @@ elif feature == lang["summarizer"]:
     col1, col2 = st.columns([1, 1])
 
     with col1:
-
         if st.button(
             translate_text("🆕 New Notes")
         ):
-
             st.session_state.summary = ""
             st.rerun()
 
-    sample_text = """
-Artificial Intelligence is transforming education
-through accessibility and smart learning systems.
-"""
+    with col2:
+        with st.expander(
+            translate_text("📚 Notes History")
+        ):
+            if st.session_state.summary_history:
+                for idx, item in enumerate(
+                    reversed(st.session_state.summary_history),
+                    start=1
+                ):
+                    st.subheader(f"Notes {idx}")
+                    st.write(item)
+            else:
+                st.info(
+                    translate_text("No history available")
+                )
 
     text = st.text_area(
         translate_text("📌 Paste Notes Here"),
-        value=sample_text,
         height=250
     )
 
@@ -294,17 +266,13 @@ through accessibility and smart learning systems.
     ):
 
         sentences = [
-            s.strip()
-            for s in text.split('.')
-            if s.strip()
+            s.strip() for s in text.split('.') if s.strip()
         ]
 
         if summary_length == "Short":
             num = max(2, len(sentences)//4)
-
         elif summary_length == "Medium":
             num = max(4, len(sentences)//2)
-
         else:
             num = len(sentences)
 
@@ -314,7 +282,7 @@ through accessibility and smart learning systems.
 
         st.session_state.summary = translated_summary
 
-        st.session_state.notes_history.append(
+        st.session_state.summary_history.append(
             translated_summary
         )
 
@@ -326,7 +294,7 @@ through accessibility and smart learning systems.
         <div style="
             background-color:#14532d;
             padding:20px;
-            border-radius:12px;
+            border-radius:15px;
             color:white;
             font-size:{font_size}px;
             line-height:2;
@@ -334,20 +302,6 @@ through accessibility and smart learning systems.
         {translated_summary}
         </div>
         """, unsafe_allow_html=True)
-
-    if st.session_state.notes_history:
-
-        st.markdown("---")
-
-        st.subheader(
-            translate_text("📘 Notes History")
-        )
-
-        for item in reversed(
-            st.session_state.notes_history
-        ):
-
-            st.info(item)
 
 # ---------------------------------------------------
 # SPEECH TO TEXT
@@ -362,12 +316,26 @@ elif feature == lang["speech"]:
     col1, col2 = st.columns([1, 1])
 
     with col1:
-
         if st.button(
             translate_text("🆕 New Speech")
         ):
-
             st.rerun()
+
+    with col2:
+        with st.expander(
+            translate_text("📚 Speech History")
+        ):
+            if st.session_state.speech_history:
+                for idx, item in enumerate(
+                    reversed(st.session_state.speech_history),
+                    start=1
+                ):
+                    st.subheader(f"Speech {idx}")
+                    st.write(item)
+            else:
+                st.info(
+                    translate_text("No history available")
+                )
 
     answer_type = st.selectbox(
         translate_text("📚 Select Explanation Type"),
@@ -391,21 +359,15 @@ elif feature == lang["speech"]:
             delete=False,
             suffix=".wav"
         ) as tmp:
-
             tmp.write(source.read())
             audio_path = tmp.name
 
         recognizer = sr.Recognizer()
 
         try:
-
             with sr.AudioFile(audio_path) as src:
-
                 audio_data = recognizer.record(src)
-
-                text = recognizer.recognize_google(
-                    audio_data
-                )
+                text = recognizer.recognize_google(audio_data)
 
             st.subheader(
                 translate_text("📝 Your Question")
@@ -413,73 +375,107 @@ elif feature == lang["speech"]:
 
             st.info(text)
 
-        except:
+            question = text.lower()
 
-            text = ""
-
-            st.error(
-                translate_text(
-                    "❌ Could not understand audio."
-                )
-            )
-
-        if text:
-
-            st.subheader(
-                translate_text("🤖 AI Explanation")
-            )
-
-            if answer_type == "Short":
+            if "difference" in question:
 
                 answer = f"""
-{text} is an important topic.
+<table border='1' style='width:100%; color:white;'>
+<tr>
+<th>Feature</th>
+<th>Supervised Learning</th>
+<th>Unsupervised Learning</th>
+</tr>
+<tr>
+<td>Data</td>
+<td>Labeled Data</td>
+<td>Unlabeled Data</td>
+</tr>
+<tr>
+<td>Purpose</td>
+<td>Prediction</td>
+<td>Pattern Detection</td>
+</tr>
+<tr>
+<td>Examples</td>
+<td>Spam Detection</td>
+<td>Customer Segmentation</td>
+</tr>
+</table>
 
 Real-world Example:
-Used in education, business, and technology.
+Netflix recommendations use unsupervised learning while email spam filters use supervised learning.
 """
 
-            elif answer_type == "Medium":
+            elif "excel" in question:
 
-                answer = f"""
-{text} is an important concept used in academics and industries.
+                if answer_type == "Short":
+                    answer = "Excel is spreadsheet software used for calculations and reports."
 
-Key Points:
-• Improves learning
-• Helps solve problems
-• Used in modern systems
+                elif answer_type == "Medium":
+                    answer = """
+Excel is used for calculations, charts, and data analysis.
+
+Examples:
+• Attendance sheets
+• Budget management
+• Student marksheets
+"""
+
+                else:
+                    answer = """
+Microsoft Excel is a spreadsheet application used for organizing, calculating, analyzing, and visualizing data.
+
+Features:
+• Formulas
+• Charts
+• Tables
+• Pivot Tables
+• Data Analysis
 
 Real-world Examples:
-• Education
-• Healthcare
-• Business technologies
+• Banking reports
+• Inventory management
+• School result systems
+• Salary calculations
+"""
+
+            elif "artificial intelligence" in question or "ai" in question:
+
+                answer = """
+Artificial Intelligence enables machines to simulate human intelligence.
+
+Applications:
+• Chatbots
+• Voice Assistants
+• Medical Diagnosis
+• Self-driving Cars
+
+Real-world Examples:
+• ChatGPT
+• Alexa
+• Netflix Recommendations
 """
 
             else:
 
                 answer = f"""
-{text} is an important concept used in science, education, and technology.
+{text} is an important topic related to education and technology.
 
-Advantages:
-• Better learning
-• Improved productivity
-• Smart automation
-• Problem-solving
+Key Points:
+• Improves learning
+• Supports innovation
+• Helps solve real-world problems
 
-Real-world Examples:
-• Educational systems
-• AI platforms
-• Healthcare technologies
-• Banking software
-
-Understanding {text} helps students and professionals apply concepts practically.
+Real-world Example:
+{text} is widely used in academics and industries.
 """
 
             translated_answer = translate_text(answer)
 
-            st.session_state.speech_history.append({
-                "question": text,
-                "answer": translated_answer
-            })
+            st.subheader(
+                translate_text("🤖 AI Explanation")
+            )
 
             st.markdown(f"""
             <div style="
@@ -494,25 +490,17 @@ Understanding {text} helps students and professionals apply concepts practically
             </div>
             """, unsafe_allow_html=True)
 
-    if st.session_state.speech_history:
+            st.session_state.speech_history.append({
+                "question": text,
+                "answer": answer
+            })
 
-        st.markdown("---")
-
-        st.subheader(
-            translate_text("📜 Speech History")
-        )
-
-        for item in reversed(
-            st.session_state.speech_history
-        ):
-
-            st.info(
+        except:
+            st.error(
                 translate_text(
-                    f"Question: {item['question']}"
+                    "❌ Could not understand audio"
                 )
             )
-
-            st.success(item["answer"])
 
 # ---------------------------------------------------
 # DYSLEXIA MODE
@@ -521,14 +509,36 @@ Understanding {text} helps students and professionals apply concepts practically
 elif feature == lang["dyslexia"]:
 
     st.header(
-        translate_text("📖 Dyslexia-Friendly Reading")
+        translate_text(
+            "📖 Dyslexia-Friendly Reading"
+        )
     )
 
-    if not st.session_state.summary:
+    col1, col2 = st.columns([1, 1])
 
+    with col1:
+        if st.button(
+            translate_text("🆕 New Reading")
+        ):
+            st.session_state.summary = ""
+            st.rerun()
+
+    with col2:
+        with st.expander(
+            translate_text("📚 Reading History")
+        ):
+            if st.session_state.summary_history:
+                for idx, item in enumerate(
+                    reversed(st.session_state.summary_history),
+                    start=1
+                ):
+                    st.subheader(f"Reading {idx}")
+                    st.write(item)
+
+    if not st.session_state.summary:
         st.warning(
             translate_text(
-                "⚠️ Generate summary first."
+                "⚠️ Generate summary first"
             )
         )
 
@@ -558,7 +568,7 @@ elif feature == lang["quiz"]:
         translate_text("❓ AI Quiz Generator")
     )
 
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([1, 1])
 
     with col1:
 
@@ -570,7 +580,40 @@ elif feature == lang["quiz"]:
             st.session_state.quiz_score = 0
             st.session_state.quiz_data = []
             st.session_state.answer_feedback = {}
+
             st.rerun()
+
+    with col2:
+
+        with st.expander(
+            translate_text("📚 Quiz History")
+        ):
+
+            if st.session_state.quiz_history:
+
+                for idx, item in enumerate(
+                    reversed(st.session_state.quiz_history),
+                    start=1
+                ):
+
+                    st.subheader(f"Quiz {idx}")
+
+                    st.write(
+                        translate_text(
+                            f"Topic: {item['topic']}"
+                        )
+                    )
+
+                    st.write(
+                        translate_text(
+                            f"Score: {item['score']}"
+                        )
+                    )
+
+            else:
+                st.info(
+                    translate_text("No quiz history available")
+                )
 
     exam = st.text_input(
         translate_text("📝 Enter Exam Name")
@@ -597,37 +640,33 @@ elif feature == lang["quiz"]:
 
         question_bank = []
 
-        for i in range(15):
+        for i in range(1, 16):
 
             question_bank.append({
-
-                "question":
-                f"What is the importance of {topic}?",
-
-                "correct":
-                f"{topic} supports smart digital systems",
-
+                "question": f"What is an important concept of {topic}?",
+                "correct": f"{topic} improves efficiency and innovation",
                 "wrong": [
                     f"{topic} has no practical use",
                     f"{topic} decreases productivity",
-                    f"{topic} removes innovation"
+                    f"{topic} only works manually"
                 ],
-
-                "reason":
-                f"{topic} improves automation, productivity, and modern learning."
+                "reason": f"{topic} is widely used in industries, education, and technology."
             })
 
         random.shuffle(question_bank)
 
-        st.session_state.quiz_data = question_bank[:num_questions]
+        selected_questions = question_bank[:num_questions]
 
-        for q in st.session_state.quiz_data:
+        st.session_state.quiz_data = []
+
+        for q in selected_questions:
 
             options = [q["correct"]] + q["wrong"]
-
             random.shuffle(options)
 
             q["options"] = options
+
+            st.session_state.quiz_data.append(q)
 
     if st.session_state.quiz_started:
 
@@ -666,41 +705,28 @@ elif feature == lang["quiz"]:
                 )
 
                 if is_correct:
-
                     st.session_state.quiz_score += 2
 
                 st.session_state.answer_feedback[idx] = {
-
                     "correct": is_correct,
                     "correct_answer": q["correct"],
                     "reason": q["reason"],
-                    "points": 2 if is_correct else 0
+                    "score": st.session_state.quiz_score
                 }
-
-                st.session_state.quiz_history.append({
-
-                    "question": q["question"],
-                    "selected": selected,
-                    "correct": q["correct"],
-                    "reason": q["reason"]
-                })
 
             if idx in st.session_state.answer_feedback:
 
                 feedback = st.session_state.answer_feedback[idx]
 
                 if feedback["correct"]:
-
                     st.success(
                         translate_text(
                             "✅ Correct Answer"
                         )
                     )
-
                     st.balloons()
 
                 else:
-
                     st.error(
                         translate_text(
                             "❌ Wrong Answer"
@@ -721,15 +747,15 @@ elif feature == lang["quiz"]:
 
                 st.success(
                     translate_text(
-                        f"🏆 Points Achieved: {feedback['points']}"
+                        f"🏆 Points Achieved: {feedback['score']}"
                     )
                 )
-
-        st.markdown("---")
 
         total_score = len(
             st.session_state.quiz_data
         ) * 2
+
+        st.markdown("---")
 
         st.header(
             translate_text(
@@ -737,38 +763,17 @@ elif feature == lang["quiz"]:
             )
         )
 
-        st.markdown("---")
-
-        st.subheader(
-            translate_text("📘 Quiz History")
-        )
-
-        for item in reversed(
-            st.session_state.quiz_history
+        if st.button(
+            translate_text("💾 Save Quiz History")
         ):
 
-            st.info(
-                translate_text(
-                    f"Question: {item['question']}"
-                )
-            )
-
-            st.write(
-                translate_text(
-                    f"Your Answer: {item['selected']}"
-                )
-            )
+            st.session_state.quiz_history.append({
+                "topic": topic,
+                "score": f"{st.session_state.quiz_score}/{total_score}"
+            })
 
             st.success(
-                translate_text(
-                    f"Correct Answer: {item['correct']}"
-                )
-            )
-
-            st.warning(
-                translate_text(
-                    f"Reason: {item['reason']}"
-                )
+                translate_text("Quiz Saved Successfully")
             )
 
 # ---------------------------------------------------
@@ -783,19 +788,17 @@ elif feature == lang["accessibility"]:
         )
     )
 
-    accessibility_features = [
-
-        "👁️ Blind → Audio Support",
-        "👂 Deaf → Text Interface",
-        "🗣️ Speech Impaired → Text Input",
-        "🦽 Mobility Support → Large UI",
+    features = [
+        "👁️ Blind Support → Audio + Screen Reader",
+        "👂 Deaf Support → Text Interface",
+        "🗣️ Speech Assistance",
         "📖 Dyslexia-Friendly Reading",
-        "🌍 28 Language Translation",
-        "🔠 Adjustable Fonts"
+        "🌍 28 Language Support",
+        "🔠 Adjustable Font Size",
+        "🌗 High Contrast Mode"
     ]
 
-    for item in accessibility_features:
-
+    for item in features:
         st.write(
             translate_text(item)
         )
