@@ -805,3 +805,60 @@ elif feature == lang["accessibility"]:
         st.write(
             translate_text(item)
         )
+
+# ---------------------------------------------------
+# AI ASSISTANT
+# ---------------------------------------------------
+
+elif feature == "🤖 AI Assistant":
+
+    st.header("🤖 EduAccess AI Assistant")
+
+    st.write("""
+Ask questions about how to use EduAccess AI.
+""")
+
+    user_query = st.text_input(
+        "Ask your question"
+    )
+
+    if st.button("Ask Assistant"):
+
+        query = user_query.lower()
+
+        if "summary" in query:
+
+            st.success("""
+1. Open AI Notes Summarizer
+2. Paste notes or upload PDF
+3. Click Generate Summary
+""")
+
+        elif "quiz" in query:
+
+            st.success("""
+1. Open Quiz Generator
+2. Enter exam name
+3. Enter topic
+4. Generate questions
+""")
+
+        elif "speech" in query:
+
+            st.success("""
+1. Open Speech-to-Text
+2. Click microphone
+3. Speak clearly
+4. AI converts speech into text
+""")
+
+        else:
+
+            st.info("""
+Welcome to EduAccess AI.
+Ask about:
+- Summary
+- Quiz
+- Speech
+- Accessibility
+""")
