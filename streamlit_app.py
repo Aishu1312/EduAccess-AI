@@ -821,33 +821,45 @@ elif feature == lang["dyslexia"]:
         )
     )
 
-    dyslexia_text = translate_text(
-        """
-Artificial Intelligence is transforming education
-by making learning more personalized, accessible,
-and inclusive for students across the world.
-"""
-    )
-
-    st.markdown(f"""
-    <div style="
-        font-size:{font_size}px;
-        line-height:2.5;
-        letter-spacing:2px;
-        background-color:#f4f4f4;
-        padding:25px;
-        border-radius:15px;
-        color:black;
-    ">
-    {dyslexia_text}
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.success(
+    st.write(
         translate_text(
-            "✅ Accessibility Mode Enabled"
+            "This mode improves readability using larger fonts, spacing, and simplified layouts."
         )
     )
+
+    # CHECK SUMMARY EXISTS
+
+    if not st.session_state.summary:
+
+        st.warning(
+            translate_text(
+                "⚠️ Please generate summary first from AI Notes Summarizer."
+            )
+        )
+
+    else:
+
+        st.success(
+            translate_text(
+                "✅ Dyslexia-Friendly Mode Enabled"
+            )
+        )
+
+        st.markdown(f"""
+        <div style="
+            font-size:{font_size + 10}px;
+            line-height:3;
+            letter-spacing:2px;
+            background-color:#fefce8;
+            padding:35px;
+            border-radius:20px;
+            color:black;
+            font-family:Arial;
+            box-shadow:0px 4px 15px rgba(0,0,0,0.2);
+        ">
+        {st.session_state.summary}
+        </div>
+        """, unsafe_allow_html=True)
 
 # ---------------------------------------------------
 # ACCESSIBILITY
