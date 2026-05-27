@@ -878,71 +878,191 @@ elif feature == lang["accessibility"]:
         )
 
 # ---------------------------------------------------
-# AI ASSISTANT
+# FLOATING AI CHAT ASSISTANT
 # ---------------------------------------------------
 
-elif feature == lang["assistant"]:
+st.markdown("""
+<style>
 
-    st.header(
-        translate_text(
-            "🤖 EduAccess AI Assistant"
-        )
-    )
+/* Floating Chat Button */
+.chat-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #2563eb;
+    color: white;
+    padding: 15px 18px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.3);
+    z-index: 9999;
+    animation: pulse 2s infinite;
+}
 
-    st.write(
-        translate_text(
-            "Ask questions about how to use EduAccess AI."
-        )
-    )
+/* Pulse Animation */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
 
-    user_query = st.text_input(
-        translate_text("Ask your question")
-    )
+.chat-box {
+    background-color: #0f172a;
+    padding: 20px;
+    border-radius: 15px;
+    color: white;
+    margin-top: 20px;
+}
 
-    if st.button(
-        translate_text("Ask Assistant")
-    ):
+</style>
+""", unsafe_allow_html=True)
 
-        query = user_query.lower()
+# Floating button
+st.markdown(
+    """
+    <div class="chat-button">
+    🤖 Need Help?
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
-        if "summary" in query:
+# ---------------------------------------------------
+# CHAT ASSISTANT SECTION
+# ---------------------------------------------------
 
-            response = """
-1. Open AI Notes Summarizer
-2. Paste notes
-3. Select summary length
-4. Click Generate Summary
-"""
+st.markdown("---")
 
-        elif "quiz" in query:
+st.header("🤖 EduAccess AI Assistant")
 
-            response = """
-1. Open Quiz Generator
-2. Enter exam name
-3. Enter topic
-4. Generate quiz
-"""
+st.write("""
+Welcome to EduAccess AI Assistant.
 
-        elif "speech" in query:
+I can help you use:
+✅ AI Notes Summarizer
+✅ Speech-to-Text
+✅ Dyslexia Reading Mode
+✅ Quiz Generator
+✅ Accessibility Support
+""")
 
-            response = """
-1. Open Speech-to-Text
-2. Record your voice
-3. AI converts speech into text
-"""
+user_query = st.text_input(
+    "💬 Ask Your Question"
+)
 
-        else:
+if st.button("🚀 Ask Assistant"):
 
-            response = """
-Welcome to EduAccess AI.
+    query = user_query.lower()
 
-You can ask about:
-• Summary
-• Quiz
-• Speech
-• Accessibility
-"""
+    # ---------------------------------------
+    # SUMMARIZER
+    # ---------------------------------------
 
-        st.success(
-            translate_text(response)
-        )
+    if "summary" in query or "notes" in query:
+
+        st.success("""
+📘 How to Use AI Notes Summarizer
+
+1️⃣ Open AI Notes Summarizer  
+2️⃣ Paste educational notes  
+3️⃣ Select summary length  
+4️⃣ Click Generate Summary  
+5️⃣ AI will generate concise notes
+""")
+
+    # ---------------------------------------
+    # QUIZ
+    # ---------------------------------------
+
+    elif "quiz" in query:
+
+        st.success("""
+❓ How to Use Quiz Generator
+
+1️⃣ Open Quiz Generator  
+2️⃣ Enter exam name  
+3️⃣ Enter topic  
+4️⃣ Select number of questions  
+5️⃣ Click Generate Quiz
+""")
+
+    # ---------------------------------------
+    # SPEECH
+    # ---------------------------------------
+
+    elif "speech" in query or "voice" in query:
+
+        st.success("""
+🎤 How to Use Speech-to-Text
+
+1️⃣ Open Speech-to-Text  
+2️⃣ Click microphone  
+3️⃣ Speak clearly  
+4️⃣ AI converts speech into text
+""")
+
+    # ---------------------------------------
+    # DYSLEXIA
+    # ---------------------------------------
+
+    elif "dyslexia" in query:
+
+        st.success("""
+📖 Dyslexia-Friendly Reading Mode
+
+This feature helps students with:
+✅ Reading difficulties
+✅ Dyslexia
+✅ Visual learning issues
+
+Features:
+• Large fonts
+• Better spacing
+• Multilingual reading
+• Improved readability
+""")
+
+    # ---------------------------------------
+    # ACCESSIBILITY
+    # ---------------------------------------
+
+    elif "accessibility" in query:
+
+        st.success("""
+♿ Accessibility Features
+
+✅ 28 Language Support  
+✅ Speech Assistance  
+✅ High Contrast Mode  
+✅ Dyslexia-Friendly Reading  
+✅ AI Learning Support  
+✅ Voice Interaction
+""")
+
+    # ---------------------------------------
+    # DEFAULT
+    # ---------------------------------------
+
+    else:
+
+        st.info("""
+🤖 I can help you with:
+
+• Notes Summarizer
+• Quiz Generator
+• Speech-to-Text
+• Accessibility Features
+• Dyslexia Mode
+
+Try asking:
+➡️ How to generate summary?
+➡️ How to use quiz?
+➡️ How speech recognition works?
+""")
