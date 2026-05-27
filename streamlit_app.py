@@ -98,15 +98,18 @@ for key, value in session_defaults.items():
 # ---------------------------------------------------
 
 base_text = {
-    "title": "🚀 EduAccess AI",
-    "subtitle": "AI-Powered Accessibility Platform",
-    "choose_feature": "Choose Feature",
-    "home": "🏠 Home",
-    "summarizer": "🧠 AI Notes Summarizer",
-    "speech": "🎤 Speech-to-Text",
-    "dyslexia": "📖 Dyslexia-Friendly Reading",
-    "quiz": "❓ AI Quiz Generator",
-    "accessibility": "♿ Accessibility Support"
+    feature = st.sidebar.selectbox(
+    "Choose Feature",
+    [
+        "🏠 Home",
+        "🧠 AI Notes Summarizer",
+        "🎤 Speech-to-Text",
+        "📖 Dyslexia-Friendly Mode",
+        "❓ Quiz Generator",
+        "♿ Accessibility Support",
+        "🤖 AI Assistant"
+    ]
+)
 }
 
 lang = {}
