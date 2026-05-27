@@ -455,6 +455,56 @@ elif feature == lang["quiz"]:
         translate_text("❓ AI Quiz Generator")
     )
 
+    col1, col2 = st.columns([1, 1])
+
+    with col1:
+
+        if st.button(
+            translate_text("🆕 New Quiz")
+        ):
+
+            st.session_state.quiz_started = False
+            st.session_state.quiz_score = 0
+            st.session_state.quiz_data = []
+            st.session_state.answer_feedback = {}
+
+            st.rerun()
+
+    with col2:
+
+        with st.expander(
+            translate_text("📚 Quiz History")
+        ):
+
+            if st.session_state.quiz_history:
+
+                for idx, item in enumerate(
+                    reversed(st.session_state.quiz_history),
+                    start=1
+                ):
+
+                    st.subheader(f"Quiz {idx}")
+
+                    st.write(
+                        translate_text(
+                            f"Topic: {item['topic']}"
+                        )
+                    )
+
+                    st.write(
+                        translate_text(
+                            f"Score: {item['score']}"
+                        )
+                    )
+
+            else:
+
+                st.info(
+                    translate_text(
+                        "No quiz history available"
+                    )
+                )
+
     exam = st.text_input(
         translate_text("📝 Enter Exam Name")
     )
@@ -464,14 +514,14 @@ elif feature == lang["quiz"]:
     )
 
     num_questions = st.slider(
-        translate_text("📊 Number of Questions"),
+        translate_text("📊 Select Number of Questions"),
         1,
-        10,
+        15,
         5
     )
 
     difficulty = st.selectbox(
-        translate_text("📈 Difficulty"),
+        translate_text("📈 Select Difficulty"),
         ["Easy", "Medium", "Hard"]
     )
 
@@ -479,34 +529,200 @@ elif feature == lang["quiz"]:
         translate_text("🚀 Generate Quiz")
     ):
 
-        st.success(
-            translate_text(
-                f"{num_questions} Questions Generated"
-            )
-        )
+        st.session_state.quiz_started = True
+        st.session_state.quiz_score = 0
+        st.session_state.answer_feedback = {}
 
         question_bank = [
-            f"What is {topic}?",
-            f"Explain advantages of {topic}.",
-            f"Where is {topic} used?",
-            f"What are applications of {topic}?",
-            f"Why is {topic} important?",
-            f"Explain future scope of {topic}.",
-            f"What are challenges in {topic}?",
-            f"Define {topic}.",
-            f"Explain working of {topic}.",
-            f"Compare {topic} with traditional methods."
+
+            {
+                "question": f"What is the main purpose of {topic}?",
+                "correct": f"{topic} improves efficiency and automation",
+                "wrong": [
+                    f"{topic} decreases productivity",
+                    f"{topic} is outdated",
+                    f"{topic} has no practical use"
+                ],
+                "reason": f"{topic} is widely used for innovation and problem solving."
+            },
+
+            {
+                "question": f"Which industry uses {topic} the most?",
+                "correct": "Healthcare and Technology",
+                "wrong": [
+                    "Only agriculture",
+                    "Only sports",
+                    "None"
+                ],
+                "reason": f"{topic} is heavily used in healthcare and technology sectors."
+            },
+
+            {
+                "question": f"What is an important benefit of {topic}?",
+                "correct": "Automation and intelligent decision-making",
+                "wrong": [
+                    "Increases manual work",
+                    "Reduces accuracy",
+                    "No benefits"
+                ],
+                "reason": f"{topic} helps automate tasks and improve decisions."
+            },
+
+            {
+                "question": f"Future scope of {topic} includes?",
+                "correct": "Advanced AI applications",
+                "wrong": [
+                    "No future growth",
+                    "Only paperwork",
+                    "Typewriting"
+                ],
+                "reason": f"{topic} has strong future demand in AI and automation."
+            },
+
+            {
+                "question": f"What skill is important for learning {topic}?",
+                "correct": "Problem-solving",
+                "wrong": [
+                    "Only handwriting",
+                    "Sleeping",
+                    "Ignoring technology"
+                ],
+                "reason": "Problem-solving is essential in technology fields."
+            }
+
         ]
 
         random.shuffle(question_bank)
 
-        for i in range(num_questions):
+        selected_questions = question_bank[:num_questions]
+
+        st.session_state.quiz_data = []
+
+        for q in selected_questions:
+
+            options = [q["correct"]] + q["wrong"]
+
+            random.shuffle(options)
+
+            q["options"] = options
+
+            st.session_state.quiz_data.append(q)
+
+    if st.session_state.quiz_started:
+
+        for idx, q in enumerate(
+            st.session_state.quiz_data
+        ):
 
             st.markdown("---")
 
             st.subheader(
                 translate_text(
-                    f"Q{i+1}. {question_bank[i]}"
+                    f"Q{idx+1}. {q['question']}"
+                )
+            )
+
+            translated_options = [
+                translate_text(opt)
+                for opt in q["options"]
+            ]
+
+            selected = st.radio(
+                translate_text("Choose Answer"),
+                translated_options,
+                key=f"radio_{idx}"
+            )
+
+            if st.button(
+                translate_text(f"Submit Q{idx+1}"),
+                key=f"submit_{idx}"
+            ):
+
+                correct_translated = translate_text(
+                    q["correct"]
+                )
+
+                is_correct = (
+                    selected == correct_translated
+                )
+
+                if is_correct:
+
+                    st.session_state.quiz_score += 2
+
+                st.session_state.answer_feedback[idx] = {
+
+                    "correct": is_correct,
+                    "correct_answer": q["correct"],
+                    "reason": q["reason"],
+                    "score": st.session_state.quiz_score
+                }
+
+            if idx in st.session_state.answer_feedback:
+
+                feedback = st.session_state.answer_feedback[idx]
+
+                if feedback["correct"]:
+
+                    st.success(
+                        translate_text(
+                            "✅ Correct Answer"
+                        )
+                    )
+
+                    st.balloons()
+
+                else:
+
+                    st.error(
+                        translate_text(
+                            "❌ Wrong Answer"
+                        )
+                    )
+
+                st.info(
+                    translate_text(
+                        f"✔ Correct Answer: {feedback['correct_answer']}"
+                    )
+                )
+
+                st.warning(
+                    translate_text(
+                        f"📖 Explanation: {feedback['reason']}"
+                    )
+                )
+
+                st.success(
+                    translate_text(
+                        f"🏆 Current Score: {feedback['score']}"
+                    )
+                )
+
+        total_score = len(
+            st.session_state.quiz_data
+        ) * 2
+
+        st.markdown("---")
+
+        st.header(
+            translate_text(
+                f"🎯 Final Score: {st.session_state.quiz_score}/{total_score}"
+            )
+        )
+
+        if st.button(
+            translate_text("💾 Save Quiz History")
+        ):
+
+            st.session_state.quiz_history.append({
+
+                "topic": topic,
+                "score": f"{st.session_state.quiz_score}/{total_score}"
+            })
+
+            st.success(
+                translate_text(
+                    "✅ Quiz Saved Successfully"
                 )
             )
 
