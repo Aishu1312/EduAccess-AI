@@ -406,46 +406,6 @@ elif feature == lang["speech"]:
             )
 
 # ---------------------------------------------------
-# DYSLEXIA MODE
-# ---------------------------------------------------
-
-elif feature == lang["dyslexia"]:
-
-    st.header(
-        translate_text(
-            "📖 Dyslexia-Friendly Reading"
-        )
-    )
-
-    dyslexia_text = translate_text(
-        """
-Artificial Intelligence is transforming education
-by making learning more personalized, accessible,
-and inclusive for students across the world.
-"""
-    )
-
-    st.markdown(f"""
-    <div style="
-        font-size:{font_size}px;
-        line-height:2.5;
-        letter-spacing:2px;
-        background-color:#f4f4f4;
-        padding:25px;
-        border-radius:15px;
-        color:black;
-    ">
-    {dyslexia_text}
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.success(
-        translate_text(
-            "✅ Accessibility Mode Enabled"
-        )
-    )
-
-# ---------------------------------------------------
 # QUIZ GENERATOR
 # ---------------------------------------------------
 
@@ -848,6 +808,47 @@ elif feature == lang["quiz"]:
                     "✅ Quiz Saved Successfully"
                 )
             )
+
+# ---------------------------------------------------
+# DYSLEXIA MODE
+# ---------------------------------------------------
+
+elif feature == lang["dyslexia"]:
+
+    st.header(
+        translate_text(
+            "📖 Dyslexia-Friendly Reading"
+        )
+    )
+
+    dyslexia_text = translate_text(
+        """
+Artificial Intelligence is transforming education
+by making learning more personalized, accessible,
+and inclusive for students across the world.
+"""
+    )
+
+    st.markdown(f"""
+    <div style="
+        font-size:{font_size}px;
+        line-height:2.5;
+        letter-spacing:2px;
+        background-color:#f4f4f4;
+        padding:25px;
+        border-radius:15px;
+        color:black;
+    ">
+    {dyslexia_text}
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.success(
+        translate_text(
+            "✅ Accessibility Mode Enabled"
+        )
+    )
+
 # ---------------------------------------------------
 # ACCESSIBILITY
 # ---------------------------------------------------
