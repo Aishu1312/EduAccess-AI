@@ -909,92 +909,103 @@ Recommended AI Projects:
             )
 
 # ---------------------------------------------------
-# FLOATING AI ASSISTANT
+# FLOATING ALIA ASSISTANT
 # ---------------------------------------------------
 
 st.markdown("""
 <style>
 
-.chat-btn {
+.chat-button {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #2563eb;
+    background: linear-gradient(135deg,#2563eb,#1d4ed8);
     color: white;
-    padding: 14px 20px;
+    padding: 15px 22px;
     border-radius: 50px;
-    z-index: 99999;
     font-size: 18px;
     font-weight: bold;
-}
-
-.chat-popup {
-    position: fixed;
-    bottom: 90px;
-    right: 20px;
-    width: 320px;
-    background-color: white;
-    border-radius: 15px;
-    padding: 20px;
-    z-index: 99999;
-    box-shadow: 0px 4px 20px rgba(0,0,0,0.3);
+    z-index: 9999;
+    box-shadow: 0px 4px 20px rgba(0,0,0,0.4);
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-if st.button("🤖 Alia Assistant"):
+if st.button("🤖 Need Help?"):
 
     st.session_state.show_chat = (
-
         not st.session_state.show_chat
     )
 
 if st.session_state.show_chat:
 
     st.markdown("""
-    <div class="chat-popup">
-    <h3>👋 Hi, I am Alia</h3>
-    <p>
-    I can help you with:
-    <br><br>
-    ✅ Summaries
-    <br>
-    ✅ Quizzes
-    <br>
-    ✅ Accessibility
-    <br>
-    ✅ Speech Recognition
+    <div style="
+    position:fixed;
+    bottom:90px;
+    right:20px;
+    width:340px;
+    background:white;
+    padding:20px;
+    border-radius:20px;
+    z-index:9999;
+    box-shadow:0px 4px 25px rgba(0,0,0,0.4);
+    ">
+    <h3 style="color:#2563eb;">
+    👋 Hi, I am Alia
+    </h3>
+
+    <p style="color:black;">
+    Your AI Accessibility Assistant.
     </p>
     </div>
     """, unsafe_allow_html=True)
 
-    user_query = st.text_input("💬 Ask Alia")
+    query = st.text_input("💬 Ask Alia")
 
-    if st.button("🚀 Send"):
+    if st.button("Send"):
 
-        query = user_query.lower()
+        q = query.lower()
 
-        if "summary" in query:
+        if "quiz" in q:
 
-            st.success(
-                "Go to AI Notes Summarizer and paste notes."
-            )
+            st.success("""
+1️⃣ Open Quiz Generator
 
-        elif "quiz" in query:
+2️⃣ Enter Topic
 
-            st.success(
-                "Open Quiz Generator and enter topic."
-            )
+3️⃣ Select Difficulty
 
-        elif "speech" in query:
+4️⃣ Generate Quiz
+""")
 
-            st.success(
-                "Use microphone in Speech-to-Text."
-            )
+        elif "summary" in q:
+
+            st.success("""
+1️⃣ Open Notes Summarizer
+
+2️⃣ Paste Notes
+
+3️⃣ Click Generate Summary
+""")
+
+        elif "speech" in q:
+
+            st.success("""
+1️⃣ Open Speech-to-Text
+
+2️⃣ Record Voice
+
+3️⃣ AI converts speech into text
+""")
 
         else:
 
-            st.info(
-                "Ask about summary, quiz, speech or accessibility."
-            )
+            st.info("""
+Ask about:
+• Quiz
+• Summary
+• Speech
+• Accessibility
+""")
