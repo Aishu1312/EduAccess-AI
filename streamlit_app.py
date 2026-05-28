@@ -406,92 +406,72 @@ elif feature == lang["speech"]:
             )
 
 # ---------------------------------------------------
-# QUIZ GENERATOR
+# ADVANCED QUIZ GENERATOR
 # ---------------------------------------------------
 
 elif feature == lang["quiz"]:
 
     st.header(
-        translate_text("❓ AI Quiz Generator")
+        translate_text("🧠 AI Adaptive Quiz Generator")
+    )
+
+    st.write(
+        translate_text(
+            "Generate intelligent quizzes with adaptive difficulty levels."
+        )
     )
 
     # -----------------------------------
-    # NEW QUIZ + HISTORY
+    # HISTORY
     # -----------------------------------
 
-    col1, col2 = st.columns([1, 1])
+    with st.expander(
+        translate_text("📚 Quiz History")
+    ):
 
-    with col1:
+        if st.session_state.quiz_history:
 
-        if st.button(
-            translate_text("🆕 New Quiz")
-        ):
+            for idx, quiz in enumerate(
+                reversed(st.session_state.quiz_history),
+                start=1
+            ):
 
-            st.session_state.quiz_started = False
-            st.session_state.quiz_score = 0
-            st.session_state.quiz_data = []
-            st.session_state.answer_feedback = {}
-
-            st.rerun()
-
-    with col2:
-
-        with st.expander(
-            translate_text("📚 Quiz History")
-        ):
-
-            if st.session_state.quiz_history:
-
-                for idx, item in enumerate(
-                    reversed(st.session_state.quiz_history),
-                    start=1
+                with st.expander(
+                    f"Quiz {idx} | {quiz['topic']} | {quiz['score']}"
                 ):
 
-                    with st.expander(
-                        f"Quiz {idx} | "
-                        f"{translate_text('Topic')}: {item['topic']} | "
-                        f"{translate_text('Score')}: {item['score']}"
-                    ):
+                    for q in quiz["questions"]:
 
-                        st.subheader(
-                            translate_text("📘 Quiz Details")
+                        st.markdown("---")
+
+                        st.write(
+                            translate_text(
+                                f"Q. {q['question']}"
+                            )
                         )
 
-                        for q_no, q in enumerate(
-                            item["questions"],
-                            start=1
-                        ):
-
-                            st.markdown("---")
-
-                            st.write(
-                                translate_text(
-                                    f"Q{q_no}. {q['question']}"
-                                )
+                        st.success(
+                            translate_text(
+                                f"✔ Answer: {q['answer']}"
                             )
+                        )
 
-                            st.success(
-                                translate_text(
-                                    f"✔ Correct Answer: {q['correct_answer']}"
-                                )
+                        st.info(
+                            translate_text(
+                                f"📖 Explanation: {q['explanation']}"
                             )
+                        )
 
-                            st.info(
-                                translate_text(
-                                    f"📖 Explanation: {q['reason']}"
-                                )
-                            )
+        else:
 
-            else:
-
-                st.info(
-                    translate_text(
-                        "No quiz history available"
-                    )
+            st.info(
+                translate_text(
+                    "No quiz history available"
                 )
+            )
 
     # -----------------------------------
-    # QUIZ INPUTS
+    # INPUTS
     # -----------------------------------
 
     exam = st.text_input(
@@ -502,17 +482,105 @@ elif feature == lang["quiz"]:
         translate_text("📘 Enter Topic")
     )
 
+    difficulty = st.selectbox(
+        translate_text("🎯 Select Difficulty"),
+        ["Easy", "Medium", "Hard"]
+    )
+
     num_questions = st.slider(
-        translate_text("📊 Select Number of Questions"),
+        translate_text("📊 Number of Questions"),
         1,
-        10,
+        15,
         5
     )
 
-    difficulty = st.selectbox(
-        translate_text("📈 Select Difficulty"),
-        ["Easy", "Medium", "Hard"]
-    )
+    # -----------------------------------
+    # QUESTION BANK
+    # -----------------------------------
+
+    easy_questions = [
+        {
+            "question": f"What is {topic}?",
+            "answer": f"{topic} is an important concept.",
+            "options": [
+                f"{topic} is an important concept.",
+                "It is a game",
+                "It is unrelated to studies",
+                "None"
+            ],
+            "explanation": f"{topic} is widely used in education and technology."
+        },
+        {
+            "question": f"Why is {topic} useful?",
+            "answer": "It improves learning and productivity.",
+            "options": [
+                "It improves learning and productivity.",
+                "It wastes time",
+                "No benefits",
+                "None"
+            ],
+            "explanation": f"{topic} helps improve efficiency."
+        }
+    ]
+
+    medium_questions = [
+        {
+            "question": f"How is {topic} used in industries?",
+            "answer": "Automation and intelligent systems",
+            "options": [
+                "Automation and intelligent systems",
+                "Only paperwork",
+                "Manual calculations",
+                "None"
+            ],
+            "explanation": f"{topic} is used in automation and AI."
+        },
+        {
+            "question": f"What challenge exists in {topic}?",
+            "answer": "Data privacy",
+            "options": [
+                "Data privacy",
+                "No challenge",
+                "Only handwriting",
+                "None"
+            ],
+            "explanation": "Privacy is a major concern."
+        }
+    ]
+
+    hard_questions = [
+        {
+            "question": f"Explain advanced applications of {topic}.",
+            "answer": "AI-driven predictive systems",
+            "options": [
+                "AI-driven predictive systems",
+                "Only manual systems",
+                "No applications",
+                "Typewriting"
+            ],
+            "explanation": f"{topic} powers predictive AI systems."
+        },
+        {
+            "question": f"How does {topic} contribute to future technologies?",
+            "answer": "By enabling intelligent automation",
+            "options": [
+                "By enabling intelligent automation",
+                "By reducing innovation",
+                "No contribution",
+                "None"
+            ],
+            "explanation": "Automation is key to future technology."
+        }
+    ]
+
+    if difficulty == "Easy":
+        question_pool = easy_questions
+
+    elif difficulty == "Medium":
+        question_pool = medium_questions
+
+    else:
+        question_pool = hard_questions
 
     # -----------------------------------
     # GENERATE QUIZ
@@ -522,139 +590,27 @@ elif feature == lang["quiz"]:
         translate_text("🚀 Generate Quiz")
     ):
 
-        st.session_state.quiz_started = True
+        random.shuffle(question_pool)
+
+        selected_questions = []
+
+        for q in question_pool:
+
+            if q["question"] not in st.session_state.used_questions:
+
+                selected_questions.append(q)
+
+                st.session_state.used_questions.add(
+                    q["question"]
+                )
+
+            if len(selected_questions) == num_questions:
+                break
+
+        st.session_state.quiz_data = selected_questions
         st.session_state.quiz_score = 0
+        st.session_state.quiz_started = True
         st.session_state.answer_feedback = {}
-
-        question_bank = [
-
-            {
-                "question": f"What is the main purpose of {topic}?",
-                "correct": f"{topic} improves efficiency and automation",
-                "wrong": [
-                    f"{topic} decreases productivity",
-                    f"{topic} is outdated",
-                    f"{topic} has no practical use"
-                ],
-                "reason": f"{topic} is widely used for automation and innovation."
-            },
-
-            {
-                "question": f"Which industry uses {topic} extensively?",
-                "correct": "Healthcare and Technology",
-                "wrong": [
-                    "Only agriculture",
-                    "Only sports",
-                    "None"
-                ],
-                "reason": f"{topic} is heavily used in healthcare and technology sectors."
-            },
-
-            {
-                "question": f"What is an important benefit of {topic}?",
-                "correct": "Automation and intelligent decision-making",
-                "wrong": [
-                    "Increases manual work",
-                    "Reduces accuracy",
-                    "No benefits"
-                ],
-                "reason": f"{topic} helps automate tasks and improve decisions."
-            },
-
-            {
-                "question": f"What is the future scope of {topic}?",
-                "correct": "Advanced AI applications",
-                "wrong": [
-                    "No future growth",
-                    "Only paperwork",
-                    "Typewriting"
-                ],
-                "reason": f"{topic} has strong future demand in AI and automation."
-            },
-
-            {
-                "question": f"What skill is important for learning {topic}?",
-                "correct": "Problem-solving",
-                "wrong": [
-                    "Only handwriting",
-                    "Sleeping",
-                    "Ignoring technology"
-                ],
-                "reason": "Problem-solving is essential in technology."
-            },
-
-            {
-                "question": f"Why is {topic} important in modern industries?",
-                "correct": "It improves productivity",
-                "wrong": [
-                    "It wastes time",
-                    "It reduces efficiency",
-                    "No importance"
-                ],
-                "reason": f"{topic} helps industries become more productive."
-            },
-
-            {
-                "question": f"Which technology is related to {topic}?",
-                "correct": "Artificial Intelligence",
-                "wrong": [
-                    "Typewriter",
-                    "Paper filing",
-                    "Manual records"
-                ],
-                "reason": f"{topic} is connected with modern digital technologies."
-            },
-
-            {
-                "question": f"Which field benefits from {topic}?",
-                "correct": "Education",
-                "wrong": [
-                    "None",
-                    "Only farming",
-                    "Only drawing"
-                ],
-                "reason": f"{topic} supports learning and innovation."
-            },
-
-            {
-                "question": f"What is a challenge in {topic}?",
-                "correct": "Data privacy and security",
-                "wrong": [
-                    "No challenges",
-                    "Only handwriting issues",
-                    "No technology needed"
-                ],
-                "reason": f"Security and privacy are major challenges."
-            },
-
-            {
-                "question": f"Which company uses {topic} technologies?",
-                "correct": "Google",
-                "wrong": [
-                    "No company",
-                    "Only libraries",
-                    "Only schools"
-                ],
-                "reason": f"Google uses advanced technology and AI systems."
-            }
-
-        ]
-
-        random.shuffle(question_bank)
-
-        selected_questions = question_bank[:num_questions]
-
-        st.session_state.quiz_data = []
-
-        for q in selected_questions:
-
-            options = [q["correct"]] + q["wrong"]
-
-            random.shuffle(options)
-
-            q["options"] = options
-
-            st.session_state.quiz_data.append(q)
 
     # -----------------------------------
     # DISPLAY QUIZ
@@ -681,51 +637,22 @@ elif feature == lang["quiz"]:
                 for opt in q["options"]
             ]
 
-            selected = st.radio(
-
+            answer = st.radio(
                 translate_text("Choose Answer"),
-
                 translated_options,
-
-                key=f"radio_{idx}"
+                key=f"quiz_{idx}"
             )
 
             if st.button(
-
                 translate_text(f"Submit Q{idx+1}"),
-
                 key=f"submit_{idx}"
             ):
 
-                correct_translated = translate_text(
-                    q["correct"]
+                correct_answer = translate_text(
+                    q["answer"]
                 )
 
-                is_correct = (
-                    selected == correct_translated
-                )
-
-                if is_correct:
-
-                    st.session_state.quiz_score += 2
-
-                st.session_state.answer_feedback[idx] = {
-
-                    "correct": is_correct,
-                    "correct_answer": q["correct"],
-                    "reason": q["reason"],
-                    "score": st.session_state.quiz_score
-                }
-
-            # -----------------------------
-            # FEEDBACK
-            # -----------------------------
-
-            if idx in st.session_state.answer_feedback:
-
-                feedback = st.session_state.answer_feedback[idx]
-
-                if feedback["correct"]:
+                if answer == correct_answer:
 
                     st.success(
                         translate_text(
@@ -733,7 +660,7 @@ elif feature == lang["quiz"]:
                         )
                     )
 
-                    st.balloons()
+                    st.session_state.quiz_score += 2
 
                 else:
 
@@ -745,62 +672,41 @@ elif feature == lang["quiz"]:
 
                 st.info(
                     translate_text(
-                        f"✔ Correct Answer: {feedback['correct_answer']}"
+                        f"✔ Correct Answer: {q['answer']}"
                     )
                 )
 
                 st.warning(
                     translate_text(
-                        f"📖 Explanation: {feedback['reason']}"
+                        f"📖 Explanation: {q['explanation']}"
                     )
                 )
-
-                st.success(
-                    translate_text(
-                        f"🏆 Current Score: {feedback['score']}"
-                    )
-                )
-
-        # -----------------------------------
-        # FINAL SCORE
-        # -----------------------------------
-
-        total_score = len(
-            st.session_state.quiz_data
-        ) * 2
 
         st.markdown("---")
 
+        total = len(
+            st.session_state.quiz_data
+        ) * 2
+
         st.header(
             translate_text(
-                f"🎯 Final Score: {st.session_state.quiz_score}/{total_score}"
+                f"🏆 Final Score: {st.session_state.quiz_score}/{total}"
             )
         )
 
-        # -----------------------------------
         # SAVE HISTORY
-        # -----------------------------------
 
         if st.button(
-            translate_text("💾 Save Quiz History")
+            translate_text("💾 Save Quiz")
         ):
 
             st.session_state.quiz_history.append({
 
                 "topic": topic,
 
-                "score": f"{st.session_state.quiz_score}/{total_score}",
+                "score": f"{st.session_state.quiz_score}/{total}",
 
-                "questions": [
-
-                    {
-                        "question": q["question"],
-                        "correct_answer": q["correct"],
-                        "reason": q["reason"]
-                    }
-
-                    for q in st.session_state.quiz_data
-                ]
+                "questions": st.session_state.quiz_data
             })
 
             st.success(
@@ -808,58 +714,6 @@ elif feature == lang["quiz"]:
                     "✅ Quiz Saved Successfully"
                 )
             )
-
-# ---------------------------------------------------
-# DYSLEXIA MODE
-# ---------------------------------------------------
-
-elif feature == lang["dyslexia"]:
-
-    st.header(
-        translate_text(
-            "📖 Dyslexia-Friendly Reading"
-        )
-    )
-
-    st.write(
-        translate_text(
-            "This mode improves readability using larger fonts, spacing, and simplified layouts."
-        )
-    )
-
-    # CHECK SUMMARY EXISTS
-
-    if not st.session_state.summary:
-
-        st.warning(
-            translate_text(
-                "⚠️ Please generate summary first from AI Notes Summarizer."
-            )
-        )
-
-    else:
-
-        st.success(
-            translate_text(
-                "✅ Dyslexia-Friendly Mode Enabled"
-            )
-        )
-
-        st.markdown(f"""
-        <div style="
-            font-size:{font_size + 10}px;
-            line-height:3;
-            letter-spacing:2px;
-            background-color:#fefce8;
-            padding:35px;
-            border-radius:20px;
-            color:black;
-            font-family:Arial;
-            box-shadow:0px 4px 15px rgba(0,0,0,0.2);
-        ">
-        {st.session_state.summary}
-        </div>
-        """, unsafe_allow_html=True)
 
 # ---------------------------------------------------
 # ACCESSIBILITY
