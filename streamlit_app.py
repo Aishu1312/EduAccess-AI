@@ -16,6 +16,58 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------
+# CUSTOM CSS
+# ---------------------------------------------------
+
+st.markdown("""
+<style>
+
+.main {
+    padding-top: 10px;
+}
+
+.stButton>button {
+    border-radius: 12px;
+    height: 3em;
+    font-weight: bold;
+    width: 100%;
+}
+
+.feature-card {
+    padding: 22px;
+    border-radius: 20px;
+    color: white;
+    margin-bottom: 20px;
+    transition: 0.3s;
+}
+
+.feature-card:hover {
+    transform: scale(1.02);
+}
+
+.footer {
+    text-align:center;
+    padding:20px;
+    color:gray;
+    font-size:14px;
+}
+
+.chat-box {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 320px;
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0px 4px 25px rgba(0,0,0,0.3);
+    z-index: 9999;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# ---------------------------------------------------
 # LANGUAGE SUPPORT
 # ---------------------------------------------------
 
@@ -31,28 +83,11 @@ LANGUAGES = {
     "Kannada": "kn-IN",
     "Malayalam": "ml-IN",
     "Urdu": "ur-PK",
-    "Odia": "or-IN",
-    "Assamese": "as-IN",
-    "Sanskrit": "sa-IN",
-    "Nepali": "ne-NP",
     "Spanish": "es-ES",
     "French": "fr-FR",
     "German": "de-DE",
-    "Italian": "it-IT",
-    "Portuguese": "pt-PT",
-    "Russian": "ru-RU",
-    "Japanese": "ja-JP",
-    "Korean": "ko-KR",
-    "Chinese": "zh-CN",
-    "Arabic": "ar-SA",
-    "Turkish": "tr-TR",
-    "Thai": "th-TH",
-    "Indonesian": "id-ID"
+    "Japanese": "ja-JP"
 }
-
-# ---------------------------------------------------
-# LANGUAGE SELECTION
-# ---------------------------------------------------
 
 selected_language = st.sidebar.selectbox(
     "🌍 Choose Language",
@@ -62,7 +97,7 @@ selected_language = st.sidebar.selectbox(
 target_lang = LANGUAGES[selected_language]
 
 # ---------------------------------------------------
-# TRANSLATION FUNCTION
+# TRANSLATION
 # ---------------------------------------------------
 
 def translate_text(text):
@@ -84,81 +119,55 @@ def translate_text(text):
 # SESSION STATE
 # ---------------------------------------------------
 
-session_defaults = {
+defaults = {
+
     "summary": "",
     "quiz_started": False,
     "quiz_score": 0,
     "quiz_data": [],
-    "answer_feedback": {},
     "quiz_history": [],
-    "summary_history": [],
     "speech_history": [],
-    "used_questions": set(),
+    "summary_history": [],
     "show_chat": False
 }
 
-for key, value in session_defaults.items():
+for key, value in defaults.items():
 
     if key not in st.session_state:
 
         st.session_state[key] = value
 
 # ---------------------------------------------------
-# UI TEXT
-# ---------------------------------------------------
-
-base_text = {
-
-    "home": "🏠 Home",
-    "summarizer": "🧠 AI Notes Summarizer",
-    "speech": "🎤 Speech-to-Text",
-    "dyslexia": "📖 Dyslexia-Friendly Reading",
-    "quiz": "❓ AI Quiz Generator",
-    "accessibility": "♿ Accessibility Support",
-    "learning": "🧠 AI Personalized Learning",
-    "emotion": "😊 Emotion-Aware Learning",
-    "career": "🚀 AI Career Mentor"
-}
-
-lang = {}
-
-for key, value in base_text.items():
-
-    lang[key] = translate_text(value)
-
-# ---------------------------------------------------
 # SIDEBAR
 # ---------------------------------------------------
 
-st.sidebar.title(
-    translate_text("⚙️ Settings")
-)
+st.sidebar.title("⚙️ Settings")
 
 font_size = st.sidebar.slider(
-    translate_text("🔠 Font Size"),
+    "🔠 Font Size",
     16,
     40,
     22
 )
 
 high_contrast = st.sidebar.checkbox(
-    translate_text("🌗 High Contrast Mode")
+    "🌗 High Contrast Mode"
 )
 
 feature = st.sidebar.selectbox(
 
-    translate_text("Choose Feature"),
+    "Choose Feature",
 
     [
-        lang["home"],
-        lang["summarizer"],
-        lang["speech"],
-        lang["dyslexia"],
-        lang["quiz"],
-        lang["accessibility"],
-        lang["learning"],
-        lang["emotion"],
-        lang["career"]
+        "🏠 Home",
+        "🧠 AI Notes Summarizer",
+        "🎤 Speech-to-Text",
+        "📖 Dyslexia-Friendly Reading",
+        "❓ AI Quiz Generator",
+        "♿ Accessibility Support",
+        "🧠 AI Personalized Learning",
+        "😊 Emotion-Aware Learning",
+        "🚀 AI Career Mentor"
     ]
 )
 
@@ -168,127 +177,122 @@ feature = st.sidebar.selectbox(
 
 if high_contrast:
 
-    st.markdown(
-        """
-        <style>
-        .stApp {
-            background-color: black;
-            color: white;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown("""
+    <style>
+    .stApp {
+        background-color:black;
+        color:white;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
 # ---------------------------------------------------
 # HOME
 # ---------------------------------------------------
 
-if feature == lang["home"]:
+if feature == "🏠 Home":
 
-    st.title(
-        translate_text("🚀 EduAccess AI")
-    )
+    st.title("🚀 EduAccess AI")
 
     st.subheader(
-        translate_text(
-            "AI-Powered Accessibility Platform for Disabled Students"
-        )
+        "AI-Powered Accessibility Platform for Students"
     )
 
     st.success(
-        translate_text(
-            "Inclusive AI Learning Platform"
-        )
+        "Inclusive AI Learning Ecosystem"
     )
 
     st.markdown("---")
 
-    st.header(
-        translate_text("🌟 Core Features")
-    )
+    st.header("🌟 Core Features")
 
     col1, col2 = st.columns(2)
 
     with col1:
 
         st.markdown("""
-        <div style="
-        background: linear-gradient(135deg,#2563eb,#1e3a8a);
-        padding:20px;
-        border-radius:20px;
-        color:white;
-        margin-bottom:20px;">
-        <h3>🧠 AI Notes Summarizer</h3>
-        <p>Generate concise AI summaries from long educational notes.</p>
+        <div class="feature-card"
+        style="background:linear-gradient(135deg,#2563eb,#1e3a8a);">
+
+        <h2>🧠 AI Notes Summarizer</h2>
+
+        <p>
+        Generate concise AI-powered summaries from notes and PDFs.
+        </p>
+
         </div>
         """, unsafe_allow_html=True)
 
         st.markdown("""
-        <div style="
-        background: linear-gradient(135deg,#16a34a,#166534);
-        padding:20px;
-        border-radius:20px;
-        color:white;">
-        <h3>🎤 Speech-to-Text</h3>
-        <p>Convert spoken language into text using AI.</p>
+        <div class="feature-card"
+        style="background:linear-gradient(135deg,#16a34a,#166534);">
+
+        <h2>🎤 Speech-to-Text</h2>
+
+        <p>
+        Convert spoken language into text with multilingual support.
+        </p>
+
         </div>
         """, unsafe_allow_html=True)
 
     with col2:
 
         st.markdown("""
-        <div style="
-        background: linear-gradient(135deg,#f59e0b,#b45309);
-        padding:20px;
-        border-radius:20px;
-        color:white;
-        margin-bottom:20px;">
-        <h3>📖 Dyslexia-Friendly Reading</h3>
-        <p>Accessible reading mode with better spacing and fonts.</p>
+        <div class="feature-card"
+        style="background:linear-gradient(135deg,#f59e0b,#b45309);">
+
+        <h2>📖 Dyslexia-Friendly Reading</h2>
+
+        <p>
+        Accessible reading mode with better spacing and readability.
+        </p>
+
         </div>
         """, unsafe_allow_html=True)
 
         st.markdown("""
-        <div style="
-        background: linear-gradient(135deg,#dc2626,#7f1d1d);
-        padding:20px;
-        border-radius:20px;
-        color:white;">
-        <h3>❓ AI Quiz Generator</h3>
-        <p>Generate adaptive quizzes with difficulty levels.</p>
+        <div class="feature-card"
+        style="background:linear-gradient(135deg,#dc2626,#7f1d1d);">
+
+        <h2>❓ AI Quiz Generator</h2>
+
+        <p>
+        Adaptive quizzes with Easy, Medium and Hard difficulty levels.
+        </p>
+
         </div>
         """, unsafe_allow_html=True)
 
     st.markdown("---")
 
-    st.header(
-        translate_text("🚀 Advanced AI Features")
-    )
+    st.header("🚀 Advanced AI Features")
 
     features = [
+
         "🧠 AI Personalized Learning",
         "😊 Emotion-Aware Learning",
         "🚀 AI Career Mentor",
-        "🌍 28 Language Support",
-        "♿ Accessibility Support"
+        "🌍 Multi-language Support",
+        "♿ Accessibility Features"
     ]
 
     for item in features:
-        st.info(translate_text(item))
+
+        st.info(item)
+
+    st.balloons()
 
 # ---------------------------------------------------
 # SUMMARIZER
 # ---------------------------------------------------
 
-elif feature == lang["summarizer"]:
+elif feature == "🧠 AI Notes Summarizer":
 
-    st.header(
-        translate_text("🧠 AI Notes Summarizer")
-    )
+    st.header("🧠 AI Notes Summarizer")
 
     uploaded_file = st.file_uploader(
-        translate_text("📂 Upload PDF"),
+        "📂 Upload PDF",
         type=["pdf"]
     )
 
@@ -306,12 +310,10 @@ elif feature == lang["summarizer"]:
 
                 text += extracted
 
-        st.success(
-            translate_text("✅ PDF Text Extracted")
-        )
+        st.success("✅ PDF Uploaded Successfully")
 
     manual_text = st.text_area(
-        translate_text("📌 Paste Notes Here"),
+        "📌 Paste Notes Here",
         height=250
     )
 
@@ -321,19 +323,19 @@ elif feature == lang["summarizer"]:
 
     summary_length = st.selectbox(
 
-        translate_text("📏 Select Summary Length"),
+        "📏 Select Summary Length",
 
         ["Short", "Medium", "Detailed"]
     )
 
-    if st.button(
-        translate_text("🚀 Generate Summary")
-    ):
+    if st.button("🚀 Generate Summary"):
 
         if text.strip() != "":
 
             sentences = [
+
                 s.strip()
+
                 for s in text.split(".")
                 if s.strip()
             ]
@@ -360,13 +362,13 @@ elif feature == lang["summarizer"]:
                 translated_summary
             )
 
-            st.success(
-                translate_text("✅ Summary Generated")
-            )
+            st.success("✅ Summary Generated")
+
+            st.balloons()
 
             st.markdown(f"""
             <div style="
-                background-color:#14532d;
+                background:#14532d;
                 padding:20px;
                 border-radius:15px;
                 color:white;
@@ -379,22 +381,18 @@ elif feature == lang["summarizer"]:
 
         else:
 
-            st.warning(
-                translate_text("⚠️ Enter Notes")
-            )
+            st.warning("⚠️ Enter Notes")
 
 # ---------------------------------------------------
 # SPEECH TO TEXT
 # ---------------------------------------------------
 
-elif feature == lang["speech"]:
+elif feature == "🎤 Speech-to-Text":
 
-    st.header(
-        translate_text("🎤 Speech-to-Text")
-    )
+    st.header("🎤 Speech-to-Text")
 
     audio = st.audio_input(
-        translate_text("🎙️ Record Voice")
+        "🎙️ Record Voice"
     )
 
     if audio:
@@ -422,39 +420,31 @@ elif feature == lang["speech"]:
                     language=target_lang
                 )
 
-            st.success(
-                translate_text("✅ Speech Recognized")
-            )
+            st.success("✅ Speech Recognized")
 
             st.write(text)
 
+            st.audio(audio)
+
             st.session_state.speech_history.append(text)
+
+            st.balloons()
 
         except:
 
-            st.error(
-                translate_text(
-                    "❌ Could not understand audio"
-                )
-            )
+            st.error("❌ Could not understand audio")
 
 # ---------------------------------------------------
 # DYSLEXIA MODE
 # ---------------------------------------------------
 
-elif feature == lang["dyslexia"]:
+elif feature == "📖 Dyslexia-Friendly Reading":
 
-    st.header(
-        translate_text("📖 Dyslexia-Friendly Reading")
-    )
+    st.header("📖 Dyslexia-Friendly Reading")
 
     if st.session_state.summary == "":
 
-        st.warning(
-            translate_text(
-                "⚠️ Generate summary first"
-            )
-        )
+        st.warning("⚠️ Generate summary first")
 
     else:
 
@@ -467,6 +457,7 @@ elif feature == lang["dyslexia"]:
             padding:25px;
             border-radius:15px;
             color:black;
+            font-family:OpenDyslexic;
         ">
         {st.session_state.summary}
         </div>
@@ -476,15 +467,11 @@ elif feature == lang["dyslexia"]:
 # QUIZ GENERATOR
 # ---------------------------------------------------
 
-elif feature == lang["quiz"]:
+elif feature == "❓ AI Quiz Generator":
 
-    st.header(
-        translate_text("❓ AI Adaptive Quiz Generator")
-    )
+    st.header("❓ AI Adaptive Quiz Generator")
 
-    with st.expander(
-        translate_text("📚 Quiz History")
-    ):
+    with st.expander("📚 Quiz History"):
 
         if st.session_state.quiz_history:
 
@@ -495,115 +482,88 @@ elif feature == lang["quiz"]:
             ):
 
                 with st.expander(
-
-                    f"Quiz {idx} | {quiz['topic']} | {quiz['score']}"
+                    f"Quiz {idx} | {quiz['topic']}"
                 ):
 
-                    for q in quiz["questions"]:
-
-                        st.markdown("---")
-
-                        st.write(
-                            translate_text(
-                                q["question"]
-                            )
-                        )
-
-                        st.success(
-                            translate_text(
-                                f"✔ {q['answer']}"
-                            )
-                        )
-
-                        st.info(
-                            translate_text(
-                                q["explanation"]
-                            )
-                        )
+                    st.write(
+                        f"🏆 Score: {quiz['score']}"
+                    )
 
         else:
 
-            st.info(
-                translate_text(
-                    "No quiz history available"
-                )
-            )
+            st.info("No Quiz History")
 
-    topic = st.text_input(
-        translate_text("📘 Enter Topic")
-    )
+    topic = st.text_input("📘 Enter Topic")
 
     difficulty = st.selectbox(
 
-        translate_text("🎯 Select Difficulty"),
+        "🎯 Select Difficulty",
 
         ["Easy", "Medium", "Hard"]
     )
 
     num_questions = st.slider(
 
-        translate_text("📊 Number of Questions"),
+        "📊 Number of Questions",
 
         1,
         10,
         5
     )
 
+    # ---------------------------------------------------
+    # LARGE QUESTION POOL
+    # ---------------------------------------------------
+
     easy_questions = [
 
         {
             "question": f"What is {topic}?",
-            "answer": f"{topic} is an important concept.",
+            "answer": "Basic concept",
             "options": [
-                f"{topic} is an important concept.",
-                "It is a game",
-                "None",
-                "No use"
-            ],
-            "explanation": f"{topic} is useful in studies."
-        },
-
-        {
-            "question": f"Why is {topic} important?",
-            "answer": "It improves knowledge",
-            "options": [
-                "It improves knowledge",
-                "No benefits",
-                "Waste of time",
+                "Basic concept",
+                "Game",
+                "Movie",
                 "None"
             ],
-            "explanation": "It helps learning."
+            "explanation": "This is the basic definition."
         }
+
+        for i in range(10)
     ]
 
     medium_questions = [
 
         {
-            "question": f"How is {topic} used in industries?",
+            "question": f"How is {topic} used in industry {i+1}?",
             "answer": "Automation",
             "options": [
                 "Automation",
-                "No usage",
                 "Cooking",
-                "Gaming"
+                "Gaming",
+                "None"
             ],
             "explanation": "Industries use automation."
         }
+
+        for i in range(10)
     ]
 
     hard_questions = [
 
         {
-            "question": f"What is advanced use of {topic}?",
-            "answer": "AI systems",
+            "question": f"What is advanced application of {topic} {i+1}?",
+            "answer": "AI Systems",
             "options": [
-                "AI systems",
-                "No use",
-                "Manual typing",
+                "AI Systems",
+                "Typing",
+                "Drawing",
                 "None"
             ],
-            "explanation": "AI uses advanced technologies."
+            "explanation": "Advanced AI systems use this."
         }
+
+        for i in range(10)
     ]
 
     if difficulty == "Easy":
@@ -618,15 +578,11 @@ elif feature == lang["quiz"]:
 
         pool = hard_questions
 
-    if st.button(
-        translate_text("🚀 Generate Quiz")
-    ):
+    if st.button("🚀 Generate Quiz"):
 
         random.shuffle(pool)
 
-        selected = pool[:num_questions]
-
-        st.session_state.quiz_data = selected
+        st.session_state.quiz_data = pool[:num_questions]
 
         st.session_state.quiz_started = True
 
@@ -635,69 +591,49 @@ elif feature == lang["quiz"]:
     if st.session_state.quiz_started:
 
         for idx, q in enumerate(
-
             st.session_state.quiz_data
         ):
 
             st.markdown("---")
 
             st.subheader(
-                translate_text(
-                    f"Q{idx+1}. {q['question']}"
-                )
+                f"Q{idx+1}. {q['question']}"
             )
-
-            translated_options = [
-
-                translate_text(opt)
-
-                for opt in q["options"]
-            ]
 
             ans = st.radio(
 
-                translate_text("Choose Answer"),
+                "Choose Answer",
 
-                translated_options,
+                q["options"],
 
                 key=f"quiz_{idx}"
             )
 
             if st.button(
 
-                translate_text(f"Submit Q{idx+1}"),
+                f"Submit Q{idx+1}",
 
                 key=f"submit_{idx}"
             ):
 
-                if ans == translate_text(q["answer"]):
+                if ans == q["answer"]:
 
-                    st.success(
-                        translate_text(
-                            "✅ Correct"
-                        )
-                    )
+                    st.success("✅ Correct")
 
                     st.session_state.quiz_score += 2
 
+                    st.balloons()
+
                 else:
 
-                    st.error(
-                        translate_text(
-                            "❌ Wrong"
-                        )
-                    )
+                    st.error("❌ Wrong")
 
                 st.info(
-                    translate_text(
-                        f"✔ Answer: {q['answer']}"
-                    )
+                    f"✔ Answer: {q['answer']}"
                 )
 
                 st.warning(
-                    translate_text(
-                        f"📖 {q['explanation']}"
-                    )
+                    f"📖 {q['explanation']}"
                 )
 
         total = len(
@@ -705,41 +641,30 @@ elif feature == lang["quiz"]:
         ) * 2
 
         st.header(
-            translate_text(
-                f"🏆 Score: {st.session_state.quiz_score}/{total}"
-            )
+            f"🏆 Score: {st.session_state.quiz_score}/{total}"
         )
 
-        if st.button(
-            translate_text("💾 Save Quiz")
-        ):
+        if st.button("💾 Save Quiz"):
 
             st.session_state.quiz_history.append({
 
                 "topic": topic,
-                "score": f"{st.session_state.quiz_score}/{total}",
-                "questions": st.session_state.quiz_data
+                "score": f"{st.session_state.quiz_score}/{total}"
             })
 
-            st.success(
-                translate_text(
-                    "Quiz Saved"
-                )
-            )
+            st.success("✅ Quiz Saved")
 
 # ---------------------------------------------------
 # ACCESSIBILITY
 # ---------------------------------------------------
 
-elif feature == lang["accessibility"]:
+elif feature == "♿ Accessibility Support":
 
-    st.header(
-        translate_text("♿ Accessibility Support")
-    )
+    st.header("♿ Accessibility Support")
 
     features = [
 
-        "🌍 28 Language Support",
+        "🌍 Multi-language Support",
         "🔠 Adjustable Font Size",
         "🌗 High Contrast Mode",
         "📖 Dyslexia Reading",
@@ -748,166 +673,141 @@ elif feature == lang["accessibility"]:
 
     for item in features:
 
-        st.write(
-            translate_text(item)
-        )
+        st.success(item)
 
 # ---------------------------------------------------
-# AI PERSONALIZED LEARNING
+# PERSONALIZED LEARNING
 # ---------------------------------------------------
 
-elif feature == lang["learning"]:
+elif feature == "🧠 AI Personalized Learning":
 
-    st.header(
-        translate_text(
-            "🧠 AI Personalized Learning"
-        )
-    )
+    st.header("🧠 AI Personalized Learning")
 
     weak_topic = st.text_input(
-        translate_text("Enter Weak Topic")
+        "Enter Weak Topic"
     )
 
-    if st.button(
-        translate_text("Generate Recommendations")
-    ):
+    if st.button("Generate Recommendations"):
 
         st.success(
-            translate_text(
-                f"AI detected weak understanding in {weak_topic}"
-            )
+            f"AI detected weak understanding in {weak_topic}"
         )
 
         recommendations = [
 
             f"Practice quizzes on {weak_topic}",
             f"Watch tutorials on {weak_topic}",
-            "Revise daily",
-            "Use visual diagrams"
+            f"Revise daily",
+            f"Use visual diagrams for {weak_topic}"
         ]
 
         for rec in recommendations:
 
-            st.info(
-                translate_text(rec)
-            )
+            st.info(rec)
 
 # ---------------------------------------------------
-# EMOTION AWARE LEARNING
+# EMOTION LEARNING
 # ---------------------------------------------------
 
-elif feature == lang["emotion"]:
+elif feature == "😊 Emotion-Aware Learning":
 
-    st.header(
-        translate_text(
-            "😊 Emotion-Aware Learning"
-        )
-    )
+    st.header("😊 Emotion-Aware Learning")
 
     emotion = st.selectbox(
 
-        translate_text("How are you feeling?"),
+        "How are you feeling?",
 
         [
             "Confused",
-            "Stressed",
             "Focused",
+            "Stressed",
             "Tired"
         ]
     )
 
-    if st.button(
-        translate_text("Analyze Emotion")
-    ):
+    if st.button("Analyze Emotion"):
 
         if emotion == "Confused":
 
             st.warning(
-                translate_text(
-                    "AI suggests beginner tutorials."
-                )
-            )
-
-        elif emotion == "Stressed":
-
-            st.error(
-                translate_text(
-                    "Take breaks and relax."
-                )
+                "AI detected confusion. Watch beginner tutorials."
             )
 
         elif emotion == "Focused":
 
             st.success(
-                translate_text(
-                    "Try advanced quizzes."
-                )
+                "AI detected focus. Attempt hard quizzes."
+            )
+
+        elif emotion == "Stressed":
+
+            st.error(
+                "AI detected stress. Take breaks."
             )
 
         else:
 
             st.info(
-                translate_text(
-                    "Take proper rest."
-                )
+                "AI suggests proper rest."
             )
 
 # ---------------------------------------------------
 # CAREER MENTOR
 # ---------------------------------------------------
 
-elif feature == lang["career"]:
+elif feature == "🚀 AI Career Mentor":
 
-    st.header(
-        translate_text(
-            "🚀 AI Career Mentor"
-        )
-    )
+    st.header("🚀 AI Career Mentor")
 
     career_query = st.text_input(
-        translate_text("Ask Career Guidance")
+        "Ask Career Guidance"
     )
 
-    if st.button(
-        translate_text("Get Guidance")
-    ):
+    st.markdown("""
+### 💡 Sample Questions
+
+- Suggest AI projects for Data Science
+- Roadmap for Web Development
+- Skills needed for Cybersecurity
+- Best projects for AI/ML
+- How to become Data Analyst
+""")
+
+    if st.button("Get Guidance"):
 
         query = career_query.lower()
 
         if "data science" in query:
 
-            st.success(
-                translate_text(
-                    """
+            st.success("""
 Recommended Skills:
 • Python
 • SQL
 • Machine Learning
 • Power BI
-"""
-                )
-            )
+
+Recommended Projects:
+• AI Resume Analyzer
+• Sales Dashboard
+• Fake News Detection
+""")
 
         elif "ai" in query:
 
-            st.success(
-                translate_text(
-                    """
+            st.success("""
 Recommended AI Projects:
-• Chatbot
-• AI Accessibility Platform
+• AI Chatbot
 • Resume Analyzer
-"""
-                )
-            )
+• Emotion Detection
+• AI Accessibility Platform
+""")
 
         else:
 
-            st.info(
-                translate_text(
-                    "Build projects and improve GitHub."
-                )
-            )
+            st.info("""
+Build projects, improve GitHub,
+practice DSA and deployment.
+""")
 
 # ---------------------------------------------------
 # FLOATING ALIA ASSISTANT
@@ -916,18 +816,16 @@ Recommended AI Projects:
 st.markdown("""
 <style>
 
-.chat-button {
+.floating-btn {
     position: fixed;
     bottom: 20px;
     right: 20px;
     background: linear-gradient(135deg,#2563eb,#1d4ed8);
-    color: white;
-    padding: 15px 22px;
-    border-radius: 50px;
-    font-size: 18px;
-    font-weight: bold;
-    z-index: 9999;
-    box-shadow: 0px 4px 20px rgba(0,0,0,0.4);
+    color:white;
+    border-radius:50px;
+    padding:15px 22px;
+    font-weight:bold;
+    z-index:9999;
 }
 
 </style>
@@ -942,28 +840,22 @@ if st.button("🤖 Need Help?"):
 if st.session_state.show_chat:
 
     st.markdown("""
-    <div style="
-    position:fixed;
-    bottom:90px;
-    right:20px;
-    width:340px;
-    background:white;
-    padding:20px;
-    border-radius:20px;
-    z-index:9999;
-    box-shadow:0px 4px 25px rgba(0,0,0,0.4);
-    ">
+    <div class="chat-box">
+
     <h3 style="color:#2563eb;">
     👋 Hi, I am Alia
     </h3>
 
     <p style="color:black;">
-    Your AI Accessibility Assistant.
+    Your AI Accessibility Assistant
     </p>
+
     </div>
     """, unsafe_allow_html=True)
 
-    query = st.text_input("💬 Ask Alia")
+    query = st.text_input(
+        "💬 Ask Alia"
+    )
 
     if st.button("Send"):
 
@@ -984,11 +876,11 @@ if st.session_state.show_chat:
         elif "summary" in q:
 
             st.success("""
-1️⃣ Open Notes Summarizer
+1️⃣ Open Summarizer
 
-2️⃣ Paste Notes
+2️⃣ Upload PDF or Notes
 
-3️⃣ Click Generate Summary
+3️⃣ Generate Summary
 """)
 
         elif "speech" in q:
@@ -1010,3 +902,15 @@ Ask about:
 • Speech
 • Accessibility
 """)
+
+# ---------------------------------------------------
+# FOOTER
+# ---------------------------------------------------
+
+st.markdown("""
+<div class="footer">
+
+Made with ❤️ using Streamlit | EduAccess AI
+
+</div>
+""", unsafe_allow_html=True)
