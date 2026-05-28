@@ -129,7 +129,7 @@ session_defaults = {
     "show_chat": False
 }
 
-for key, value in defaults.items():
+for key, value in session_defaults.items():
 
     if key not in st.session_state:
 
