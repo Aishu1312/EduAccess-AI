@@ -115,19 +115,17 @@ def translate_text(text):
 
         return text
 
-# ---------------------------------------------------
-# SESSION STATE
-# ---------------------------------------------------
-
-defaults = {
+session_defaults = {
 
     "summary": "",
     "quiz_started": False,
     "quiz_score": 0,
     "quiz_data": [],
+    "answer_feedback": {},
     "quiz_history": [],
-    "speech_history": [],
     "summary_history": [],
+    "speech_history": [],
+    "used_questions": set(),
     "show_chat": False
 }
 
