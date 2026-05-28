@@ -744,6 +744,49 @@ elif feature == lang["accessibility"]:
         )
 
 # ---------------------------------------------------
+# AI PERSONALIZED LEARNING
+# ---------------------------------------------------
+
+elif feature == "🧠 AI Personalized Learning":
+
+    st.header("🧠 AI Personalized Learning")
+
+    weak_topic = st.text_input(
+        "Enter Weak Topic"
+    )
+
+    learning_style = st.selectbox(
+        "Preferred Learning Style",
+        [
+            "Visual",
+            "Practical",
+            "Theory",
+            "Interactive"
+        ]
+    )
+
+    if st.button("Generate Recommendations"):
+
+        st.success(
+            f"AI detected weak understanding in {weak_topic}"
+        )
+
+        recommendations = [
+
+            f"Practice quizzes on {weak_topic}",
+
+            f"Watch YouTube tutorials on {weak_topic}",
+
+            f"Revise fundamentals daily",
+
+            f"Use visual diagrams for {weak_topic}"
+        ]
+
+        for rec in recommendations:
+
+            st.info(rec)
+
+# ---------------------------------------------------
 # FLOATING AI CHAT ASSISTANT
 # ---------------------------------------------------
 
