@@ -84,19 +84,18 @@ def translate_text(text):
 # SESSION STATE
 # ---------------------------------------------------
 
-defaults = {
-
+session_defaults = {
     "summary": "",
     "quiz_started": False,
     "quiz_score": 0,
     "quiz_data": [],
+    "answer_feedback": {},
     "quiz_history": [],
     "summary_history": [],
     "speech_history": [],
-    "show_chat": False,
-    "used_questions": set()
+    "used_questions": set(),
+    "show_chat": False
 }
-
 for key, value in defaults.items():
 
     if key not in st.session_state:
@@ -196,13 +195,9 @@ if feature == lang["home"]:
         )
     )
 
-    st.write(
+    st.success(
         translate_text(
-            """
-EduAccess AI helps students with disabilities using AI,
-speech technologies, NLP, quizzes, summaries,
-accessibility support, and personalized learning.
-"""
+            "Inclusive AI Learning Platform"
         )
     )
 
@@ -212,22 +207,74 @@ accessibility support, and personalized learning.
         translate_text("🌟 Core Features")
     )
 
-    features = [
+    col1, col2 = st.columns(2)
 
-        "🧠 AI Notes Summarizer",
-        "🎤 Speech-to-Text",
-        "📖 Dyslexia-Friendly Reading",
-        "❓ AI Quiz Generator",
-        "🧠 Personalized Learning",
+    with col1:
+
+        st.markdown("""
+        <div style="
+        background: linear-gradient(135deg,#2563eb,#1e3a8a);
+        padding:20px;
+        border-radius:20px;
+        color:white;
+        margin-bottom:20px;">
+        <h3>🧠 AI Notes Summarizer</h3>
+        <p>Generate concise AI summaries from long educational notes.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div style="
+        background: linear-gradient(135deg,#16a34a,#166534);
+        padding:20px;
+        border-radius:20px;
+        color:white;">
+        <h3>🎤 Speech-to-Text</h3>
+        <p>Convert spoken language into text using AI.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+
+        st.markdown("""
+        <div style="
+        background: linear-gradient(135deg,#f59e0b,#b45309);
+        padding:20px;
+        border-radius:20px;
+        color:white;
+        margin-bottom:20px;">
+        <h3>📖 Dyslexia-Friendly Reading</h3>
+        <p>Accessible reading mode with better spacing and fonts.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div style="
+        background: linear-gradient(135deg,#dc2626,#7f1d1d);
+        padding:20px;
+        border-radius:20px;
+        color:white;">
+        <h3>❓ AI Quiz Generator</h3>
+        <p>Generate adaptive quizzes with difficulty levels.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    st.header(
+        translate_text("🚀 Advanced AI Features")
+    )
+
+    features = [
+        "🧠 AI Personalized Learning",
         "😊 Emotion-Aware Learning",
-        "🚀 AI Career Mentor"
+        "🚀 AI Career Mentor",
+        "🌍 28 Language Support",
+        "♿ Accessibility Support"
     ]
 
     for item in features:
-
-        st.info(
-            translate_text(item)
-        )
+        st.info(translate_text(item))
 
 # ---------------------------------------------------
 # SUMMARIZER
