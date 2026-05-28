@@ -844,6 +844,119 @@ st.markdown(
 )
 
 # ---------------------------------------------------
+# EMOTION-AWARE LEARNING
+# ---------------------------------------------------
+
+elif feature == "😊 Emotion-Aware Learning":
+
+    st.header("😊 Emotion-Aware Learning")
+
+    emotion = st.selectbox(
+        "How are you feeling?",
+        [
+            "Confused",
+            "Stressed",
+            "Focused",
+            "Tired"
+        ]
+    )
+
+    if st.button("Analyze Emotion"):
+
+        if emotion == "Confused":
+
+            st.warning("""
+AI detected confusion.
+
+Recommendation:
+• Simplify learning
+• Watch beginner tutorials
+• Use visual notes
+""")
+
+        elif emotion == "Stressed":
+
+            st.error("""
+AI detected stress.
+
+Recommendation:
+• Take breaks
+• Reduce study load
+• Practice mindfulness
+""")
+
+        elif emotion == "Focused":
+
+            st.success("""
+AI detected high focus.
+
+Recommendation:
+• Attempt hard quizzes
+• Practice mock tests
+""")
+
+        else:
+
+            st.info("""
+AI suggests:
+• Rest properly
+• Continue tomorrow
+""")
+
+# ---------------------------------------------------
+# AI CAREER MENTOR
+# ---------------------------------------------------
+
+elif feature == "🚀 AI Career Mentor":
+
+    st.header("🚀 AI Career Mentor")
+
+    career_query = st.text_input(
+        "Ask Career Guidance"
+    )
+
+    if st.button("Get AI Guidance"):
+
+        query = career_query.lower()
+
+        if "data science" in query:
+
+            st.success("""
+Recommended Projects:
+• AI Resume Analyzer
+• Fake News Detection
+• Sales Forecasting Dashboard
+• AI Career Recommendation System
+
+Recommended Skills:
+• Python
+• Machine Learning
+• Power BI
+• SQL
+""")
+
+        elif "ai" in query:
+
+            st.success("""
+Recommended AI Projects:
+• Chatbot
+• AI Accessibility Platform
+• Emotion Detection
+• NLP Summarizer
+• AI Interview Coach
+""")
+
+        else:
+
+            st.info("""
+AI recommends:
+• Build real-world projects
+• Learn deployment
+• Improve GitHub portfolio
+• Practice DSA + AI
+""")
+
+# ---------------------------------------------------
 # FLOATING AI ASSISTANT
 # ---------------------------------------------------
 
