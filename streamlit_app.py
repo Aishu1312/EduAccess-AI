@@ -464,131 +464,6 @@ elif feature == "📖 Dyslexia-Friendly Reading":
         """, unsafe_allow_html=True)
 
 # ---------------------------------------------------
-# QUIZ GENERATOR
-# ---------------------------------------------------
-
-elif feature == "❓ AI Quiz Generator":
-
-    st.header("❓ AI Adaptive Quiz Generator")
-
-    with st.expander("📚 Quiz History"):
-
-        if st.session_state.quiz_history:
-
-            for idx, quiz in enumerate(
-
-                reversed(st.session_state.quiz_history),
-                start=1
-            ):
-
-                with st.expander(
-                    f"Quiz {idx} | {quiz['topic']}"
-                ):
-
-                    st.write(
-                        f"🏆 Score: {quiz['score']}"
-                    )
-
-        else:
-
-            st.info("No Quiz History")
-
-    topic = st.text_input("📘 Enter Topic")
-
-    difficulty = st.selectbox(
-
-        "🎯 Select Difficulty",
-
-        ["Easy", "Medium", "Hard"]
-    )
-
-    num_questions = st.slider(
-
-        "📊 Number of Questions",
-
-        1,
-        10,
-        5
-    )
-
-    # ---------------------------------------------------
-    # LARGE QUESTION POOL
-    # ---------------------------------------------------
-
-    easy_questions = [
-
-        {
-            "question": f"What is {topic}?",
-            "answer": "Basic concept",
-            "options": [
-                "Basic concept",
-                "Game",
-                "Movie",
-                "None"
-            ],
-            "explanation": "This is the basic definition."
-        }
-
-        for i in range(10)
-    ]
-
-    medium_questions = [
-
-        {
-            "question": f"How is {topic} used in industry {i+1}?",
-            "answer": "Automation",
-            "options": [
-                "Automation",
-                "Cooking",
-                "Gaming",
-                "None"
-            ],
-            "explanation": "Industries use automation."
-        }
-
-        for i in range(10)
-    ]
-
-    hard_questions = [
-
-        {
-            "question": f"What is advanced application of {topic} {i+1}?",
-            "answer": "AI Systems",
-            "options": [
-                "AI Systems",
-                "Typing",
-                "Drawing",
-                "None"
-            ],
-            "explanation": "Advanced AI systems use this."
-        }
-
-        for i in range(10)
-    ]
-
-    if difficulty == "Easy":
-
-        pool = easy_questions
-
-    elif difficulty == "Medium":
-
-        pool = medium_questions
-
-    else:
-
-        pool = hard_questions
-
-    if st.button("🚀 Generate Quiz"):
-
-        random.shuffle(pool)
-
-        st.session_state.quiz_data = pool[:num_questions]
-
-        st.session_state.quiz_started = True
-
-        st.session_state.quiz_score = 0
-
-    if st.session_state.quiz_started:
 
         for idx, q in enumerate(
             st.session_state.quiz_data
@@ -600,60 +475,66 @@ elif feature == "❓ AI Quiz Generator":
                 f"Q{idx+1}. {q['question']}"
             )
 
-            ans = st.radio(
-
+            answer = st.radio(
                 "Choose Answer",
-
                 q["options"],
-
                 key=f"quiz_{idx}"
             )
 
             if st.button(
-
                 f"Submit Q{idx+1}",
-
                 key=f"submit_{idx}"
             ):
 
-                if ans == q["answer"]:
+                if answer == q["answer"]:
 
-                    st.success("✅ Correct")
+                    st.success("✅ Correct Answer")
 
                     st.session_state.quiz_score += 2
 
-                    st.balloons()
-
                 else:
 
-                    st.error("❌ Wrong")
+                    st.error("❌ Wrong Answer")
 
                 st.info(
-                    f"✔ Answer: {q['answer']}"
+                    f"✔ Correct Answer: {q['answer']}"
                 )
 
                 st.warning(
-                    f"📖 {q['explanation']}"
+                    f"📖 Explanation: {q['explanation']}"
                 )
 
-        total = len(
-            st.session_state.quiz_data
-        ) * 2
+        st.markdown("---")
+
+        total = len(st.session_state.quiz_data) * 2
 
         st.header(
-            f"🏆 Score: {st.session_state.quiz_score}/{total}"
+            f"🏆 Final Score: {st.session_state.quiz_score}/{total}"
         )
+
+        # ---------------------------------------------------
+        # BALLOONS ONLY IN QUIZ
+        # ---------------------------------------------------
+
+        if st.session_state.quiz_score >= total // 2:
+            st.balloons()
+
+        # ---------------------------------------------------
+        # SAVE QUIZ
+        # ---------------------------------------------------
 
         if st.button("💾 Save Quiz"):
 
             st.session_state.quiz_history.append({
 
                 "topic": topic,
-                "score": f"{st.session_state.quiz_score}/{total}"
+
+                "score": f"{st.session_state.quiz_score}/{total}",
+
+                "questions": st.session_state.quiz_data
             })
 
-            st.success("✅ Quiz Saved")
-
+            st.success("✅ Quiz Saved Successfully")
 # ---------------------------------------------------
 # ACCESSIBILITY
 # ---------------------------------------------------
