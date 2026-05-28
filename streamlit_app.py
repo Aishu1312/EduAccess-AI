@@ -697,76 +697,152 @@ practice DSA and deployment.
 st.markdown("""
 <style>
 
-.floating-btn {
+/* Floating Help Button */
+
+.help-button {
     position: fixed;
     bottom: 20px;
     right: 20px;
     background: linear-gradient(135deg,#2563eb,#1d4ed8);
-    color:white;
-    border-radius:50px;
-    padding:15px 22px;
-    font-weight:bold;
-    z-index:9999;
+    color: white;
+    padding: 14px 22px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: bold;
+    z-index: 9999;
+    box-shadow: 0px 4px 20px rgba(0,0,0,0.4);
+}
+
+/* Chat Popup */
+
+.chat-popup {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 340px;
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
+    z-index: 9999;
+    box-shadow: 0px 4px 25px rgba(0,0,0,0.3);
+}
+
+.chat-title {
+    color: #2563eb;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.chat-text {
+    color: black;
+    line-height: 1.7;
+    margin-top: 10px;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-if st.button("🤖 Need Help?"):
+# ---------------------------------------------------
+# SESSION STATE
+# ---------------------------------------------------
 
-    st.session_state.show_chat = (
-        not st.session_state.show_chat
-    )
+if "show_chat" not in st.session_state:
+    st.session_state.show_chat = False
+
+# ---------------------------------------------------
+# NEED HELP BUTTON
+# ---------------------------------------------------
+
+col1, col2, col3 = st.columns([8,1,1])
+
+with col3:
+
+    if st.button("🤖 Need Help?"):
+
+        st.session_state.show_chat = (
+            not st.session_state.show_chat
+        )
+
+# ---------------------------------------------------
+# CHAT POPUP
+# ---------------------------------------------------
 
 if st.session_state.show_chat:
 
     st.markdown("""
-    <div class="chat-box">
+    <div class="chat-popup">
 
-    <h3 style="color:#2563eb;">
+    <div class="chat-title">
     👋 Hi, I am Alia
-    </h3>
+    </div>
 
-    <p style="color:black;">
+    <div class="chat-text">
     Your AI Accessibility Assistant
-    </p>
+
+    <br><br>
+
+    I can help you with:
+
+    ✅ Quiz Generator  
+    ✅ AI Notes Summarizer  
+    ✅ Speech-to-Text  
+    ✅ Accessibility Features  
+    ✅ Dyslexia Mode
+
+    </div>
 
     </div>
     """, unsafe_allow_html=True)
 
-    query = st.text_input(
+    st.markdown("<br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
+
+    user_query = st.text_input(
         "💬 Ask Alia"
     )
 
-    if st.button("Send"):
+    if st.button("🚀 Send"):
 
-        q = query.lower()
+        query = user_query.lower()
 
-        if "quiz" in q:
+        # QUIZ
+
+        if "quiz" in query:
 
             st.success("""
+📘 Quiz Generator Steps
+
 1️⃣ Open Quiz Generator
 
 2️⃣ Enter Topic
 
 3️⃣ Select Difficulty
 
-4️⃣ Generate Quiz
+4️⃣ Select Number of Questions
+
+5️⃣ Click Generate Quiz
 """)
 
-        elif "summary" in q:
+        # SUMMARY
+
+        elif "summary" in query or "notes" in query:
 
             st.success("""
-1️⃣ Open Summarizer
+🧠 AI Notes Summarizer Steps
 
-2️⃣ Upload PDF or Notes
+1️⃣ Upload PDF or Paste Notes
 
-3️⃣ Generate Summary
+2️⃣ Select Summary Length
+
+3️⃣ Click Generate Summary
 """)
 
-        elif "speech" in q:
+        # SPEECH
+
+        elif "speech" in query or "voice" in query:
 
             st.success("""
+🎤 Speech-to-Text Steps
+
 1️⃣ Open Speech-to-Text
 
 2️⃣ Record Voice
@@ -774,24 +850,48 @@ if st.session_state.show_chat:
 3️⃣ AI converts speech into text
 """)
 
+        # DYSLEXIA
+
+        elif "dyslexia" in query:
+
+            st.success("""
+📖 Dyslexia Mode Features
+
+✅ Better readability
+
+✅ Improved spacing
+
+✅ Large fonts
+
+✅ Accessibility support
+""")
+
+        # ACCESSIBILITY
+
+        elif "accessibility" in query:
+
+            st.success("""
+♿ Accessibility Features
+
+✅ 28 Languages
+
+✅ High Contrast Mode
+
+✅ Adjustable Fonts
+
+✅ Speech Assistance
+""")
+
+        # DEFAULT
+
         else:
 
             st.info("""
-Ask about:
+Ask me about:
+
 • Quiz
 • Summary
 • Speech
 • Accessibility
+• Dyslexia
 """)
-
-# ---------------------------------------------------
-# FOOTER
-# ---------------------------------------------------
-
-st.markdown("""
-<div class="footer">
-
-Made with ❤️ using Streamlit | EduAccess AI
-
-</div>
-""", unsafe_allow_html=True)
