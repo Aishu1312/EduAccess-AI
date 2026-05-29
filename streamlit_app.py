@@ -446,28 +446,30 @@ elif feature == "🎤 Speech-to-Text":
 
 elif feature == "📖 Dyslexia-Friendly Reading":
 
-    st.header("📖 Dyslexia-Friendly Reading")
+```
+st.header("📖 Dyslexia-Friendly Reading")
 
-    if st.session_state.summary == "":
+if st.session_state.summary == "":
 
-        st.warning("⚠️ Generate summary first")
+    st.warning("⚠️ Generate summary first")
 
-    else:
+else:
 
-        st.markdown(f"""
-        <div style="
-            font-size:{font_size}px;
-            line-height:2.5;
-            letter-spacing:2px;
-            background-color:#f4f4f4;
-            padding:25px;
-            border-radius:15px;
-            color:black;
-            font-family:OpenDyslexic;
-        ">
-        {st.session_state.summary}
-        </div>
-        """, unsafe_allow_html=True)
+    st.markdown(f"""
+    <div style="
+        font-size:{font_size}px;
+        line-height:2.5;
+        letter-spacing:2px;
+        background-color:#f4f4f4;
+        padding:25px;
+        border-radius:15px;
+        color:black;
+        font-family:OpenDyslexic;
+    ">
+    {st.session_state.summary}
+    </div>
+    """, unsafe_allow_html=True)
+```
 
 # ---------------------------------------------------
 
