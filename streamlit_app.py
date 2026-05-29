@@ -440,10 +440,6 @@ elif feature == "🎤 Speech-to-Text":
 
             st.error("❌ Could not understand audio")
 
-# ---------------------------------------------------
-# DYSLEXIA MODE
-# ---------------------------------------------------
-
 elif feature == "📖 Dyslexia-Friendly Reading":
 
 ```
@@ -479,7 +475,6 @@ else:
 
 elif feature == "❓ AI Quiz Generator":
 
-```
 st.header("❓ AI Adaptive Exam Quiz Generator")
 
 st.write("""
