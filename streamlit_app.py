@@ -512,8 +512,7 @@ elif feature == "📖 Dyslexia-Friendly Reading":
         # BALLOONS ONLY IN QUIZ
         # ---------------------------------------------------
 
-        if st.session_state.quiz_score >= total // 2:
-
+       if st.session_state.quiz_score >= total // 2:
     st.balloons()
     
         # ---------------------------------------------------
