@@ -460,6 +460,174 @@ elif feature == "📖 Dyslexia-Friendly Reading":
         """, unsafe_allow_html=True)
 
 # ---------------------------------------------------
+# QUIZ GENERATOR
+# ---------------------------------------------------
+
+elif feature == lang["quiz"]:
+
+    st.header(
+        translate_text("❓ AI Adaptive Quiz Generator")
+    )
+
+    # Quiz History
+    with st.expander(
+        translate_text("📚 Quiz History")
+    ):
+
+        if st.session_state.quiz_history:
+
+            for idx, quiz in enumerate(
+                reversed(st.session_state.quiz_history),
+                start=1
+            ):
+
+                with st.expander(
+                    f"Quiz {idx} | {quiz['topic']} | {quiz['score']}"
+                ):
+
+                    for q in quiz["questions"]:
+
+                        st.markdown("---")
+
+                        st.write(
+                            translate_text(q["question"])
+                        )
+
+                        st.success(
+                            translate_text(
+                                f"✔ Answer: {q['answer']}"
+                            )
+                        )
+
+                        st.info(
+                            translate_text(
+                                f"📖 {q['explanation']}"
+                            )
+                        )
+
+        else:
+
+            st.info(
+                translate_text(
+                    "No quiz history available"
+                )
+            )
+
+    # Inputs
+    topic = st.text_input(
+        translate_text("📘 Enter Topic")
+    )
+
+    difficulty = st.selectbox(
+        translate_text("🎯 Select Difficulty"),
+        ["Easy", "Medium", "Hard"]
+    )
+
+    num_questions = st.slider(
+        translate_text("📊 Number of Questions"),
+        1,
+        10,
+        5
+    )
+
+    # Dynamic Question Bank
+    question_bank = []
+
+    for i in range(1, 21):
+
+        question_bank.append({
+
+            "question": f"What is the role of {topic} in real-world applications? ({i})",
+
+            "answer": f"{topic} improves efficiency and automation.",
+
+            "options": [
+
+                f"{topic} improves efficiency and automation.",
+
+                f"{topic} removes all technologies.",
+
+                f"{topic} has no real-world use.",
+
+                f"{topic} is only theoretical."
+            ],
+
+            "explanation": f"{topic} is widely used to improve systems and productivity."
+        })
+
+        question_bank.append({
+
+            "question": f"Why is {topic} important for students? ({i})",
+
+            "answer": f"{topic} helps build practical and analytical skills.",
+
+            "options": [
+
+                f"{topic} helps build practical and analytical skills.",
+
+                f"{topic} is useless for careers.",
+
+                f"{topic} decreases learning.",
+
+                f"{topic} is unrelated to education."
+            ],
+
+            "explanation": f"{topic} develops important industry skills."
+        })
+
+        question_bank.append({
+
+            "question": f"How is {topic} used in industries? ({i})",
+
+            "answer": "Automation and intelligent systems",
+
+            "options": [
+
+                "Automation and intelligent systems",
+
+                "Only manual paperwork",
+
+                "No industrial use",
+
+                "Gaming only"
+            ],
+
+            "explanation": "Industries use it for automation and smart technologies."
+        })
+
+    # Difficulty Levels
+
+    if difficulty == "Easy":
+
+        pool = question_bank[:10]
+
+    elif difficulty == "Medium":
+
+        pool = question_bank[5:20]
+
+    else:
+
+        pool = question_bank[10:30]
+
+    # Generate Quiz
+
+    if st.button(
+        translate_text("🚀 Generate Quiz")
+    ):
+
+        random.shuffle(pool)
+
+        selected = pool[:num_questions]
+
+        st.session_state.quiz_data = selected
+
+        st.session_state.quiz_started = True
+
+        st.session_state.quiz_score = 0
+
+    # Display Quiz
+
+    if st.session_state.quiz_started:
 
         for idx, q in enumerate(
             st.session_state.quiz_data
@@ -468,61 +636,82 @@ elif feature == "📖 Dyslexia-Friendly Reading":
             st.markdown("---")
 
             st.subheader(
-                f"Q{idx+1}. {q['question']}"
+                translate_text(
+                    f"Q{idx+1}. {q['question']}"
+                )
             )
 
-            answer = st.radio(
-                "Choose Answer",
-                q["options"],
+            translated_options = [
+
+                translate_text(opt)
+
+                for opt in q["options"]
+            ]
+
+            ans = st.radio(
+
+                translate_text("Choose Answer"),
+
+                translated_options,
+
                 key=f"quiz_{idx}"
             )
 
             if st.button(
-                f"Submit Q{idx+1}",
+
+                translate_text(f"Submit Q{idx+1}"),
+
                 key=f"submit_{idx}"
             ):
 
-                if answer == q["answer"]:
+                if ans == translate_text(q["answer"]):
 
-                    st.success("✅ Correct Answer")
+                    st.success(
+                        translate_text(
+                            "✅ Correct Answer"
+                        )
+                    )
 
                     st.session_state.quiz_score += 2
 
+                    # BALLOONS ONLY HERE
+                    st.balloons()
+
                 else:
 
-                    st.error("❌ Wrong Answer")
+                    st.error(
+                        translate_text(
+                            "❌ Wrong Answer"
+                        )
+                    )
 
                 st.info(
-                    f"✔ Correct Answer: {q['answer']}"
+                    translate_text(
+                        f"✔ Correct Answer: {q['answer']}"
+                    )
                 )
 
                 st.warning(
-                    f"📖 Explanation: {q['explanation']}"
+                    translate_text(
+                        f"📖 Explanation: {q['explanation']}"
+                    )
                 )
 
-        st.markdown("---")
+        total = len(
+            st.session_state.quiz_data
+        ) * 2
 
-       total = len(st.session_state.quiz_data) * 2
+        st.header(
+            translate_text(
+                f"🏆 Final Score: {st.session_state.quiz_score}/{total}"
+            )
+        )
 
-st.header(
-    f"🏆 Final Score: {st.session_state.quiz_score}/{total}"
-)
+        # Save Quiz
 
-if st.session_state.quiz_score >= total // 2:
-    st.balloons()
-
-        # ---------------------------------------------------
-        # BALLOONS ONLY IN QUIZ
-        # ---------------------------------------------------
-
-       if st.session_state.quiz_score >= total // 2:
-    st.balloons()
-    
-        # ---------------------------------------------------
-        # SAVE QUIZ
-        # ---------------------------------------------------
-
-        if st.button("💾 Save Quiz"):
+        if st.button(
+            translate_text("💾 Save Quiz")
+        ):
 
             st.session_state.quiz_history.append({
 
@@ -533,7 +722,12 @@ if st.session_state.quiz_score >= total // 2:
                 "questions": st.session_state.quiz_data
             })
 
-            st.success("✅ Quiz Saved Successfully")
+            st.success(
+                translate_text(
+                    "✅ Quiz Saved Successfully"
+                )
+            )
+
 # ---------------------------------------------------
 # ACCESSIBILITY
 # ---------------------------------------------------
