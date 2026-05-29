@@ -445,6 +445,25 @@ elif feature == "📖 Dyslexia-Friendly Reading":
         </div>
         """, unsafe_allow_html=True)
 
+# ✅ Fixed Streamlit Code Sections for EduAccess AI
+
+The main issue in your app is:
+
+* Wrong indentation
+* Extra ```python markdown blocks inside Python file
+* Quiz logic not generating enough questions
+* Questions not changing according to topic
+* Career mentor links formatting
+
+Delete ALL `python and ` from your `.py` file.
+
+---
+
+# ✅ FIXED QUIZ SECTION
+
+Replace your complete `❓ AI Quiz Generator` section with this:
+
+```python
 # ---------------------------------------------------
 # QUIZ GENERATOR
 # ---------------------------------------------------
@@ -453,10 +472,9 @@ elif feature == "❓ AI Quiz Generator":
 
     st.header("❓ AI Adaptive Exam Quiz Generator")
 
-    st.write("""
-Prepare from Beginner → Intermediate → Advanced level.
-Questions are generated according to your selected topic.
-""")
+    st.write(
+        "Prepare from Beginner → Intermediate → Advanced level."
+    )
 
     if "user_answers" not in st.session_state:
         st.session_state.user_answers = {}
@@ -491,7 +509,7 @@ Questions are generated according to your selected topic.
 
     exam = st.text_input(
         "📝 Enter Exam Name",
-        placeholder="Example: GATE, UPSC, Placement"
+        placeholder="Example: Placement, GATE, UPSC"
     )
 
     topic = st.text_input(
@@ -501,11 +519,7 @@ Questions are generated according to your selected topic.
 
     difficulty = st.selectbox(
         "🎯 Select Difficulty",
-        [
-            "Beginner",
-            "Intermediate",
-            "Advanced"
-        ]
+        ["Beginner", "Intermediate", "Advanced"]
     )
 
     num_questions = st.slider(
@@ -515,77 +529,147 @@ Questions are generated according to your selected topic.
         5
     )
 
-    # DYNAMIC QUESTION GENERATOR
+    # TOPIC BASED QUESTIONS
 
-    def generate_questions(topic, difficulty, num):
+    topic_lower = topic.lower()
 
-        questions = []
+    if "excel" in topic_lower:
 
-        for i in range(num):
+        question_pool = [
+            {
+                "question": "Which function is used to calculate average in Excel?",
+                "options": ["AVG", "AVERAGE", "MEAN", "CALCULATE"],
+                "answer": "AVERAGE",
+                "explanation": "AVERAGE function calculates mean value."
+            },
+            {
+                "question": "Which symbol is used before formulas in Excel?",
+                "options": ["#", "=", "$", "%"],
+                "answer": "=",
+                "explanation": "Excel formulas start with '=' symbol."
+            },
+            {
+                "question": "Which shortcut is used to save workbook?",
+                "options": ["Ctrl + S", "Ctrl + X", "Ctrl + P", "Ctrl + D"],
+                "answer": "Ctrl + S",
+                "explanation": "Ctrl + S saves workbook."
+            },
+            {
+                "question": "Which chart is best for trends?",
+                "options": ["Pie Chart", "Line Chart", "Bar Chart", "Area Chart"],
+                "answer": "Line Chart",
+                "explanation": "Line charts show trends over time."
+            },
+            {
+                "question": "What is the intersection of row and column called?",
+                "options": ["Table", "Cell", "Sheet", "Box"],
+                "answer": "Cell",
+                "explanation": "Rows and columns intersect at cells."
+            }
+        ]
 
-            questions.append({
+    elif "python" in topic_lower:
 
-                "question":
-                f"{difficulty} Question {i+1} on {topic}",
+        question_pool = [
+            {
+                "question": "Which keyword defines a function in Python?",
+                "options": ["function", "define", "def", "fun"],
+                "answer": "def",
+                "explanation": "def keyword creates functions."
+            },
+            {
+                "question": "Which datatype stores key-value pairs?",
+                "options": ["List", "Tuple", "Dictionary", "Set"],
+                "answer": "Dictionary",
+                "explanation": "Dictionary stores key-value pairs."
+            },
+            {
+                "question": "Which function prints output?",
+                "options": ["show()", "print()", "echo()", "output()"],
+                "answer": "print()",
+                "explanation": "print() displays output."
+            },
+            {
+                "question": "Which loop repeats until condition is false?",
+                "options": ["if", "for", "while", "switch"],
+                "answer": "while",
+                "explanation": "while loop repeats until condition becomes false."
+            },
+            {
+                "question": "Which symbol is used for comments?",
+                "options": ["//", "#", "<!--", "%"],
+                "answer": "#",
+                "explanation": "# is used for comments in Python."
+            }
+        ]
 
-                "options": [
-                    f"{topic} Option A",
-                    f"{topic} Option B",
-                    f"{topic} Option C",
-                    f"{topic} Option D"
-                ],
+    else:
 
-                "answer": f"{topic} Option A",
-
-                "explanation":
-                f"This is a sample explanation for {topic}."
-            })
-
-        return questions
+        question_pool = [
+            {
+                "question": f"What is an important concept in {topic}?",
+                "options": ["Basics", "Advanced", "Theory", "Practical"],
+                "answer": "Basics",
+                "explanation": f"Basics are important in {topic}."
+            },
+            {
+                "question": f"Which skill helps improve {topic}?",
+                "options": ["Practice", "Sleeping", "Ignoring", "Skipping"],
+                "answer": "Practice",
+                "explanation": "Practice improves skills."
+            },
+            {
+                "question": f"Which platform helps learn {topic}?",
+                "options": ["YouTube", "Books", "Courses", "All of these"],
+                "answer": "All of these",
+                "explanation": "All resources help learning."
+            },
+            {
+                "question": f"What is necessary for mastering {topic}?",
+                "options": ["Consistency", "Avoiding practice", "Skipping concepts", "None"],
+                "answer": "Consistency",
+                "explanation": "Consistency improves mastery."
+            },
+            {
+                "question": f"Which activity improves understanding of {topic}?",
+                "options": ["Projects", "Ignoring", "Copying", "None"],
+                "answer": "Projects",
+                "explanation": "Projects improve practical understanding."
+            }
+        ]
 
     # GENERATE QUIZ
 
     if st.button("🚀 Generate Quiz"):
 
-        if topic.strip() == "":
+        random.shuffle(question_pool)
 
-            st.warning("⚠️ Please enter a topic")
+        selected_questions = question_pool[:num_questions]
 
-        else:
+        st.session_state.quiz_data = selected_questions
 
-            st.session_state.quiz_data = generate_questions(
-                topic,
-                difficulty,
-                num_questions
-            )
+        st.session_state.quiz_started = True
 
-            st.session_state.quiz_started = True
+        st.session_state.quiz_score = 0
 
-            st.session_state.quiz_score = 0
+        st.session_state.user_answers = {}
 
-            st.session_state.user_answers = {}
-
-            st.session_state.submitted_questions = set()
+        st.session_state.submitted_questions = set()
 
     # DISPLAY QUIZ
 
     if st.session_state.quiz_started:
 
-        for idx, q in enumerate(
-            st.session_state.quiz_data
-        ):
+        for idx, q in enumerate(st.session_state.quiz_data):
 
             st.markdown("---")
 
-            st.subheader(
-                f"Q{idx+1}. {q['question']}"
-            )
+            st.subheader(f"Q{idx+1}. {q['question']}")
 
             user_answer = st.radio(
                 "Choose Answer",
                 q["options"],
-                key=f"radio_{idx}",
-                index=None
+                key=f"radio_{idx}"
             )
 
             if st.button(
@@ -609,31 +693,13 @@ Questions are generated according to your selected topic.
 
                     st.error("❌ Wrong Answer")
 
-                st.info(
-                    f"✔ Correct Answer: {q['answer']}"
-                )
+                st.info(f"✔ Correct Answer: {q['answer']}")
 
                 st.warning(
                     f"📖 Explanation: {q['explanation']}"
                 )
 
-            # KEEP ANSWERS VISIBLE
-
-            if idx in st.session_state.submitted_questions:
-
-                st.markdown(f"""
-✅ Your Answer:
-{st.session_state.user_answers[idx]}
-""")
-
-                st.markdown(f"""
-✔ Correct Answer:
-{q['answer']}
-""")
-
-        total = len(
-            st.session_state.quiz_data
-        ) * 2
+        total = len(st.session_state.quiz_data) * 2
 
         st.markdown("---")
 
@@ -644,9 +710,7 @@ Questions are generated according to your selected topic.
         if st.button("💾 Save Quiz"):
 
             st.session_state.quiz_history.append({
-
                 "topic": topic,
-
                 "score": f"{st.session_state.quiz_score}/{total}"
             })
 
