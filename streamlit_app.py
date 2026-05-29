@@ -869,7 +869,7 @@ elif feature == "😊 Emotion-Aware Learning":
 
 
 # ---------------------------------------------------
-# AI CAREER MENTOR
+# CAREER MENTOR
 # ---------------------------------------------------
 
 elif feature == "🚀 AI Career Mentor":
@@ -877,122 +877,18 @@ elif feature == "🚀 AI Career Mentor":
     st.header("🚀 AI Career Mentor")
 
     career_query = st.text_input(
-        "💬 Ask Career Guidance"
+        "Ask Career Guidance"
     )
 
-    st.markdown("""
-### 💡 Sample Questions
-
-• How to become Data Scientist
-
-• AI Engineer roadmap
-
-• Web Development roadmap
-
-• Best AI projects
-
-• Skills for Cybersecurity
-""")
-
-    if st.button("🚀 Get Guidance"):
+    if st.button("Get Guidance"):
 
         query = career_query.lower()
 
         st.markdown("---")
 
-        # DATA SCIENCE
+        st.success("🚀 Career Growth Recommendations")
 
-        if "data science" in query or "data scientist" in query:
-
-            st.success("📊 Data Science Career Roadmap")
-
-            st.subheader("🛠️ Skills Required")
-
-            st.info("""
-✅ Python
-
-✅ SQL
-
-✅ Machine Learning
-
-✅ Power BI
-
-✅ Statistics
-""")
-
-            st.subheader("📚 Best Courses")
-
-            st.markdown("""
-🔗 https://www.coursera.org/
-
-🔗 https://www.udemy.com/
-
-🔗 https://www.geeksforgeeks.org/data-science-for-beginners/
-""")
-
-            st.subheader("🎥 YouTube Tutorials")
-
-            st.markdown("""
-▶️ https://www.youtube.com/results?search_query=data+science+full+course
-""")
-
-        # AI / ML
-
-        elif "ai" in query or "machine learning" in query:
-
-            st.success("🤖 AI / ML Career Roadmap")
-
-            st.subheader("🛠️ Skills Required")
-
-            st.info("""
-✅ Python
-
-✅ Machine Learning
-
-✅ Deep Learning
-
-✅ NLP
-
-✅ Computer Vision
-""")
-
-            st.subheader("🎥 Learning Resources")
-
-            st.markdown("""
-▶️ https://www.youtube.com/results?search_query=machine+learning+full+course
-
-🔗 https://www.geeksforgeeks.org/machine-learning/
-""")
-
-        # WEB DEVELOPMENT
-
-        elif "web" in query:
-
-            st.success("🌐 Web Development Roadmap")
-
-            st.subheader("🛠️ Skills Required")
-
-            st.info("""
-✅ HTML
-
-✅ CSS
-
-✅ JavaScript
-
-✅ React
-
-✅ Node.js
-""")
-
-            st.subheader("🎥 Tutorials")
-
-            st.markdown("""
-▶️ https://www.youtube.com/results?search_query=web+development+full+course
-""")
-
-        else:
-
-            st.info("""
+        st.info("""
 ✅ Build real-world projects
 
 ✅ Improve GitHub profile
@@ -1004,6 +900,37 @@ elif feature == "🚀 AI Career Mentor":
 ✅ Build LinkedIn presence
 """)
 
+        st.subheader("🎥 YouTube Resources")
+
+        st.markdown("""
+▶️ DSA Preparation:
+https://www.youtube.com/results?search_query=dsa+full+course
+
+▶️ GitHub Portfolio:
+https://www.youtube.com/results?search_query=github+portfolio+tutorial
+
+▶️ Deployment Tutorials:
+https://www.youtube.com/results?search_query=deployment+tutorial
+
+▶️ LinkedIn Optimization:
+https://www.youtube.com/results?search_query=linkedin+profile+for+students
+""")
+
+        st.subheader("🔗 Useful Links")
+
+        st.markdown("""
+🔗 LeetCode:
+https://leetcode.com/
+
+🔗 GitHub:
+https://github.com/
+
+🔗 LinkedIn:
+https://www.linkedin.com/
+
+🔗 GeeksforGeeks:
+https://www.geeksforgeeks.org/
+""")
 
 # ---------------------------------------------------
 # FOOTER
