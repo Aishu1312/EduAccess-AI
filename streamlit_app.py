@@ -502,11 +502,14 @@ elif feature == "📖 Dyslexia-Friendly Reading":
 
         st.markdown("---")
 
-        total = len(st.session_state.quiz_data) * 2
+       total = len(st.session_state.quiz_data) * 2
 
-        st.header(
-            f"🏆 Final Score: {st.session_state.quiz_score}/{total}"
-        )
+st.header(
+    f"🏆 Final Score: {st.session_state.quiz_score}/{total}"
+)
+
+if st.session_state.quiz_score >= total // 2:
+    st.balloons()
 
         # ---------------------------------------------------
         # BALLOONS ONLY IN QUIZ
