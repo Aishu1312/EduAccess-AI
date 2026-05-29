@@ -877,9 +877,11 @@ elif feature == "🚀 AI Career Mentor":
     st.header("🚀 AI Career Mentor")
 
     career_query = st.text_input(
-        "Ask Career Guidance"
+        "💬 Ask Career Guidance"
     )
 
+st.markdown(""" ### 💡 Sample Questions • How to become Data Scientist • AI Engineer roadmap • Web Development roadmap • Best AI projects • Skills for Cybersecurity """)
+    
     if st.button("Get Guidance"):
 
         query = career_query.lower()
