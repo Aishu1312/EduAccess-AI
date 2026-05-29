@@ -587,7 +587,7 @@ elif feature == "♿ Accessibility Support":
     st.success("📖 Dyslexia Reading")
     st.success("🎤 Speech Assistance")
 
-```python
+
 # ---------------------------------------------------
 # AI PERSONALIZED LEARNING
 # ---------------------------------------------------
@@ -667,9 +667,7 @@ elif feature == "🧠 AI Personalized Learning":
 
 🔗 https://www.google.com/search?q={weak_topic}+infographics
 """)
-```
 
-```python
 # ---------------------------------------------------
 # EMOTION-AWARE LEARNING
 # ---------------------------------------------------
@@ -791,7 +789,6 @@ elif feature == "😊 Emotion-Aware Learning":
 """)
 
 
-```python
 # ---------------------------------------------------
 # AI CAREER MENTOR
 # ---------------------------------------------------
@@ -927,7 +924,7 @@ elif feature == "🚀 AI Career Mentor":
 
 ✅ Build LinkedIn presence
 """)
-```
+
 
 # ---------------------------------------------------
 # FOOTER
