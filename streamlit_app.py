@@ -440,387 +440,313 @@ elif feature == "🎤 Speech-to-Text":
 
             st.error("❌ Could not understand audio")
 
-elif feature == "📖 Dyslexia-Friendly Reading":
-
-```
-st.header("📖 Dyslexia-Friendly Reading")
-
-if st.session_state.summary == "":
-
-    st.warning("⚠️ Generate summary first")
-
-else:
-
-    st.markdown(f"""
-    <div style="
-        font-size:{font_size}px;
-        line-height:2.5;
-        letter-spacing:2px;
-        background-color:#f4f4f4;
-        padding:25px;
-        border-radius:15px;
-        color:black;
-        font-family:OpenDyslexic;
-    ">
-    {st.session_state.summary}
-    </div>
-    """, unsafe_allow_html=True)
-```
-
+```python
+# ---------------------------------------------------
+# DYSLEXIA MODE
 # ---------------------------------------------------
 
-# QUIZ GENERATOR
+elif feature == "📖 Dyslexia-Friendly Reading":
 
+    st.header("📖 Dyslexia-Friendly Reading")
+
+    if st.session_state.summary == "":
+
+        st.warning("⚠️ Generate summary first")
+
+    else:
+
+        st.markdown(f"""
+        <div style="
+            font-size:{font_size}px;
+            line-height:2.5;
+            letter-spacing:2px;
+            background-color:#f4f4f4;
+            padding:25px;
+            border-radius:15px;
+            color:black;
+            font-family:OpenDyslexic;
+        ">
+        {st.session_state.summary}
+        </div>
+        """, unsafe_allow_html=True)
+
+# ---------------------------------------------------
+# QUIZ GENERATOR
 # ---------------------------------------------------
 
 elif feature == "❓ AI Quiz Generator":
 
-st.header("❓ AI Adaptive Exam Quiz Generator")
+    st.header("❓ AI Adaptive Exam Quiz Generator")
 
-st.write("""
-```
+    st.write("""
+    Prepare from Beginner → Intermediate → Advanced level.
+    Questions are designed for competitive exams,
+    placements and university preparation.
+    """)
 
-Prepare from Beginner → Intermediate → Advanced level.
-Questions are designed for competitive exams,
-placements and university preparation.
-""")
+    # ---------------------------------------------------
+    # SESSION STATES
+    # ---------------------------------------------------
 
-```
-# ---------------------------------------------------
-# SESSION STATES
-# ---------------------------------------------------
+    if "user_answers" not in st.session_state:
+        st.session_state.user_answers = {}
 
-if "user_answers" not in st.session_state:
-    st.session_state.user_answers = {}
+    if "submitted_questions" not in st.session_state:
+        st.session_state.submitted_questions = set()
 
-if "submitted_questions" not in st.session_state:
-    st.session_state.submitted_questions = set()
+    # ---------------------------------------------------
+    # QUIZ HISTORY
+    # ---------------------------------------------------
 
-# ---------------------------------------------------
-# QUIZ HISTORY
-# ---------------------------------------------------
+    with st.expander("📚 Quiz History"):
 
-with st.expander("📚 Quiz History"):
+        if st.session_state.quiz_history:
 
-    if st.session_state.quiz_history:
+            for idx, quiz in enumerate(
+                reversed(st.session_state.quiz_history),
+                start=1
+            ):
 
-        for idx, quiz in enumerate(
-            reversed(st.session_state.quiz_history),
-            start=1
-        ):
+                st.markdown(f"""
+                ### Quiz {idx}
 
-            st.markdown(f"""
-```
+                📘 Topic: {quiz['topic']}
 
-### Quiz {idx}
+                🏆 Score: {quiz['score']}
+                """)
 
-📘 Topic: {quiz['topic']}
+        else:
 
-🏆 Score: {quiz['score']}
-""")
+            st.info("No quiz history available")
 
-```
+    # ---------------------------------------------------
+    # INPUTS
+    # ---------------------------------------------------
+
+    exam = st.text_input(
+        "📝 Enter Exam Name",
+        placeholder="Example: GATE, UPSC, JEE, Placement"
+    )
+
+    topic = st.text_input(
+        "📘 Enter Topic",
+        placeholder="Example: Python, DBMS, AI"
+    )
+
+    difficulty = st.selectbox(
+        "🎯 Select Difficulty",
+        [
+            "Beginner",
+            "Intermediate",
+            "Advanced"
+        ]
+    )
+
+    num_questions = st.slider(
+        "📊 Number of Questions",
+        1,
+        10,
+        5
+    )
+
+    # ---------------------------------------------------
+    # QUESTION BANKS
+    # ---------------------------------------------------
+
+    beginner_questions = [
+
+        {
+            "question": "What is the output of print(type(10)) in Python?",
+            "options": [
+                "<class 'int'>",
+                "integer",
+                "10",
+                "float"
+            ],
+            "answer": "<class 'int'>",
+            "explanation": "10 is an integer value in Python."
+        },
+
+        {
+            "question": "Which keyword is used to define a function in Python?",
+            "options": [
+                "def",
+                "function",
+                "func",
+                "define"
+            ],
+            "answer": "def",
+            "explanation": "The def keyword is used to create functions."
+        }
+    ]
+
+    intermediate_questions = [
+
+        {
+            "question": "What is the time complexity of binary search?",
+            "options": [
+                "O(log n)",
+                "O(n)",
+                "O(n log n)",
+                "O(1)"
+            ],
+            "answer": "O(log n)",
+            "explanation": "Binary search divides the search space in half."
+        }
+    ]
+
+    advanced_questions = [
+
+        {
+            "question": "Which machine learning algorithm is used for classification problems?",
+            "options": [
+                "Logistic Regression",
+                "Linear Regression",
+                "K-Means",
+                "Apriori"
+            ],
+            "answer": "Logistic Regression",
+            "explanation": "Logistic Regression is used for classification."
+        }
+    ]
+
+    # ---------------------------------------------------
+    # DIFFICULTY LOGIC
+    # ---------------------------------------------------
+
+    if difficulty == "Beginner":
+
+        question_pool = beginner_questions
+
+    elif difficulty == "Intermediate":
+
+        question_pool = (
+            beginner_questions +
+            intermediate_questions
+        )
+
     else:
 
-        st.info("No quiz history available")
+        question_pool = (
+            beginner_questions +
+            intermediate_questions +
+            advanced_questions
+        )
 
-# ---------------------------------------------------
-# INPUTS
-# ---------------------------------------------------
+    # ---------------------------------------------------
+    # GENERATE QUIZ
+    # ---------------------------------------------------
 
-exam = st.text_input(
-    "📝 Enter Exam Name",
-    placeholder="Example: GATE, UPSC, JEE, Placement"
-)
+    if st.button("🚀 Generate Quiz"):
 
-topic = st.text_input(
-    "📘 Enter Topic",
-    placeholder="Example: Python, DBMS, AI"
-)
+        random.shuffle(question_pool)
 
-difficulty = st.selectbox(
-    "🎯 Select Difficulty",
-    [
-        "Beginner",
-        "Intermediate",
-        "Advanced"
-    ]
-)
+        selected_questions = question_pool[:num_questions]
 
-num_questions = st.slider(
-    "📊 Number of Questions",
-    1,
-    10,
-    5
-)
+        st.session_state.quiz_data = selected_questions
 
-# ---------------------------------------------------
-# QUESTION BANKS
-# ---------------------------------------------------
+        st.session_state.quiz_started = True
 
-beginner_questions = [
+        st.session_state.quiz_score = 0
 
-    {
-        "question": f"What is the output of print(type(10)) in Python?",
-        "options": [
-            "<class 'int'>",
-            "integer",
-            "10",
-            "float"
-        ],
-        "answer": "<class 'int'>",
-        "explanation": "10 is an integer value in Python."
-    },
+        st.session_state.user_answers = {}
 
-    {
-        "question": f"Which keyword is used to define a function in Python?",
-        "options": [
-            "def",
-            "function",
-            "func",
-            "define"
-        ],
-        "answer": "def",
-        "explanation": "The def keyword is used to create functions."
-    },
+        st.session_state.submitted_questions = set()
 
-    {
-        "question": f"Which data structure stores key-value pairs?",
-        "options": [
-            "Dictionary",
-            "Tuple",
-            "List",
-            "Set"
-        ],
-        "answer": "Dictionary",
-        "explanation": "Dictionary stores data in key-value format."
-    }
-]
+    # ---------------------------------------------------
+    # DISPLAY QUIZ
+    # ---------------------------------------------------
 
-intermediate_questions = [
+    if st.session_state.quiz_started:
 
-    {
-        "question": f"What is the time complexity of binary search?",
-        "options": [
-            "O(log n)",
-            "O(n)",
-            "O(n log n)",
-            "O(1)"
-        ],
-        "answer": "O(log n)",
-        "explanation": "Binary search divides the search space in half."
-    },
+        for idx, q in enumerate(
+            st.session_state.quiz_data
+        ):
 
-    {
-        "question": f"Which SQL clause is used to filter grouped data?",
-        "options": [
-            "HAVING",
-            "WHERE",
-            "GROUP BY",
-            "ORDER BY"
-        ],
-        "answer": "HAVING",
-        "explanation": "HAVING filters grouped records."
-    },
+            st.markdown("---")
 
-    {
-        "question": f"What does API stand for?",
-        "options": [
-            "Application Programming Interface",
-            "Applied Program Internet",
-            "Advanced Protocol Integration",
-            "Automated Programming Input"
-        ],
-        "answer": "Application Programming Interface",
-        "explanation": "API allows communication between systems."
-    }
-]
+            st.subheader(
+                f"Q{idx+1}. {q['question']}"
+            )
 
-advanced_questions = [
+            user_answer = st.radio(
+                "Choose Answer",
+                q["options"],
+                key=f"radio_{idx}",
+                index=None
+            )
 
-    {
-        "question": f"Which machine learning algorithm is used for classification problems?",
-        "options": [
-            "Logistic Regression",
-            "Linear Regression",
-            "K-Means",
-            "Apriori"
-        ],
-        "answer": "Logistic Regression",
-        "explanation": "Logistic Regression is commonly used for classification."
-    },
+            if st.button(
+                f"Submit Q{idx+1}",
+                key=f"submit_{idx}"
+            ):
 
-    {
-        "question": f"What is normalization in DBMS?",
-        "options": [
-            "Reducing redundancy",
-            "Increasing duplication",
-            "Creating backups",
-            "Deleting tables"
-        ],
-        "answer": "Reducing redundancy",
-        "explanation": "Normalization reduces data redundancy."
-    },
+                st.session_state.user_answers[idx] = user_answer
 
-    {
-        "question": f"What is the main purpose of Docker?",
-        "options": [
-            "Containerization",
-            "Database management",
-            "Cloud storage",
-            "Networking"
-        ],
-        "answer": "Containerization",
-        "explanation": "Docker is used for containerization."
-    }
-]
+                st.session_state.submitted_questions.add(idx)
 
-# ---------------------------------------------------
-# DIFFICULTY LOGIC
-# ---------------------------------------------------
+                if user_answer == q["answer"]:
 
-if difficulty == "Beginner":
+                    st.success("✅ Correct Answer")
 
-    question_pool = beginner_questions
+                    st.session_state.quiz_score += 2
 
-elif difficulty == "Intermediate":
+                    st.balloons()
 
-    question_pool = (
-        beginner_questions +
-        intermediate_questions
-    )
+                else:
 
-else:
+                    st.error("❌ Wrong Answer")
 
-    question_pool = (
-        beginner_questions +
-        intermediate_questions +
-        advanced_questions
-    )
+                st.info(
+                    f"✔ Correct Answer: {q['answer']}"
+                )
 
-# ---------------------------------------------------
-# GENERATE QUIZ
-# ---------------------------------------------------
+                st.warning(
+                    f"📖 Explanation: {q['explanation']}"
+                )
 
-if st.button("🚀 Generate Quiz"):
+            # KEEP ANSWERS VISIBLE
 
-    random.shuffle(question_pool)
+            if idx in st.session_state.submitted_questions:
 
-    selected_questions = question_pool[:num_questions]
+                st.markdown(f"""
+                ✅ Your Answer:
+                {st.session_state.user_answers[idx]}
+                """)
 
-    st.session_state.quiz_data = selected_questions
+                st.markdown(f"""
+                ✔ Correct Answer:
+                {q['answer']}
+                """)
 
-    st.session_state.quiz_started = True
+        # ---------------------------------------------------
+        # FINAL SCORE
+        # ---------------------------------------------------
 
-    st.session_state.quiz_score = 0
-
-    st.session_state.user_answers = {}
-
-    st.session_state.submitted_questions = set()
-
-# ---------------------------------------------------
-# DISPLAY QUIZ
-# ---------------------------------------------------
-
-if st.session_state.quiz_started:
-
-    for idx, q in enumerate(
-        st.session_state.quiz_data
-    ):
+        total = len(
+            st.session_state.quiz_data
+        ) * 2
 
         st.markdown("---")
 
-        st.subheader(
-            f"Q{idx+1}. {q['question']}"
+        st.header(
+            f"🏆 Final Score: {st.session_state.quiz_score}/{total}"
         )
 
-        user_answer = st.radio(
-            "Choose Answer",
-            q["options"],
-            key=f"radio_{idx}",
-            index=None
-        )
-
-        if st.button(
-            f"Submit Q{idx+1}",
-            key=f"submit_{idx}"
-        ):
-
-            st.session_state.user_answers[idx] = user_answer
-
-            st.session_state.submitted_questions.add(idx)
-
-            if user_answer == q["answer"]:
-
-                st.success("✅ Correct Answer")
-
-                st.session_state.quiz_score += 2
-
-                # BALLOONS ONLY HERE
-                st.balloons()
-
-            else:
-
-                st.error("❌ Wrong Answer")
-
-            st.info(
-                f"✔ Correct Answer: {q['answer']}"
-            )
-
-            st.warning(
-                f"📖 Explanation: {q['explanation']}"
-            )
-
         # ---------------------------------------------------
-        # KEEP ANSWERS VISIBLE
+        # SAVE QUIZ
         # ---------------------------------------------------
 
-        if idx in st.session_state.submitted_questions:
+        if st.button("💾 Save Quiz"):
 
-            st.markdown(f"""
-```
+            st.session_state.quiz_history.append({
 
-✅ Your Answer:
-{st.session_state.user_answers[idx]}
-""")
+                "topic": topic,
 
-```
-            st.markdown(f"""
-```
+                "score": f"{st.session_state.quiz_score}/{total}"
+            })
 
-✔ Correct Answer:
-{q['answer']}
-""")
-
-```
-    # ---------------------------------------------------
-    # FINAL SCORE
-    # ---------------------------------------------------
-
-    total = len(
-        st.session_state.quiz_data
-    ) * 2
-
-    st.markdown("---")
-
-    st.header(
-        f"🏆 Final Score: {st.session_state.quiz_score}/{total}"
-    )
-
-    # ---------------------------------------------------
-    # SAVE QUIZ
-    # ---------------------------------------------------
-
-    if st.button("💾 Save Quiz"):
-
-        st.session_state.quiz_history.append({
-
-            "topic": topic,
-
-            "score": f"{st.session_state.quiz_score}/{total}"
-        })
-
-        st.success("✅ Quiz Saved Successfully")
+            st.success("✅ Quiz Saved Successfully")
 ```
 
 # ---------------------------------------------------
