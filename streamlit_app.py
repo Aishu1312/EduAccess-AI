@@ -476,11 +476,13 @@ elif feature == "📖 Dyslexia-Friendly Reading":
 
 elif feature == "❓ AI Quiz Generator":
 
-    st.header("❓ AI Adaptive Quiz Generator")
+    st.header("❓ AI Adaptive Exam Quiz Generator")
 
-    st.write(
-        "Generate technical MCQs with adaptive difficulty levels."
-    )
+    st.write("""
+Prepare from Beginner → Intermediate → Advanced level.
+Questions are designed for competitive exams,
+placements and university preparation.
+""")
 
     # ---------------------------------------------------
     # QUIZ HISTORY
@@ -495,23 +497,12 @@ elif feature == "❓ AI Quiz Generator":
                 start=1
             ):
 
-                with st.expander(
-                    f"Quiz {idx} | {quiz['topic']} | {quiz['score']}"
-                ):
+                st.markdown(f"""
+                ### Quiz {idx}
+                Topic: {quiz['topic']}
 
-                    for q in quiz["questions"]:
-
-                        st.markdown("---")
-
-                        st.write(f"Q. {q['question']}")
-
-                        st.success(
-                            f"✔ Correct Answer: {q['answer']}"
-                        )
-
-                        st.info(
-                            f"📖 Explanation: {q['explanation']}"
-                        )
+                Score: {quiz['score']}
+                """)
 
         else:
 
@@ -521,175 +512,177 @@ elif feature == "❓ AI Quiz Generator":
     # INPUTS
     # ---------------------------------------------------
 
-    topic = st.text_input("📘 Enter Topic")
+    exam = st.text_input(
+        "📝 Enter Exam Name",
+        placeholder="Example: GATE, UPSC, JEE, Placement"
+    )
+
+    topic = st.text_input(
+        "📘 Enter Topic",
+        placeholder="Example: Python, DBMS, AI"
+    )
 
     difficulty = st.selectbox(
 
         "🎯 Select Difficulty",
 
         [
-            "Easy",
-            "Medium",
-            "Hard"
+            "Beginner",
+            "Intermediate",
+            "Advanced"
         ]
     )
 
     num_questions = st.slider(
-
         "📊 Number of Questions",
-
         1,
         10,
         5
     )
 
     # ---------------------------------------------------
-    # EASY QUESTIONS
+    # QUESTION BANKS
     # ---------------------------------------------------
 
-    easy_questions = [
+    beginner_questions = [
 
         {
             "question": f"What is the primary purpose of {topic}?",
             "options": [
-                "Solving real-world problems",
-                "Only entertainment",
-                "Replacing all jobs",
+                "To solve real-world problems efficiently",
+                "To increase hardware size",
+                "To remove automation",
+                "To reduce learning"
+            ],
+            "answer": "To solve real-world problems efficiently",
+            "explanation": f"{topic} helps solve practical real-world problems efficiently."
+        },
+
+        {
+            "question": f"Which industry commonly uses {topic}?",
+            "options": [
+                "Healthcare",
+                "Agriculture",
+                "Education",
+                "All of the above"
+            ],
+            "answer": "All of the above",
+            "explanation": f"{topic} is used across multiple industries."
+        },
+
+        {
+            "question": f"What is a major benefit of learning {topic}?",
+            "options": [
+                "Career opportunities",
+                "Reduced knowledge",
+                "No applications",
                 "Avoiding technology"
             ],
-            "answer": "Solving real-world problems",
-            "explanation": f"{topic} helps solve practical and technical problems."
-        },
-
-        {
-            "question": f"Which skill is important for learning {topic}?",
-            "options": [
-                "Problem solving",
-                "Sleeping",
-                "Ignoring concepts",
-                "Avoiding practice"
-            ],
-            "answer": "Problem solving",
-            "explanation": "Problem-solving is important in technical fields."
-        },
-
-        {
-            "question": f"Why is {topic} useful in education?",
-            "options": [
-                "Improves analytical thinking",
-                "Reduces learning",
-                "Only for gaming",
-                "No real use"
-            ],
-            "answer": "Improves analytical thinking",
-            "explanation": f"{topic} improves logical and analytical thinking."
+            "answer": "Career opportunities",
+            "explanation": f"{topic} provides strong career opportunities."
         }
-
     ]
 
-    # ---------------------------------------------------
-    # MEDIUM QUESTIONS
-    # ---------------------------------------------------
-
-    medium_questions = [
+    intermediate_questions = [
 
         {
-            "question": f"How is {topic} applied in industries?",
+            "question": f"How does {topic} improve automation systems?",
             "options": [
-                "Automation and optimization",
-                "Only paperwork",
-                "No industrial usage",
-                "Only manual systems"
+                "By increasing manual work",
+                "By enabling intelligent decision making",
+                "By removing data",
+                "By slowing processes"
             ],
-            "answer": "Automation and optimization",
-            "explanation": "Industries use it for automation and efficiency."
+            "answer": "By enabling intelligent decision making",
+            "explanation": f"{topic} improves automation using intelligent systems."
         },
 
         {
-            "question": f"What is a major challenge in {topic}?",
+            "question": f"What challenge is commonly faced in {topic}?",
             "options": [
-                "Scalability and security",
-                "Too much free time",
-                "No challenges exist",
-                "Lack of keyboards"
+                "Data privacy",
+                "Unlimited storage",
+                "Zero complexity",
+                "No learning curve"
             ],
-            "answer": "Scalability and security",
-            "explanation": "Security and scalability are common technical challenges."
+            "answer": "Data privacy",
+            "explanation": "Privacy and security are common challenges."
         },
 
         {
-            "question": f"Which technology is commonly associated with {topic}?",
+            "question": f"Why is optimization important in {topic}?",
             "options": [
-                "Artificial Intelligence",
-                "Stone carving",
+                "To improve performance",
+                "To increase errors",
+                "To remove scalability",
+                "To avoid efficiency"
+            ],
+            "answer": "To improve performance",
+            "explanation": "Optimization improves speed and efficiency."
+        }
+    ]
+
+    advanced_questions = [
+
+        {
+            "question": f"Which advanced concept is heavily used in {topic} systems?",
+            "options": [
+                "Predictive analytics",
+                "Manual paperwork",
                 "Typewriters",
-                "Paper-only systems"
+                "No computation"
             ],
-            "answer": "Artificial Intelligence",
-            "explanation": "Modern technologies integrate AI systems."
-        }
-
-    ]
-
-    # ---------------------------------------------------
-    # HARD QUESTIONS
-    # ---------------------------------------------------
-
-    hard_questions = [
-
-        {
-            "question": f"How does {topic} contribute to intelligent systems?",
-            "options": [
-                "By enabling predictive decision-making",
-                "By reducing computation",
-                "By avoiding automation",
-                "By eliminating data"
-            ],
-            "answer": "By enabling predictive decision-making",
-            "explanation": "Predictive systems are a major application."
+            "answer": "Predictive analytics",
+            "explanation": "Advanced systems rely on predictive analytics."
         },
 
         {
-            "question": f"What is the role of optimization in {topic}?",
+            "question": f"How does scalability affect enterprise-level {topic} applications?",
             "options": [
-                "Improving performance efficiency",
-                "Reducing all computations to zero",
-                "Avoiding algorithms",
-                "Removing automation"
+                "Improves handling of large workloads",
+                "Reduces system capacity",
+                "Deletes automation",
+                "Stops optimization"
             ],
-            "answer": "Improving performance efficiency",
-            "explanation": "Optimization improves efficiency and speed."
+            "answer": "Improves handling of large workloads",
+            "explanation": "Scalability helps enterprise systems manage high workloads."
         },
 
         {
-            "question": f"Which concept is most critical in advanced {topic} systems?",
+            "question": f"What is the role of AI integration in advanced {topic} applications?",
             "options": [
-                "Scalable architecture",
-                "Ignoring datasets",
-                "Manual-only operations",
-                "Removing security"
+                "Intelligent automation",
+                "Removing computation",
+                "Reducing productivity",
+                "Avoiding analysis"
             ],
-            "answer": "Scalable architecture",
-            "explanation": "Scalable systems handle large workloads efficiently."
+            "answer": "Intelligent automation",
+            "explanation": "AI integration enables intelligent automation."
         }
-
     ]
 
     # ---------------------------------------------------
-    # SELECT QUESTION POOL
+    # DIFFICULTY LOGIC
     # ---------------------------------------------------
 
-    if difficulty == "Easy":
+    if difficulty == "Beginner":
 
-        pool = easy_questions
+        question_pool = beginner_questions
 
-    elif difficulty == "Medium":
+    elif difficulty == "Intermediate":
 
-        pool = medium_questions
+        question_pool = (
+            beginner_questions +
+            intermediate_questions
+        )
 
     else:
 
-        pool = hard_questions
+        question_pool = (
+            beginner_questions +
+            intermediate_questions +
+            advanced_questions
+        )
 
     # ---------------------------------------------------
     # GENERATE QUIZ
@@ -697,17 +690,19 @@ elif feature == "❓ AI Quiz Generator":
 
     if st.button("🚀 Generate Quiz"):
 
-        expanded_pool = pool * 5
+        random.shuffle(question_pool)
 
-        random.shuffle(expanded_pool)
+        selected_questions = question_pool[:num_questions]
 
-        st.session_state.quiz_data = expanded_pool[:num_questions]
+        st.session_state.quiz_data = selected_questions
 
         st.session_state.quiz_started = True
 
         st.session_state.quiz_score = 0
 
-        st.session_state.submitted_answers = {}
+        st.session_state.user_answers = {}
+
+        st.session_state.submitted_questions = set()
 
     # ---------------------------------------------------
     # DISPLAY QUIZ
@@ -725,7 +720,7 @@ elif feature == "❓ AI Quiz Generator":
                 f"Q{idx+1}. {q['question']}"
             )
 
-            answer = st.radio(
+            user_answer = st.radio(
 
                 "Choose Answer",
 
@@ -736,18 +731,25 @@ elif feature == "❓ AI Quiz Generator":
                 index=None
             )
 
+            # SAVE USER ANSWER
+
+            st.session_state.user_answers[idx] = user_answer
+
             if st.button(
                 f"Submit Q{idx+1}",
                 key=f"submit_{idx}"
             ):
 
-                st.session_state.submitted_answers[idx] = answer
+                st.session_state.submitted_questions.add(idx)
 
-                if answer == q["answer"]:
+                if user_answer == q["answer"]:
 
                     st.success("✅ Correct Answer")
 
                     st.session_state.quiz_score += 2
+
+                    # BALLOONS ONLY HERE
+                    st.balloons()
 
                 else:
 
@@ -763,12 +765,17 @@ elif feature == "❓ AI Quiz Generator":
 
             # KEEP PREVIOUS ANSWERS VISIBLE
 
-            if idx in st.session_state.submitted_answers:
+            if idx in st.session_state.submitted_questions:
 
-                st.write(
-                    f"📝 Your Answer: "
-                    f"{st.session_state.submitted_answers[idx]}"
-                )
+                st.markdown(f"""
+                ✅ Your Answer:
+                {st.session_state.user_answers[idx]}
+                """)
+
+                st.markdown(f"""
+                ✔ Correct Answer:
+                {q['answer']}
+                """)
 
         # ---------------------------------------------------
         # FINAL SCORE
@@ -781,8 +788,7 @@ elif feature == "❓ AI Quiz Generator":
         st.markdown("---")
 
         st.header(
-            f"🏆 Final Score: "
-            f"{st.session_state.quiz_score}/{total}"
+            f"🏆 Final Score: {st.session_state.quiz_score}/{total}"
         )
 
         # ---------------------------------------------------
@@ -795,18 +801,10 @@ elif feature == "❓ AI Quiz Generator":
 
                 "topic": topic,
 
-                "score": f"{st.session_state.quiz_score}/{total}",
-
-                "questions": st.session_state.quiz_data
+                "score": f"{st.session_state.quiz_score}/{total}"
             })
 
-            st.success(
-                "✅ Quiz Saved Successfully"
-            )
-
-            # BALLOONS ONLY HERE
-            st.balloons()
-```
+            st.success("✅ Quiz Saved Successfully")
 
 # ---------------------------------------------------
 # ACCESSIBILITY
