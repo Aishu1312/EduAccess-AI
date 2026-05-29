@@ -587,6 +587,7 @@ elif feature == "♿ Accessibility Support":
     st.success("📖 Dyslexia Reading")
     st.success("🎤 Speech Assistance")
 
+```python
 # ---------------------------------------------------
 # AI PERSONALIZED LEARNING
 # ---------------------------------------------------
@@ -596,11 +597,11 @@ elif feature == "🧠 AI Personalized Learning":
     st.header("🧠 AI Personalized Learning")
 
     weak_topic = st.text_input(
-        "Enter Weak Topic"
+        "📘 Enter Weak Topic"
     )
 
     learning_style = st.selectbox(
-        "Preferred Learning Style",
+        "🎯 Preferred Learning Style",
         [
             "Visual",
             "Theory",
@@ -609,7 +610,7 @@ elif feature == "🧠 AI Personalized Learning":
         ]
     )
 
-    if st.button("Generate Recommendations"):
+    if st.button("🚀 Generate Recommendations"):
 
         if weak_topic.strip() == "":
 
@@ -623,14 +624,12 @@ elif feature == "🧠 AI Personalized Learning":
 
             st.markdown("---")
 
-            st.subheader("📘 Practice Quizzes")
+            st.subheader("📘 Practice Resources")
 
             st.markdown(f"""
-🔗 [GeeksforGeeks Quiz on {weak_topic}]
-(https://www.google.com/search?q=GeeksforGeeks+{weak_topic}+quiz)
+🔗 https://www.google.com/search?q=GeeksforGeeks+{weak_topic}+quiz
 
-🔗 [MCQ Practice for {weak_topic}]
-(https://www.google.com/search?q={weak_topic}+MCQ+questions)
+🔗 https://www.google.com/search?q={weak_topic}+MCQ+questions
 """)
 
             st.markdown("---")
@@ -638,11 +637,9 @@ elif feature == "🧠 AI Personalized Learning":
             st.subheader("🎥 Best YouTube Tutorials")
 
             st.markdown(f"""
-▶️ [YouTube Tutorials for {weak_topic}]
-(https://www.youtube.com/results?search_query={weak_topic}+full+course)
+▶️ https://www.youtube.com/results?search_query={weak_topic}+full+course
 
-▶️ [Beginner Friendly {weak_topic} Tutorials]
-(https://www.youtube.com/results?search_query=learn+{weak_topic}+for+beginners)
+▶️ https://www.youtube.com/results?search_query=learn+{weak_topic}+for+beginners
 """)
 
             st.markdown("---")
@@ -650,31 +647,31 @@ elif feature == "🧠 AI Personalized Learning":
             st.subheader("📅 Daily Revision Plan")
 
             st.info(f"""
-✅ Revise {weak_topic} concepts daily
+✅ Revise {weak_topic} daily
 
-✅ Solve 5 practice questions everyday
+✅ Solve practice questions
 
-✅ Watch one tutorial daily
+✅ Watch one tutorial everyday
 
 ✅ Create handwritten notes
 
-✅ Revise weak concepts weekly
+✅ Weekly revision
 """)
 
             st.markdown("---")
 
-            st.subheader("📊 Visual Learning Resources")
+            st.subheader("📊 Visual Learning")
 
             st.markdown(f"""
-🖼️ [Visual Diagrams for {weak_topic}]
-(https://www.google.com/search?q={weak_topic}+diagram)
+🔗 https://www.google.com/search?q={weak_topic}+diagram
 
-🖼️ [Infographics on {weak_topic}]
-(https://www.google.com/search?q={weak_topic}+infographics)
+🔗 https://www.google.com/search?q={weak_topic}+infographics
 """)
+```
 
+```python
 # ---------------------------------------------------
-# EMOTION LEARNING
+# EMOTION-AWARE LEARNING
 # ---------------------------------------------------
 
 elif feature == "😊 Emotion-Aware Learning":
@@ -683,7 +680,7 @@ elif feature == "😊 Emotion-Aware Learning":
 
     emotion = st.selectbox(
 
-        "How are you feeling?",
+        "💭 How are you feeling?",
 
         [
             "Confused",
@@ -693,7 +690,7 @@ elif feature == "😊 Emotion-Aware Learning":
         ]
     )
 
-    if st.button("Analyze Emotion"):
+    if st.button("🧠 Analyze Emotion"):
 
         st.markdown("---")
 
@@ -703,7 +700,7 @@ elif feature == "😊 Emotion-Aware Learning":
                 "AI detected confusion in learning."
             )
 
-            st.subheader("📘 Recommended Beginner Tutorials")
+            st.subheader("🎥 Beginner Tutorials")
 
             st.markdown("""
 ▶️ https://www.youtube.com/results?search_query=beginner+programming+tutorials
@@ -711,16 +708,14 @@ elif feature == "😊 Emotion-Aware Learning":
 ▶️ https://www.youtube.com/results?search_query=easy+computer+science+tutorials
 """)
 
-            st.subheader("📚 Recommended Actions")
-
             st.info("""
 ✅ Start from basics
 
-✅ Use visual diagrams
+✅ Watch visual tutorials
 
-✅ Practice easy quizzes
+✅ Practice beginner quizzes
 
-✅ Watch beginner tutorials daily
+✅ Revise concepts slowly
 """)
 
         elif emotion == "Focused":
@@ -734,17 +729,17 @@ elif feature == "😊 Emotion-Aware Learning":
             st.markdown("""
 ▶️ https://www.youtube.com/results?search_query=advanced+programming+projects
 
-▶️ https://www.geeksforgeeks.org/
+🔗 https://www.geeksforgeeks.org/
 """)
 
             st.info("""
-✅ Attempt hard quizzes
-
 ✅ Build projects
 
-✅ Practice coding daily
+✅ Practice coding
 
 ✅ Learn advanced concepts
+
+✅ Attempt difficult quizzes
 """)
 
         elif emotion == "Stressed":
@@ -764,9 +759,9 @@ elif feature == "😊 Emotion-Aware Learning":
             st.info("""
 ✅ Take short breaks
 
-✅ Reduce study pressure
-
 ✅ Sleep properly
+
+✅ Reduce pressure
 
 ✅ Practice mindfulness
 """)
@@ -780,9 +775,9 @@ elif feature == "😊 Emotion-Aware Learning":
             st.subheader("😴 Recovery Suggestions")
 
             st.markdown("""
-▶️ https://www.youtube.com/results?search_query=study+motivation
-
 ▶️ https://www.youtube.com/results?search_query=focus+music+for+studying
+
+▶️ https://www.youtube.com/results?search_query=study+motivation
 """)
 
             st.info("""
@@ -790,13 +785,15 @@ elif feature == "😊 Emotion-Aware Learning":
 
 ✅ Drink water
 
-✅ Continue learning tomorrow
+✅ Continue tomorrow
 
 ✅ Avoid over-studying
 """)
 
+
+```python
 # ---------------------------------------------------
-# CAREER MENTOR
+# AI CAREER MENTOR
 # ---------------------------------------------------
 
 elif feature == "🚀 AI Career Mentor":
@@ -804,20 +801,24 @@ elif feature == "🚀 AI Career Mentor":
     st.header("🚀 AI Career Mentor")
 
     career_query = st.text_input(
-        "Ask Career Guidance"
+        "💬 Ask Career Guidance"
     )
 
     st.markdown("""
 ### 💡 Sample Questions
 
-- How to become Data Scientist
-- AI Engineer roadmap
-- Web Development roadmap
-- Best AI projects
-- Skills for Cybersecurity
+• How to become Data Scientist
+
+• AI Engineer roadmap
+
+• Web Development roadmap
+
+• Best AI projects
+
+• Skills for Cybersecurity
 """)
 
-    if st.button("Get Guidance"):
+    if st.button("🚀 Get Guidance"):
 
         query = career_query.lower()
 
@@ -846,23 +847,11 @@ elif feature == "🚀 AI Career Mentor":
             st.subheader("📚 Best Courses")
 
             st.markdown("""
-▶️ https://www.coursera.org/
+🔗 https://www.coursera.org/
 
-▶️ https://www.udemy.com/
+🔗 https://www.udemy.com/
 
-▶️ https://www.geeksforgeeks.org/data-science-for-beginners/
-""")
-
-            st.subheader("💻 Recommended Projects")
-
-            st.info("""
-• AI Resume Analyzer
-
-• Sales Prediction Dashboard
-
-• Fake News Detection
-
-• Chatbot using AI
+🔗 https://www.geeksforgeeks.org/data-science-for-beginners/
 """)
 
             st.subheader("🎥 YouTube Tutorials")
@@ -891,24 +880,12 @@ elif feature == "🚀 AI Career Mentor":
 ✅ Computer Vision
 """)
 
-            st.subheader("💻 Recommended Projects")
-
-            st.info("""
-• AI Chatbot
-
-• Emotion Detection
-
-• AI Accessibility Platform
-
-• Resume Analyzer
-""")
-
             st.subheader("🎥 Learning Resources")
 
             st.markdown("""
 ▶️ https://www.youtube.com/results?search_query=machine+learning+full+course
 
-▶️ https://www.geeksforgeeks.org/machine-learning/
+🔗 https://www.geeksforgeeks.org/machine-learning/
 """)
 
         # WEB DEVELOPMENT
@@ -931,25 +908,11 @@ elif feature == "🚀 AI Career Mentor":
 ✅ Node.js
 """)
 
-            st.subheader("💻 Recommended Projects")
-
-            st.info("""
-• Portfolio Website
-
-• E-commerce Website
-
-• Blog Platform
-
-• AI Integrated Website
-""")
-
             st.subheader("🎥 Tutorials")
 
             st.markdown("""
 ▶️ https://www.youtube.com/results?search_query=web+development+full+course
 """)
-
-        # DEFAULT
 
         else:
 
@@ -958,12 +921,14 @@ elif feature == "🚀 AI Career Mentor":
 
 ✅ Improve GitHub profile
 
-✅ Learn deployment
-
 ✅ Practice DSA
+
+✅ Learn deployment
 
 ✅ Build LinkedIn presence
 """)
+```
+
 # ---------------------------------------------------
 # FOOTER
 # ---------------------------------------------------
