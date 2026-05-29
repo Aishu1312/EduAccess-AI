@@ -698,7 +698,7 @@ elif feature == "♿ Accessibility Support":
         st.success(item)
 
 # ---------------------------------------------------
-# PERSONALIZED LEARNING
+# AI PERSONALIZED LEARNING
 # ---------------------------------------------------
 
 elif feature == "🧠 AI Personalized Learning":
@@ -709,23 +709,79 @@ elif feature == "🧠 AI Personalized Learning":
         "Enter Weak Topic"
     )
 
+    learning_style = st.selectbox(
+        "Preferred Learning Style",
+        [
+            "Visual",
+            "Theory",
+            "Practical",
+            "Interactive"
+        ]
+    )
+
     if st.button("Generate Recommendations"):
 
-        st.success(
-            f"AI detected weak understanding in {weak_topic}"
-        )
+        if weak_topic.strip() == "":
 
-        recommendations = [
+            st.warning("⚠️ Please enter a topic")
 
-            f"Practice quizzes on {weak_topic}",
-            f"Watch tutorials on {weak_topic}",
-            "Revise daily",
-            f"Use visual diagrams for {weak_topic}"
-        ]
+        else:
 
-        for rec in recommendations:
+            st.success(
+                f"AI detected weak understanding in {weak_topic}"
+            )
 
-            st.info(rec)
+            st.markdown("---")
+
+            st.subheader("📘 Practice Quizzes")
+
+            st.markdown(f"""
+🔗 [GeeksforGeeks Quiz on {weak_topic}]
+(https://www.google.com/search?q=GeeksforGeeks+{weak_topic}+quiz)
+
+🔗 [MCQ Practice for {weak_topic}]
+(https://www.google.com/search?q={weak_topic}+MCQ+questions)
+""")
+
+            st.markdown("---")
+
+            st.subheader("🎥 Best YouTube Tutorials")
+
+            st.markdown(f"""
+▶️ [YouTube Tutorials for {weak_topic}]
+(https://www.youtube.com/results?search_query={weak_topic}+full+course)
+
+▶️ [Beginner Friendly {weak_topic} Tutorials]
+(https://www.youtube.com/results?search_query=learn+{weak_topic}+for+beginners)
+""")
+
+            st.markdown("---")
+
+            st.subheader("📅 Daily Revision Plan")
+
+            st.info(f"""
+✅ Revise {weak_topic} concepts daily
+
+✅ Solve 5 practice questions everyday
+
+✅ Watch one tutorial daily
+
+✅ Create handwritten notes
+
+✅ Revise weak concepts weekly
+""")
+
+            st.markdown("---")
+
+            st.subheader("📊 Visual Learning Resources")
+
+            st.markdown(f"""
+🖼️ [Visual Diagrams for {weak_topic}]
+(https://www.google.com/search?q={weak_topic}+diagram)
+
+🖼️ [Infographics on {weak_topic}]
+(https://www.google.com/search?q={weak_topic}+infographics)
+""")
 
 # ---------------------------------------------------
 # EMOTION LEARNING
@@ -749,29 +805,105 @@ elif feature == "😊 Emotion-Aware Learning":
 
     if st.button("Analyze Emotion"):
 
+        st.markdown("---")
+
         if emotion == "Confused":
 
             st.warning(
-                "AI detected confusion. Watch beginner tutorials."
+                "AI detected confusion in learning."
             )
+
+            st.subheader("📘 Recommended Beginner Tutorials")
+
+            st.markdown("""
+▶️ https://www.youtube.com/results?search_query=beginner+programming+tutorials
+
+▶️ https://www.youtube.com/results?search_query=easy+computer+science+tutorials
+""")
+
+            st.subheader("📚 Recommended Actions")
+
+            st.info("""
+✅ Start from basics
+
+✅ Use visual diagrams
+
+✅ Practice easy quizzes
+
+✅ Watch beginner tutorials daily
+""")
 
         elif emotion == "Focused":
 
             st.success(
-                "AI detected focus. Attempt hard quizzes."
+                "AI detected high focus level."
             )
+
+            st.subheader("🚀 Advanced Recommendations")
+
+            st.markdown("""
+▶️ https://www.youtube.com/results?search_query=advanced+programming+projects
+
+▶️ https://www.geeksforgeeks.org/
+""")
+
+            st.info("""
+✅ Attempt hard quizzes
+
+✅ Build projects
+
+✅ Practice coding daily
+
+✅ Learn advanced concepts
+""")
 
         elif emotion == "Stressed":
 
             st.error(
-                "AI detected stress. Take breaks."
+                "AI detected stress."
             )
+
+            st.subheader("🧘 Relaxation Resources")
+
+            st.markdown("""
+▶️ https://www.youtube.com/results?search_query=student+stress+management
+
+▶️ https://www.youtube.com/results?search_query=study+motivation
+""")
+
+            st.info("""
+✅ Take short breaks
+
+✅ Reduce study pressure
+
+✅ Sleep properly
+
+✅ Practice mindfulness
+""")
 
         else:
 
             st.info(
-                "AI suggests proper rest."
+                "AI detected tiredness."
             )
+
+            st.subheader("😴 Recovery Suggestions")
+
+            st.markdown("""
+▶️ https://www.youtube.com/results?search_query=study+motivation
+
+▶️ https://www.youtube.com/results?search_query=focus+music+for+studying
+""")
+
+            st.info("""
+✅ Take proper rest
+
+✅ Drink water
+
+✅ Continue learning tomorrow
+
+✅ Avoid over-studying
+""")
 
 # ---------------------------------------------------
 # CAREER MENTOR
@@ -788,47 +920,159 @@ elif feature == "🚀 AI Career Mentor":
     st.markdown("""
 ### 💡 Sample Questions
 
-- Suggest AI projects for Data Science
-- Roadmap for Web Development
-- Skills needed for Cybersecurity
-- Best projects for AI/ML
-- How to become Data Analyst
+- How to become Data Scientist
+- AI Engineer roadmap
+- Web Development roadmap
+- Best AI projects
+- Skills for Cybersecurity
 """)
 
     if st.button("Get Guidance"):
 
         query = career_query.lower()
 
-        if "data science" in query:
+        st.markdown("---")
 
-            st.success("""
-Recommended Skills:
-• Python
-• SQL
-• Machine Learning
-• Power BI
+        # DATA SCIENCE
 
-Recommended Projects:
+        if "data science" in query or "data scientist" in query:
+
+            st.success("📊 Data Science Career Roadmap")
+
+            st.subheader("🛠️ Skills Required")
+
+            st.info("""
+✅ Python
+
+✅ SQL
+
+✅ Machine Learning
+
+✅ Power BI
+
+✅ Statistics
+""")
+
+            st.subheader("📚 Best Courses")
+
+            st.markdown("""
+▶️ https://www.coursera.org/
+
+▶️ https://www.udemy.com/
+
+▶️ https://www.geeksforgeeks.org/data-science-for-beginners/
+""")
+
+            st.subheader("💻 Recommended Projects")
+
+            st.info("""
 • AI Resume Analyzer
-• Sales Dashboard
+
+• Sales Prediction Dashboard
+
 • Fake News Detection
+
+• Chatbot using AI
 """)
 
-        elif "ai" in query:
+            st.subheader("🎥 YouTube Tutorials")
 
-            st.success("""
-Recommended AI Projects:
+            st.markdown("""
+▶️ https://www.youtube.com/results?search_query=data+science+full+course
+""")
+
+        # AI / ML
+
+        elif "ai" in query or "machine learning" in query:
+
+            st.success("🤖 AI / ML Career Roadmap")
+
+            st.subheader("🛠️ Skills Required")
+
+            st.info("""
+✅ Python
+
+✅ Machine Learning
+
+✅ Deep Learning
+
+✅ NLP
+
+✅ Computer Vision
+""")
+
+            st.subheader("💻 Recommended Projects")
+
+            st.info("""
 • AI Chatbot
-• Resume Analyzer
+
 • Emotion Detection
+
 • AI Accessibility Platform
+
+• Resume Analyzer
 """)
+
+            st.subheader("🎥 Learning Resources")
+
+            st.markdown("""
+▶️ https://www.youtube.com/results?search_query=machine+learning+full+course
+
+▶️ https://www.geeksforgeeks.org/machine-learning/
+""")
+
+        # WEB DEVELOPMENT
+
+        elif "web" in query:
+
+            st.success("🌐 Web Development Roadmap")
+
+            st.subheader("🛠️ Skills Required")
+
+            st.info("""
+✅ HTML
+
+✅ CSS
+
+✅ JavaScript
+
+✅ React
+
+✅ Node.js
+""")
+
+            st.subheader("💻 Recommended Projects")
+
+            st.info("""
+• Portfolio Website
+
+• E-commerce Website
+
+• Blog Platform
+
+• AI Integrated Website
+""")
+
+            st.subheader("🎥 Tutorials")
+
+            st.markdown("""
+▶️ https://www.youtube.com/results?search_query=web+development+full+course
+""")
+
+        # DEFAULT
 
         else:
 
             st.info("""
-Build projects, improve GitHub,
-practice DSA and deployment.
+✅ Build real-world projects
+
+✅ Improve GitHub profile
+
+✅ Learn deployment
+
+✅ Practice DSA
+
+✅ Build LinkedIn presence
 """)
 
 # ---------------------------------------------------
