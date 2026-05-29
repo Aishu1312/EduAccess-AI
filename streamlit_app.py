@@ -453,13 +453,51 @@ elif feature == "❓ AI Quiz Generator":
 
     st.header("❓ AI Adaptive Exam Quiz Generator")
 
+    st.write("""
+Prepare from Beginner → Intermediate → Advanced level.
+Questions are generated according to your selected topic.
+""")
+
     if "user_answers" not in st.session_state:
         st.session_state.user_answers = {}
 
     if "submitted_questions" not in st.session_state:
         st.session_state.submitted_questions = set()
 
-    topic = st.text_input("📘 Enter Topic")
+    # QUIZ HISTORY
+
+    with st.expander("📚 Quiz History"):
+
+        if st.session_state.quiz_history:
+
+            for idx, quiz in enumerate(
+                reversed(st.session_state.quiz_history),
+                start=1
+            ):
+
+                st.markdown(f"""
+### Quiz {idx}
+
+📘 Topic: {quiz['topic']}
+
+🏆 Score: {quiz['score']}
+""")
+
+        else:
+
+            st.info("No quiz history available")
+
+    # INPUTS
+
+    exam = st.text_input(
+        "📝 Enter Exam Name",
+        placeholder="Example: GATE, UPSC, Placement"
+    )
+
+    topic = st.text_input(
+        "📘 Enter Topic",
+        placeholder="Example: Excel, Python, DBMS"
+    )
 
     difficulty = st.selectbox(
         "🎯 Select Difficulty",
@@ -470,67 +508,66 @@ elif feature == "❓ AI Quiz Generator":
         ]
     )
 
-    beginner_questions = [
-        {
-            "question": "What is Python?",
-            "options": [
-                "Programming Language",
-                "Snake",
-                "Browser",
-                "Database"
-            ],
-            "answer": "Programming Language"
-        }
-    ]
+    num_questions = st.slider(
+        "📊 Number of Questions",
+        1,
+        10,
+        5
+    )
 
-    intermediate_questions = [
-        {
-            "question": "What is OOP?",
-            "options": [
-                "Object Oriented Programming",
-                "Operating Output Program",
-                "Open Office Project",
-                "None"
-            ],
-            "answer": "Object Oriented Programming"
-        }
-    ]
+    # DYNAMIC QUESTION GENERATOR
 
-    advanced_questions = [
-        {
-            "question": "Which algorithm is used in classification?",
-            "options": [
-                "Logistic Regression",
-                "K-Means",
-                "Apriori",
-                "Linear Search"
-            ],
-            "answer": "Logistic Regression"
-        }
-    ]
+    def generate_questions(topic, difficulty, num):
 
-    if difficulty == "Beginner":
-        question_pool = beginner_questions
+        questions = []
 
-    elif difficulty == "Intermediate":
-        question_pool = beginner_questions + intermediate_questions
+        for i in range(num):
 
-    else:
-        question_pool = (
-            beginner_questions +
-            intermediate_questions +
-            advanced_questions
-        )
+            questions.append({
+
+                "question":
+                f"{difficulty} Question {i+1} on {topic}",
+
+                "options": [
+                    f"{topic} Option A",
+                    f"{topic} Option B",
+                    f"{topic} Option C",
+                    f"{topic} Option D"
+                ],
+
+                "answer": f"{topic} Option A",
+
+                "explanation":
+                f"This is a sample explanation for {topic}."
+            })
+
+        return questions
+
+    # GENERATE QUIZ
 
     if st.button("🚀 Generate Quiz"):
 
-        random.shuffle(question_pool)
+        if topic.strip() == "":
 
-        st.session_state.quiz_data = question_pool
+            st.warning("⚠️ Please enter a topic")
 
-        st.session_state.quiz_started = True
+        else:
 
-        st.session_state.quiz_score = 0
+            st.session_state.quiz_data = generate_questions(
+                topic,
+                difficulty,
+                num_questions
+            )
+
+            st.session_state.quiz_started = True
+
+            st.session_state.quiz_score = 0
+
+            st.session_state.user_answers = {}
+
+            st.session_state.submitted_questions = set()
+
+    # DISPLAY QUIZ
 
     if st.session_state.quiz_started:
 
@@ -538,14 +575,17 @@ elif feature == "❓ AI Quiz Generator":
             st.session_state.quiz_data
         ):
 
+            st.markdown("---")
+
             st.subheader(
                 f"Q{idx+1}. {q['question']}"
             )
 
-            answer = st.radio(
+            user_answer = st.radio(
                 "Choose Answer",
                 q["options"],
-                key=f"q_{idx}"
+                key=f"radio_{idx}",
+                index=None
             )
 
             if st.button(
@@ -553,9 +593,13 @@ elif feature == "❓ AI Quiz Generator":
                 key=f"submit_{idx}"
             ):
 
-                if answer == q["answer"]:
+                st.session_state.user_answers[idx] = user_answer
 
-                    st.success("✅ Correct")
+                st.session_state.submitted_questions.add(idx)
+
+                if user_answer == q["answer"]:
+
+                    st.success("✅ Correct Answer")
 
                     st.session_state.quiz_score += 2
 
@@ -563,15 +607,50 @@ elif feature == "❓ AI Quiz Generator":
 
                 else:
 
-                    st.error("❌ Wrong")
+                    st.error("❌ Wrong Answer")
 
-                    st.info(
-                        f"Correct Answer: {q['answer']}"
-                    )
+                st.info(
+                    f"✔ Correct Answer: {q['answer']}"
+                )
+
+                st.warning(
+                    f"📖 Explanation: {q['explanation']}"
+                )
+
+            # KEEP ANSWERS VISIBLE
+
+            if idx in st.session_state.submitted_questions:
+
+                st.markdown(f"""
+✅ Your Answer:
+{st.session_state.user_answers[idx]}
+""")
+
+                st.markdown(f"""
+✔ Correct Answer:
+{q['answer']}
+""")
+
+        total = len(
+            st.session_state.quiz_data
+        ) * 2
+
+        st.markdown("---")
 
         st.header(
-            f"🏆 Score: {st.session_state.quiz_score}"
+            f"🏆 Final Score: {st.session_state.quiz_score}/{total}"
         )
+
+        if st.button("💾 Save Quiz"):
+
+            st.session_state.quiz_history.append({
+
+                "topic": topic,
+
+                "score": f"{st.session_state.quiz_score}/{total}"
+            })
+
+            st.success("✅ Quiz Saved Successfully")
 
 # ---------------------------------------------------
 # ACCESSIBILITY SUPPORT
