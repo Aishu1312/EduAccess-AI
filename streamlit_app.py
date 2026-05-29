@@ -598,4 +598,3 @@ Made with ❤️ using Streamlit | EduAccess AI
 
 </div>
 """, unsafe_allow_html=True)
-```
