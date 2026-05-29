@@ -867,9 +867,8 @@ elif feature == "😊 Emotion-Aware Learning":
 ✅ Avoid over-studying
 """)
 
-
 # ---------------------------------------------------
-# CAREER MENTOR
+# AI CAREER MENTOR
 # ---------------------------------------------------
 
 elif feature == "🚀 AI Career Mentor":
@@ -880,17 +879,130 @@ elif feature == "🚀 AI Career Mentor":
         "💬 Ask Career Guidance"
     )
 
-st.markdown(""" ### 💡 Sample Questions • How to become Data Scientist • AI Engineer roadmap • Web Development roadmap • Best AI projects • Skills for Cybersecurity """)
-    
-    if st.button("Get Guidance"):
+    st.markdown("""
+### 💡 Sample Questions
+
+• How to become Data Scientist
+
+• AI Engineer roadmap
+
+• Web Development roadmap
+
+• Best AI projects
+
+• Skills for Cybersecurity
+""")
+
+    if st.button("🚀 Get Guidance"):
 
         query = career_query.lower()
 
         st.markdown("---")
 
-        st.success("🚀 Career Growth Recommendations")
+        # DATA SCIENCE
 
-        st.info("""
+        if "data science" in query or "data scientist" in query:
+
+            st.success("📊 Data Science Career Roadmap")
+
+            st.subheader("🛠️ Skills Required")
+
+            st.info("""
+✅ Python
+
+✅ SQL
+
+✅ Machine Learning
+
+✅ Power BI
+
+✅ Statistics
+""")
+
+            st.subheader("📚 Best Courses")
+
+            st.markdown("""
+🔗 Coursera:
+https://www.coursera.org/
+
+🔗 Udemy:
+https://www.udemy.com/
+
+🔗 GeeksforGeeks:
+https://www.geeksforgeeks.org/data-science-for-beginners/
+""")
+
+            st.subheader("🎥 YouTube Tutorials")
+
+            st.markdown("""
+▶️ Data Science Full Course:
+https://www.youtube.com/results?search_query=data+science+full+course
+""")
+
+        # AI / ML
+
+        elif "ai" in query or "machine learning" in query:
+
+            st.success("🤖 AI / ML Career Roadmap")
+
+            st.subheader("🛠️ Skills Required")
+
+            st.info("""
+✅ Python
+
+✅ Machine Learning
+
+✅ Deep Learning
+
+✅ NLP
+
+✅ Computer Vision
+""")
+
+            st.subheader("🎥 Learning Resources")
+
+            st.markdown("""
+▶️ Machine Learning Full Course:
+https://www.youtube.com/results?search_query=machine+learning+full+course
+
+🔗 GeeksforGeeks ML:
+https://www.geeksforgeeks.org/machine-learning/
+""")
+
+        # WEB DEVELOPMENT
+
+        elif "web" in query:
+
+            st.success("🌐 Web Development Roadmap")
+
+            st.subheader("🛠️ Skills Required")
+
+            st.info("""
+✅ HTML
+
+✅ CSS
+
+✅ JavaScript
+
+✅ React
+
+✅ Node.js
+""")
+
+            st.subheader("🎥 Tutorials")
+
+            st.markdown("""
+▶️ Web Development Full Course:
+https://www.youtube.com/results?search_query=web+development+full+course
+""")
+
+        # DEFAULT
+
+        else:
+
+            st.success("🚀 Career Growth Recommendations")
+
+            st.info("""
 ✅ Build real-world projects
 
 ✅ Improve GitHub profile
@@ -902,9 +1014,9 @@ st.markdown(""" ### 💡 Sample Questions • How to become Data Scientist • A
 ✅ Build LinkedIn presence
 """)
 
-        st.subheader("🎥 YouTube Resources")
+            st.subheader("🎥 YouTube Resources")
 
-        st.markdown("""
+            st.markdown("""
 ▶️ DSA Preparation:
 https://www.youtube.com/results?search_query=dsa+full+course
 
@@ -918,9 +1030,9 @@ https://www.youtube.com/results?search_query=deployment+tutorial
 https://www.youtube.com/results?search_query=linkedin+profile+for+students
 """)
 
-        st.subheader("🔗 Useful Links")
+            st.subheader("🔗 Useful Links")
 
-        st.markdown("""
+            st.markdown("""
 🔗 LeetCode:
 https://leetcode.com/
 
@@ -933,6 +1045,7 @@ https://www.linkedin.com/
 🔗 GeeksforGeeks:
 https://www.geeksforgeeks.org/
 """)
+
 
 # ---------------------------------------------------
 # FOOTER
