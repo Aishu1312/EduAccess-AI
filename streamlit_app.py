@@ -279,8 +279,6 @@ if feature == "🏠 Home":
 
         st.info(item)
 
-    st.balloons()
-
 # ---------------------------------------------------
 # SUMMARIZER
 # ---------------------------------------------------
@@ -515,7 +513,8 @@ elif feature == "📖 Dyslexia-Friendly Reading":
         # ---------------------------------------------------
 
         if st.session_state.quiz_score >= total // 2:
-        st.balloons()
+
+    st.balloons()
     
         # ---------------------------------------------------
         # SAVE QUIZ
