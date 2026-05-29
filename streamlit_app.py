@@ -445,25 +445,6 @@ elif feature == "📖 Dyslexia-Friendly Reading":
         </div>
         """, unsafe_allow_html=True)
 
-# ✅ Fixed Streamlit Code Sections for EduAccess AI
-
-The main issue in your app is:
-
-* Wrong indentation
-* Extra ```python markdown blocks inside Python file
-* Quiz logic not generating enough questions
-* Questions not changing according to topic
-* Career mentor links formatting
-
-Delete ALL `python and ` from your `.py` file.
-
----
-
-# ✅ FIXED QUIZ SECTION
-
-Replace your complete `❓ AI Quiz Generator` section with this:
-
-```python
 # ---------------------------------------------------
 # QUIZ GENERATOR
 # ---------------------------------------------------
@@ -475,6 +456,8 @@ elif feature == "❓ AI Quiz Generator":
     st.write(
         "Prepare from Beginner → Intermediate → Advanced level."
     )
+
+    # SESSION STATES
 
     if "user_answers" not in st.session_state:
         st.session_state.user_answers = {}
@@ -519,7 +502,11 @@ elif feature == "❓ AI Quiz Generator":
 
     difficulty = st.selectbox(
         "🎯 Select Difficulty",
-        ["Beginner", "Intermediate", "Advanced"]
+        [
+            "Beginner",
+            "Intermediate",
+            "Advanced"
+        ]
     )
 
     num_questions = st.slider(
@@ -529,113 +516,206 @@ elif feature == "❓ AI Quiz Generator":
         5
     )
 
-    # TOPIC BASED QUESTIONS
+    # QUESTION POOLS
 
     topic_lower = topic.lower()
 
     if "excel" in topic_lower:
 
         question_pool = [
+
             {
-                "question": "Which function is used to calculate average in Excel?",
-                "options": ["AVG", "AVERAGE", "MEAN", "CALCULATE"],
+                "question": "Which function calculates average in Excel?",
+                "options": [
+                    "AVG",
+                    "AVERAGE",
+                    "MEAN",
+                    "CALCULATE"
+                ],
                 "answer": "AVERAGE",
-                "explanation": "AVERAGE function calculates mean value."
+                "explanation": "AVERAGE calculates mean value."
             },
+
             {
-                "question": "Which symbol is used before formulas in Excel?",
-                "options": ["#", "=", "$", "%"],
+                "question": "Which symbol starts formulas in Excel?",
+                "options": [
+                    "=",
+                    "#",
+                    "%",
+                    "$"
+                ],
                 "answer": "=",
-                "explanation": "Excel formulas start with '=' symbol."
+                "explanation": "Excel formulas start with ="
             },
+
             {
-                "question": "Which shortcut is used to save workbook?",
-                "options": ["Ctrl + S", "Ctrl + X", "Ctrl + P", "Ctrl + D"],
+                "question": "Shortcut to save workbook?",
+                "options": [
+                    "Ctrl + S",
+                    "Ctrl + P",
+                    "Ctrl + D",
+                    "Ctrl + X"
+                ],
                 "answer": "Ctrl + S",
                 "explanation": "Ctrl + S saves workbook."
             },
+
             {
-                "question": "Which chart is best for trends?",
-                "options": ["Pie Chart", "Line Chart", "Bar Chart", "Area Chart"],
-                "answer": "Line Chart",
-                "explanation": "Line charts show trends over time."
+                "question": "Which chart shows trends?",
+                "options": [
+                    "Pie",
+                    "Line",
+                    "Bar",
+                    "Area"
+                ],
+                "answer": "Line",
+                "explanation": "Line charts show trends."
             },
+
             {
-                "question": "What is the intersection of row and column called?",
-                "options": ["Table", "Cell", "Sheet", "Box"],
+                "question": "Intersection of row and column?",
+                "options": [
+                    "Cell",
+                    "Sheet",
+                    "Box",
+                    "Table"
+                ],
                 "answer": "Cell",
                 "explanation": "Rows and columns intersect at cells."
             }
+
         ]
 
     elif "python" in topic_lower:
 
         question_pool = [
+
             {
-                "question": "Which keyword defines a function in Python?",
-                "options": ["function", "define", "def", "fun"],
+                "question": "Which keyword defines function?",
+                "options": [
+                    "def",
+                    "function",
+                    "define",
+                    "func"
+                ],
                 "answer": "def",
-                "explanation": "def keyword creates functions."
+                "explanation": "def creates functions."
             },
+
             {
                 "question": "Which datatype stores key-value pairs?",
-                "options": ["List", "Tuple", "Dictionary", "Set"],
+                "options": [
+                    "Dictionary",
+                    "Tuple",
+                    "List",
+                    "Set"
+                ],
                 "answer": "Dictionary",
                 "explanation": "Dictionary stores key-value pairs."
             },
+
             {
                 "question": "Which function prints output?",
-                "options": ["show()", "print()", "echo()", "output()"],
+                "options": [
+                    "show()",
+                    "print()",
+                    "echo()",
+                    "display()"
+                ],
                 "answer": "print()",
                 "explanation": "print() displays output."
             },
-            {
-                "question": "Which loop repeats until condition is false?",
-                "options": ["if", "for", "while", "switch"],
-                "answer": "while",
-                "explanation": "while loop repeats until condition becomes false."
-            },
+
             {
                 "question": "Which symbol is used for comments?",
-                "options": ["//", "#", "<!--", "%"],
+                "options": [
+                    "#",
+                    "//",
+                    "%",
+                    "<!--"
+                ],
                 "answer": "#",
-                "explanation": "# is used for comments in Python."
+                "explanation": "# creates comments."
+            },
+
+            {
+                "question": "Which loop repeats while condition is true?",
+                "options": [
+                    "for",
+                    "if",
+                    "while",
+                    "switch"
+                ],
+                "answer": "while",
+                "explanation": "while loop repeats until condition becomes false."
             }
+
         ]
 
     else:
 
         question_pool = [
+
             {
-                "question": f"What is an important concept in {topic}?",
-                "options": ["Basics", "Advanced", "Theory", "Practical"],
-                "answer": "Basics",
-                "explanation": f"Basics are important in {topic}."
-            },
-            {
-                "question": f"Which skill helps improve {topic}?",
-                "options": ["Practice", "Sleeping", "Ignoring", "Skipping"],
+                "question": f"What is important in {topic}?",
+                "options": [
+                    "Practice",
+                    "Skipping",
+                    "Ignoring",
+                    "None"
+                ],
                 "answer": "Practice",
-                "explanation": "Practice improves skills."
+                "explanation": "Practice improves understanding."
             },
+
+            {
+                "question": f"Best way to learn {topic}?",
+                "options": [
+                    "Projects",
+                    "Avoiding",
+                    "Skipping",
+                    "Nothing"
+                ],
+                "answer": "Projects",
+                "explanation": "Projects improve practical learning."
+            },
+
+            {
+                "question": f"What helps in mastering {topic}?",
+                "options": [
+                    "Consistency",
+                    "No revision",
+                    "Skipping",
+                    "None"
+                ],
+                "answer": "Consistency",
+                "explanation": "Consistency improves skills."
+            },
+
             {
                 "question": f"Which platform helps learn {topic}?",
-                "options": ["YouTube", "Books", "Courses", "All of these"],
+                "options": [
+                    "YouTube",
+                    "Books",
+                    "Courses",
+                    "All of these"
+                ],
                 "answer": "All of these",
                 "explanation": "All resources help learning."
             },
+
             {
-                "question": f"What is necessary for mastering {topic}?",
-                "options": ["Consistency", "Avoiding practice", "Skipping concepts", "None"],
-                "answer": "Consistency",
-                "explanation": "Consistency improves mastery."
-            },
-            {
-                "question": f"Which activity improves understanding of {topic}?",
-                "options": ["Projects", "Ignoring", "Copying", "None"],
-                "answer": "Projects",
-                "explanation": "Projects improve practical understanding."
+                "question": f"What improves {topic} skills?",
+                "options": [
+                    "Practice",
+                    "Ignoring",
+                    "Sleeping",
+                    "Nothing"
+                ],
+                "answer": "Practice",
+                "explanation": "Practice improves skills."
             }
+
         ]
 
     # GENERATE QUIZ
@@ -660,11 +740,15 @@ elif feature == "❓ AI Quiz Generator":
 
     if st.session_state.quiz_started:
 
-        for idx, q in enumerate(st.session_state.quiz_data):
+        for idx, q in enumerate(
+            st.session_state.quiz_data
+        ):
 
             st.markdown("---")
 
-            st.subheader(f"Q{idx+1}. {q['question']}")
+            st.subheader(
+                f"Q{idx+1}. {q['question']}"
+            )
 
             user_answer = st.radio(
                 "Choose Answer",
@@ -693,13 +777,17 @@ elif feature == "❓ AI Quiz Generator":
 
                     st.error("❌ Wrong Answer")
 
-                st.info(f"✔ Correct Answer: {q['answer']}")
+                st.info(
+                    f"✔ Correct Answer: {q['answer']}"
+                )
 
                 st.warning(
                     f"📖 Explanation: {q['explanation']}"
                 )
 
-        total = len(st.session_state.quiz_data) * 2
+        total = len(
+            st.session_state.quiz_data
+        ) * 2
 
         st.markdown("---")
 
@@ -710,12 +798,16 @@ elif feature == "❓ AI Quiz Generator":
         if st.button("💾 Save Quiz"):
 
             st.session_state.quiz_history.append({
+
                 "topic": topic,
-                "score": f"{st.session_state.quiz_score}/{total}"
+
+                "score":
+                f"{st.session_state.quiz_score}/{total}"
             })
 
-            st.success("✅ Quiz Saved Successfully")
-
+            st.success(
+                "✅ Quiz Saved Successfully"
+            )
 # ---------------------------------------------------
 # ACCESSIBILITY SUPPORT
 # ---------------------------------------------------
