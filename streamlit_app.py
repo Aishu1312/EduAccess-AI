@@ -340,60 +340,25 @@ elif feature == "🎤 Speech-to-Text":
 
     st.header("🎤 Speech-to-Text")
 
-    answer_mode = st.selectbox(
-        "Answer Detail",
-        ["Short", "Intermediate", "Advanced"]
-    )
-
-    audio = st.audio_input(
-        "🎙️ Ask Your Question"
-    )
-
-    if audio:
-
-        with tempfile.NamedTemporaryFile(
-            delete=False,
-            suffix=".wav"
-        ) as tmp:
-
-            tmp.write(audio.read())
-            audio_path = tmp.name
-
-        recognizer = sr.Recognizer()
-
-try:
-
-    with sr.AudioFile(audio_path) as source:
-
-        audio_data = recognizer.record(source)
+    # all speech code ...
 
     try:
 
-        question = recognizer.recognize_google(
-            audio_data,
-            language=target_lang
-        )
+        # speech recognition code
 
-    except Exception:
+    except Exception as e:
 
-        question = ""
-
-        st.error("Speech recognition failed.")
-
-    st.success("Question Recognized")
-
-    st.subheader("📝 Question")
-    st.info(question)
-
-    # Your answer generation code here
-
-except Exception as e:
-
-    st.error(f"Error: {e}")
+        st.error(f"Error: {e}")
     
 # ---------------------------------------------------
 # QUIZ GENERATOR
 # ---------------------------------------------------
+
+try:
+    do_something()
+
+except Exception as e:
+    st.error(str(e))
 
 elif feature == "❓ AI Quiz Generator":
 
@@ -465,8 +430,8 @@ Questions are designed for:
     num_questions = st.slider(
         "📊 Number of Questions",
         1,
-        5,
-        3
+        10,
+        5
     )
 
     # ---------------------------------------------------
