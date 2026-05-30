@@ -340,15 +340,38 @@ elif feature == "🎤 Speech-to-Text":
 
     st.header("🎤 Speech-to-Text")
 
-    # all speech code ...
+    audio = st.audio_input("🎙️ Ask Your Question")
 
-    try:
+    if audio:
 
-        # speech recognition code
+        try:
 
-    except Exception as e:
+            with tempfile.NamedTemporaryFile(
+                delete=False,
+                suffix=".wav"
+            ) as tmp:
 
-        st.error(f"Error: {e}")
+                tmp.write(audio.read())
+                audio_path = tmp.name
+
+            recognizer = sr.Recognizer()
+
+            with sr.AudioFile(audio_path) as source:
+
+                audio_data = recognizer.record(source)
+
+            question = recognizer.recognize_google(
+                audio_data,
+                language=target_lang
+            )
+
+            st.success("Question Recognized")
+
+            st.write(question)
+
+        except Exception as e:
+
+            st.error(f"Error: {e}")
     
 # ---------------------------------------------------
 # QUIZ GENERATOR
