@@ -159,93 +159,36 @@ if high_contrast:
 
 if feature == "🏠 Home":
 
-```
-st.title("🚀 EduAccess AI")
+    st.title("🚀 EduAccess AI")
 
-st.subheader(
-    "AI-Powered Accessibility Platform for Students"
-)
+    st.subheader(
+        "AI-Powered Accessibility Platform for Students"
+    )
 
-st.success(
-    "Inclusive AI Learning Ecosystem"
-)
+    st.success(
+        "Inclusive AI Learning Ecosystem"
+    )
 
-st.markdown("---")
+    st.markdown("---")
 
-st.header("🌟 Core Features")
+    st.header("🌟 Core Features")
 
-col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2)
 
-with col1:
+    with col1:
 
-    st.markdown("""
-    <div class="feature-card"
-    style="background:linear-gradient(135deg,#2563eb,#1e3a8a);">
+        st.markdown("""
+        <div class="feature-card"
+        style="background:linear-gradient(135deg,#2563eb,#1e3a8a);">
 
-    <h2>🧠 AI Notes Summarizer</h2>
+        <h2>🧠 AI Notes Summarizer</h2>
 
-    <p>
-    Generate concise AI-powered summaries from notes and PDFs.
-    </p>
+        <p>
+        Generate concise AI-powered summaries from notes and PDFs.
+        </p>
 
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
-    <div class="feature-card"
-    style="background:linear-gradient(135deg,#16a34a,#166534);">
-
-    <h2>🎤 Speech-to-Text</h2>
-
-    <p>
-    Convert spoken language into text with multilingual support.
-    </p>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-with col2:
-
-    st.markdown("""
-    <div class="feature-card"
-    style="background:linear-gradient(135deg,#f59e0b,#b45309);">
-
-    <h2>📖 Dyslexia-Friendly Reading</h2>
-
-    <p>
-    Accessible reading mode with better spacing and readability.
-    </p>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
-    <div class="feature-card"
-    style="background:linear-gradient(135deg,#dc2626,#7f1d1d);">
-
-    <h2>❓ AI Quiz Generator</h2>
-
-    <p>
-    Adaptive quizzes with Easy, Medium and Hard difficulty levels.
-    </p>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-st.markdown("---")
-
-st.header("🚀 Advanced AI Features")
-
-features = [
-    "🧠 AI Personalized Learning",
-    "😊 Emotion-Aware Learning",
-    "🚀 AI Career Mentor",
-    "🌍 Multi-language Support",
-    "♿ Accessibility Features"
-]
-
-for item in features:
-    st.info(item)
+        </div>
+        """, unsafe_allow_html=True)
 
 ##---------------------------------------------------------##
 ## AI Notes Summarizer ##
