@@ -541,54 +541,41 @@ For deeper learning, refer to tutorials, projects, and case studies.
 # DYSLEXIA MODE
 # ---------------------------------------------------
 
-st.markdown("""
-<style>
-
-.dyslexia-text {
-
-line-height:2.8;
-letter-spacing:2px;
-word-spacing:4px;
-font-size:24px;
-
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown(
-f"""
-<div class="dyslexia-text">
-
-{st.session_state.summary}
-
-</div>
-""",
-unsafe_allow_html=True
-)
 elif feature == "📖 Dyslexia-Friendly Reading":
 
     st.header("📖 Dyslexia-Friendly Reading")
 
+    st.markdown("""
+    <style>
+
+    .dyslexia-text {
+
+        line-height: 2.8;
+        letter-spacing: 2px;
+        word-spacing: 4px;
+        font-size: 24px;
+
+    }
+
+    </style>
+    """, unsafe_allow_html=True)
+
     if st.session_state.summary == "":
 
-        st.warning("⚠️ Generate summary first")
+        st.warning("⚠️ Generate summary first from AI Notes Summarizer")
 
     else:
 
-        st.markdown(f"""
-        <div style="
-            font-size:{font_size}px;
-            line-height:2.5;
-            letter-spacing:2px;
-            background-color:#f4f4f4;
-            padding:25px;
-            border-radius:15px;
-            color:black;
-        ">
-        {st.session_state.summary}
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            f"""
+            <div class="dyslexia-text">
+
+            {st.session_state.summary}
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 # ---------------------------------------------------
 # QUIZ GENERATOR
