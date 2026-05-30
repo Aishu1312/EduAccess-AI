@@ -190,6 +190,21 @@ if feature == "🏠 Home":
         </div>
         """, unsafe_allow_html=True)
 
+    with col2:
+
+        st.markdown("""
+        <div class="feature-card"
+        style="background:linear-gradient(135deg,#dc2626,#7f1d1d);">
+
+        <h2>❓ AI Quiz Generator</h2>
+
+        <p>
+        Adaptive quizzes with Easy, Medium and Hard difficulty levels.
+        </p>
+
+        </div>
+        """, unsafe_allow_html=True)
+
 ##---------------------------------------------------------##
 ## AI Notes Summarizer ##
 ##----------------------------------------------------------##
