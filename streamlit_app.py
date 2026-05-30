@@ -1,129 +1,154 @@
 import streamlit as st
-import tempfile
 import random
+import tempfile
 import os
 import speech_recognition as sr
-from gtts import gTTS
-from sumy.parsers.plaintext import PlaintextParser
-from sumy.nlp.tokenizers import Tokenizer
-from sumy.summarizers.lsa import LsaSummarizer
 from deep_translator import GoogleTranslator
 from PyPDF2 import PdfReader
+from gtts import gTTS
 import nltk
+
+# --------------------------------------------------
+# NLTK DOWNLOAD
+# --------------------------------------------------
 
 try:
     nltk.data.find("tokenizers/punkt")
 except LookupError:
     nltk.download("punkt")
 
-# Page Configuration
+# --------------------------------------------------
+# PAGE CONFIG
+# --------------------------------------------------
+
 st.set_page_config(
     page_title="EduAccess AI",
     page_icon="🚀",
     layout="wide"
 )
 
-# Custom CSS
+# --------------------------------------------------
+# CUSTOM CSS
+# --------------------------------------------------
+
 st.markdown("""
 <style>
 
-.main {
+.main{
     padding-top:10px;
 }
 
-.stButton > button {
+.stButton > button{
+    width:100%;
     border-radius:12px;
     height:3em;
-    width:100%;
     font-weight:bold;
 }
 
 .feature-card{
-    padding:20px;
-    border-radius:15px;
+    padding:22px;
+    border-radius:20px;
     color:white;
-    margin-bottom:15px;
+    margin-bottom:20px;
+    transition:0.3s;
+}
+
+.feature-card:hover{
+    transform:scale(1.02);
 }
 
 .footer{
     text-align:center;
     color:gray;
     padding:20px;
+    font-size:14px;
+}
+
+.metric-box{
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+    background:#f0f2f6;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# Language Support
+# --------------------------------------------------
+# LANGUAGE SUPPORT
+# --------------------------------------------------
+
 LANGUAGES = {
-    "English":"en-IN",
-    "Hindi":"hi-IN",
-    "Marathi":"mr-IN",
-    "Gujarati":"gu-IN",
-    "Punjabi":"pa-IN",
-    "Bengali":"bn-IN",
-    "Tamil":"ta-IN",
-    "Telugu":"te-IN",
-    "Kannada":"kn-IN",
-    "Malayalam":"ml-IN",
-    "Urdu":"ur-PK",
-    "Spanish":"es-ES",
-    "French":"fr-FR",
-    "German":"de-DE",
-    "Japanese":"ja-JP"
+    "English": "en",
+    "Hindi": "hi",
+    "Marathi": "mr",
+    "Gujarati": "gu",
+    "Punjabi": "pa",
+    "Bengali": "bn",
+    "Tamil": "ta",
+    "Telugu": "te",
+    "Kannada": "kn",
+    "Malayalam": "ml",
+    "Urdu": "ur",
+    "Spanish": "es",
+    "French": "fr",
+    "German": "de",
+    "Japanese": "ja"
 }
 
-selected_language = st.sidebar.selectbox(
-    "🌍 Select Language",
-    list(LANGUAGES.keys())
-)
+# --------------------------------------------------
+# TRANSLATION FUNCTION
+# --------------------------------------------------
 
-target_lang = LANGUAGES[selected_language]
-
-# Translation Function
 def translate_text(text):
-
     try:
-        short_lang = target_lang.split("-")[0]
-
-        translated = GoogleTranslator(
+        return GoogleTranslator(
             source="auto",
-            target=short_lang
+            target=LANGUAGES[selected_language]
         ).translate(text)
-
-        return translated
-
     except:
         return text
 
-# Session State
+# --------------------------------------------------
+# SESSION STATE
+# --------------------------------------------------
+
 defaults = {
-    "summary":"",
-    "quiz_started":False,
-    "quiz_score":0,
-    "quiz_data":[],
-    "quiz_history":[],
-    "user_answers":{},
-    "submitted_questions":set()
+    "summary": "",
+    "quiz_started": False,
+    "quiz_score": 0,
+    "quiz_data": [],
+    "quiz_history": [],
+    "user_answers": {},
+    "submitted_questions": set(),
+    "speech_history": [],
+    "summary_history": []
 }
 
 for key, value in defaults.items():
-
     if key not in st.session_state:
         st.session_state[key] = value
 
-# Sidebar
+# --------------------------------------------------
+# SIDEBAR
+# --------------------------------------------------
+
 st.sidebar.title("⚙️ Settings")
 
+selected_language = st.sidebar.selectbox(
+    "🌍 Choose Language",
+    list(LANGUAGES.keys())
+)
+
 font_size = st.sidebar.slider(
-    "Font Size",
+    "🔠 Font Size",
     16,
     40,
     22
 )
 
 high_contrast = st.sidebar.checkbox(
-    "High Contrast Mode"
+    "🌗 High Contrast Mode"
 )
 
 feature = st.sidebar.selectbox(
@@ -141,37 +166,49 @@ feature = st.sidebar.selectbox(
     ]
 )
 
-# High Contrast Mode
+# --------------------------------------------------
+# HIGH CONTRAST MODE
+# --------------------------------------------------
+
 if high_contrast:
 
     st.markdown("""
     <style>
+
     .stApp{
         background:black;
         color:white;
     }
+
     </style>
     """, unsafe_allow_html=True)
 
-##--------------------------------------##
-## Home Page ## 
-##--------------------------------------##
+# --------------------------------------------------
+# HOME PAGE
+# --------------------------------------------------
 
 if feature == "🏠 Home":
 
-    st.title("🚀 EduAccess AI")
-
-    st.subheader(
+    title = translate_text("🚀 EduAccess AI")
+    subtitle = translate_text(
         "AI-Powered Accessibility Platform for Students"
     )
 
+    st.title(title)
+
+    st.subheader(subtitle)
+
     st.success(
-        "Inclusive AI Learning Ecosystem"
+        translate_text(
+            "Inclusive AI Learning Ecosystem"
+        )
     )
 
     st.markdown("---")
 
-    st.header("🌟 Core Features")
+    st.header(
+        translate_text("🌟 Core Features")
+    )
 
     col1, col2 = st.columns(2)
 
@@ -184,7 +221,22 @@ if feature == "🏠 Home":
         <h2>🧠 AI Notes Summarizer</h2>
 
         <p>
-        Generate concise AI-powered summaries from notes and PDFs.
+        Generate concise AI-powered summaries
+        from notes and PDFs.
+        </p>
+
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class="feature-card"
+        style="background:linear-gradient(135deg,#16a34a,#166534);">
+
+        <h2>🎤 Speech-to-Text</h2>
+
+        <p>
+        Convert spoken language into text
+        with multilingual support.
         </p>
 
         </div>
@@ -194,16 +246,61 @@ if feature == "🏠 Home":
 
         st.markdown("""
         <div class="feature-card"
+        style="background:linear-gradient(135deg,#f59e0b,#b45309);">
+
+        <h2>📖 Dyslexia-Friendly Reading</h2>
+
+        <p>
+        Accessible reading mode with
+        improved readability.
+        </p>
+
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class="feature-card"
         style="background:linear-gradient(135deg,#dc2626,#7f1d1d);">
 
         <h2>❓ AI Quiz Generator</h2>
 
         <p>
-        Adaptive quizzes with Easy, Medium and Hard difficulty levels.
+        Adaptive quizzes with Easy,
+        Medium and Hard levels.
         </p>
 
         </div>
         """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    st.header(
+        translate_text("🚀 Advanced AI Features")
+    )
+
+    advanced_features = [
+        "🧠 AI Personalized Learning",
+        "😊 Emotion-Aware Learning",
+        "🚀 AI Career Mentor",
+        "🌍 Multi-language Support",
+        "♿ Accessibility Features"
+    ]
+
+    for item in advanced_features:
+        st.info(translate_text(item))
+
+    st.markdown("---")
+
+    c1, c2, c3 = st.columns(3)
+
+    with c1:
+        st.metric("🌍 Languages", "15+")
+
+    with c2:
+        st.metric("⚙️ Features", "9")
+
+    with c3:
+        st.metric("🚀 AI Modules", "8")
 
 ##---------------------------------------------------------##
 ## AI Notes Summarizer ##
