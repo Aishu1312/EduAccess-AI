@@ -276,6 +276,65 @@ if feature == "🏠 Home":
         </div>
         """, unsafe_allow_html=True)
 
+    st.markdown("---")
+
+    st.header("🚀 Advanced AI Features")
+
+    advanced_features = [
+
+        "🧠 AI Personalized Learning",
+        "😊 Emotion-Aware Learning",
+        "🚀 AI Career Mentor",
+        "🌍 Multi-language Support",
+        "♿ Accessibility Features"
+    ]
+
+    for item in advanced_features:
+
+        st.info(item)
+
+    st.markdown("---")
+
+    st.header("📈 EduAccess AI Highlights")
+
+    c1, c2, c3 = st.columns(3)
+
+    with c1:
+        st.metric(
+            label="Supported Languages",
+            value="15+"
+        )
+
+    with c2:
+        st.metric(
+            label="Accessibility Features",
+            value="5+"
+        )
+
+    with c3:
+        st.metric(
+            label="AI Modules",
+            value="8"
+        )
+
+    st.markdown("---")
+
+    st.header("🎯 Why EduAccess AI?")
+
+    st.success("""
+✅ Helps students learn faster
+
+✅ Supports multiple languages
+
+✅ Accessibility-friendly design
+
+✅ AI-powered learning assistance
+
+✅ Personalized career guidance
+
+✅ Adaptive quiz generation
+""")
+
 # ---------------------------------------------------
 # SUMMARIZER
 # ---------------------------------------------------
