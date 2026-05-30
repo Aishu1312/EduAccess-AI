@@ -472,7 +472,6 @@ with tempfile.NamedTemporaryFile(
                 f"Error: {e}"
             )
 
-```python
 # ---------------------------------------------------
 # QUIZ GENERATOR
 # ---------------------------------------------------
@@ -729,7 +728,6 @@ Questions are designed for:
             })
 
             st.success("✅ Quiz Saved Successfully")
-```
 
 
 ##------------------------------------------------------------------##
@@ -762,22 +760,21 @@ elif feature == "♿ Accessibility Support":
         "🎤 Speech Assistance"
     )
 
-##----------------------------------------------------------##
-## Personalized Learning ##
-##----------------------------------------------------------##
+
+# ---------------------------------------------------
+# AI PERSONALIZED LEARNING
+# ---------------------------------------------------
 
 elif feature == "🧠 AI Personalized Learning":
 
-    st.header(
-        "🧠 AI Personalized Learning"
-    )
+    st.header("🧠 AI Personalized Learning")
 
     weak_topic = st.text_input(
-        "Enter Weak Topic"
+        "📘 Enter Weak Topic"
     )
 
     learning_style = st.selectbox(
-        "Learning Style",
+        "🎯 Preferred Learning Style",
         [
             "Visual",
             "Theory",
@@ -786,40 +783,78 @@ elif feature == "🧠 AI Personalized Learning":
         ]
     )
 
-    if st.button(
-        "Generate Recommendations"
-    ):
+    if st.button("🚀 Generate Recommendations"):
 
-        st.success(
-            f"Improvement Plan for {weak_topic}"
-        )
+        if weak_topic.strip() == "":
 
-        st.markdown("""
-### Daily Plan
+            st.warning("⚠️ Please enter a topic")
 
-✅ Revise concepts
+        else:
 
-✅ Practice MCQs
+            st.success(
+                f"AI detected weak understanding in {weak_topic}"
+            )
 
-✅ Watch tutorials
+            st.markdown("---")
 
-✅ Build mini projects
+            st.subheader("📘 Practice Resources")
+
+            st.markdown(f"""
+🔗 https://www.google.com/search?q=GeeksforGeeks+{weak_topic}+quiz
+
+🔗 https://www.google.com/search?q={weak_topic}+MCQ+questions
+""")
+
+            st.markdown("---")
+
+            st.subheader("🎥 Best YouTube Tutorials")
+
+            st.markdown(f"""
+▶️ https://www.youtube.com/results?search_query={weak_topic}+full+course
+
+▶️ https://www.youtube.com/results?search_query=learn+{weak_topic}+for+beginners
+""")
+
+            st.markdown("---")
+
+            st.subheader("📅 Daily Revision Plan")
+
+            st.info(f"""
+✅ Revise {weak_topic} daily
+
+✅ Solve practice questions
+
+✅ Watch one tutorial everyday
+
+✅ Create handwritten notes
 
 ✅ Weekly revision
 """)
 
-##----------------------------------------------------------##
-## Emotion Aware Learning ##
-##----------------------------------------------------------##
+            st.markdown("---")
+
+            st.subheader("📊 Visual Learning")
+
+            st.markdown(f"""
+🔗 https://www.google.com/search?q={weak_topic}+diagram
+
+🔗 https://www.google.com/search?q={weak_topic}+infographics
+""")
+
+
+```python
+# ---------------------------------------------------
+# EMOTION-AWARE LEARNING
+# ---------------------------------------------------
 
 elif feature == "😊 Emotion-Aware Learning":
 
-    st.header(
-        "😊 Emotion Aware Learning"
-    )
+    st.header("😊 Emotion-Aware Learning")
 
     emotion = st.selectbox(
-        "How are you feeling?",
+
+        "💭 How are you feeling?",
+
         [
             "Confused",
             "Focused",
@@ -828,83 +863,187 @@ elif feature == "😊 Emotion-Aware Learning":
         ]
     )
 
-    if st.button(
-        "Analyze Emotion"
-    ):
+    if st.button("🧠 Analyze Emotion"):
+
+        st.markdown("---")
 
         if emotion == "Confused":
 
             st.warning(
-                "Start from basics and revise slowly."
+                "AI detected confusion in learning."
             )
+
+            st.subheader("🎥 Beginner Tutorials")
+
+            st.markdown("""
+▶️ https://www.youtube.com/results?search_query=beginner+programming+tutorials
+
+▶️ https://www.youtube.com/results?search_query=easy+computer+science+tutorials
+""")
+
+            st.info("""
+✅ Start from basics
+
+✅ Watch visual tutorials
+
+✅ Practice beginner quizzes
+
+✅ Revise concepts slowly
+""")
 
         elif emotion == "Focused":
 
             st.success(
-                "Perfect time for advanced learning."
+                "AI detected high focus level."
             )
+
+            st.subheader("🚀 Advanced Recommendations")
+
+            st.markdown("""
+▶️ https://www.youtube.com/results?search_query=advanced+programming+projects
+
+🔗 https://www.geeksforgeeks.org/
+""")
+
+            st.info("""
+✅ Build projects
+
+✅ Practice coding
+
+✅ Learn advanced concepts
+
+✅ Attempt difficult quizzes
+""")
 
         elif emotion == "Stressed":
 
             st.error(
-                "Take breaks and reduce pressure."
+                "AI detected stress."
             )
+
+            st.subheader("🧘 Relaxation Resources")
+
+            st.markdown("""
+▶️ https://www.youtube.com/results?search_query=student+stress+management
+
+▶️ https://www.youtube.com/results?search_query=study+motivation
+""")
+
+            st.info("""
+✅ Take short breaks
+
+✅ Sleep properly
+
+✅ Reduce pressure
+
+✅ Practice mindfulness
+""")
 
         else:
 
             st.info(
-                "Take proper rest and continue later."
+                "AI detected tiredness."
             )
 
-##--------------------------------------------------##
-## AI Career Mentor ##
-##--------------------------------------------------##
+            st.subheader("😴 Recovery Suggestions")
+
+            st.markdown("""
+▶️ https://www.youtube.com/results?search_query=focus+music+for+studying
+
+▶️ https://www.youtube.com/results?search_query=study+motivation
+""")
+
+            st.info("""
+✅ Take proper rest
+
+✅ Drink water
+
+✅ Continue tomorrow
+
+✅ Avoid over-studying
+""")
+
+```python
+# ---------------------------------------------------
+# AI CAREER MENTOR
+# ---------------------------------------------------
 
 elif feature == "🚀 AI Career Mentor":
 
-    st.header(
-        "🚀 AI Career Mentor"
+    st.header("🚀 AI Career Mentor")
+
+    career_query = st.text_input(
+        "💬 Ask Career Guidance"
     )
 
-    query = st.text_input(
-        "Ask Career Question"
-    )
+    st.markdown("""
+### 💡 Sample Questions
 
-    if st.button(
-        "Get Guidance"
-    ):
+• How to become Data Scientist
 
-        q = query.lower()
+• AI Engineer roadmap
 
-        if "data scientist" in q:
+• Web Development roadmap
 
-            st.success(
-                "Data Scientist Roadmap"
-            )
+• Best AI projects
 
-            st.markdown("""
+• Skills for Cybersecurity
+""")
+File "/mount/src/eduaccess-ai/streamlit_app.py", line 885
+      if st.button("Get Guidance"):
+     ^
+IndentationError: unexpected indent
+    if st.button("🚀 Get Guidance"):
+
+        query = career_query.lower()
+
+        st.markdown("---")
+
+        # DATA SCIENCE
+
+        if "data science" in query or "data scientist" in query:
+
+            st.success("📊 Data Science Career Roadmap")
+
+            st.subheader("🛠️ Skills Required")
+
+            st.info("""
 ✅ Python
 
 ✅ SQL
-
-✅ Statistics
 
 ✅ Machine Learning
 
 ✅ Power BI
 
-✅ Projects
-
-✅ Internships
+✅ Statistics
 """)
 
-        elif "ai" in q:
-
-            st.success(
-                "AI Engineer Roadmap"
-            )
+            st.subheader("📚 Best Courses")
 
             st.markdown("""
+🔗 https://www.coursera.org/
+
+🔗 https://www.udemy.com/
+
+🔗 https://www.geeksforgeeks.org/data-science-for-beginners/
+""")
+
+            st.subheader("🎥 YouTube Tutorials")
+
+            st.markdown("""
+▶️ https://www.youtube.com/results?search_query=data+science+full+course
+""")
+
+        # AI / ML
+
+        elif "ai" in query or "machine learning" in query:
+
+            st.success("🤖 AI / ML Career Roadmap")
+
+            st.subheader("🛠️ Skills Required")
+
+            st.info("""
 ✅ Python
 
 ✅ Machine Learning
@@ -914,19 +1053,25 @@ elif feature == "🚀 AI Career Mentor":
 ✅ NLP
 
 ✅ Computer Vision
-
-✅ LLMs
-
-✅ Deployment
 """)
 
-        elif "web" in q:
-
-            st.success(
-                "Web Development Roadmap"
-            )
+            st.subheader("🎥 Learning Resources")
 
             st.markdown("""
+▶️ https://www.youtube.com/results?search_query=machine+learning+full+course
+
+🔗 https://www.geeksforgeeks.org/machine-learning/
+""")
+
+        # WEB DEVELOPMENT
+
+        elif "web" in query:
+
+            st.success("🌐 Web Development Roadmap")
+
+            st.subheader("🛠️ Skills Required")
+
+            st.info("""
 ✅ HTML
 
 ✅ CSS
@@ -935,23 +1080,31 @@ elif feature == "🚀 AI Career Mentor":
 
 ✅ React
 
-✅ NodeJS
+✅ Node.js
+""")
 
-✅ MongoDB
+            st.subheader("🎥 Tutorials")
+
+            st.markdown("""
+▶️ https://www.youtube.com/results?search_query=web+development+full+course
 """)
 
         else:
 
             st.info("""
-Build projects,
-improve GitHub,
-practice DSA,
-learn deployment,
-and optimize LinkedIn.
-""")
-            
-# Final Footer 
+✅ Build real-world projects
 
+✅ Improve GitHub profile
+
+✅ Practice DSA
+
+✅ Learn deployment
+
+✅ Build LinkedIn presence
+""")
+
+
+# Final Footer 
 st.markdown(
     """
     <div class='footer'>
