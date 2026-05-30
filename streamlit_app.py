@@ -361,91 +361,36 @@ elif feature == "🎤 Speech-to-Text":
 
         recognizer = sr.Recognizer()
 
-        try:
+try:
+
     with sr.AudioFile(audio_path) as source:
 
         audio_data = recognizer.record(source)
 
     try:
+
         question = recognizer.recognize_google(
             audio_data,
             language=target_lang
         )
 
     except Exception:
+
         question = ""
+
         st.error("Speech recognition failed.")
 
-            st.success("Question Recognized")
+    st.success("Question Recognized")
 
-            st.subheader("📝 Question")
-            st.info(question)
+    st.subheader("📝 Question")
+    st.info(question)
 
-            q = question.lower()
+    # Your answer generation code here
 
-            if "artificial intelligence" in q or "ai" in q:
+except Exception as e:
 
-                if answer_mode == "Short":
-
-                    answer = """
-Artificial Intelligence enables machines to perform tasks that normally require human intelligence.
-"""
-
-                elif answer_mode == "Intermediate":
-
-                    answer = """
-Artificial Intelligence allows machines to learn, reason and solve problems. Applications include healthcare, education, chatbots and recommendation systems.
-"""
-
-                else:
-
-                    answer = """
-Artificial Intelligence is the simulation of human intelligence in machines.
-
-Major Areas:
-• Machine Learning
-• Deep Learning
-• NLP
-• Computer Vision
-
-Applications:
-• Healthcare
-• Banking
-• Education
-• Transportation
-• Cybersecurity
-"""
-
-            else:
-
-                answer = f"""
-Topic: {question}
-
-This is an important concept for learning and practical applications.
-Study examples, projects and real-world use cases to understand it deeply.
-"""
-
-            st.subheader("🤖 AI Answer")
-            st.success(answer)
-
-           tts = gTTS(
-    text=answer,
-    lang="en"
-)
-
-with tempfile.NamedTemporaryFile(
-    delete=False,
-    suffix=".mp3"
-) as fp:
-
-    tts.save(fp.name)
-
-        except Exception as e:
-
-            st.error(
-                f"Error: {e}"
-            )
-
+    st.error(f"Error: {e}")
+    
 # ---------------------------------------------------
 # QUIZ GENERATOR
 # ---------------------------------------------------
