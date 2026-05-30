@@ -159,58 +159,72 @@ if high_contrast:
 
 if feature == "🏠 Home":
 
-    st.title("🚀 EduAccess AI")
+    st.markdown("""
+    <h1 style='text-align:center;'>
+    🚀 EduAccess AI
+    </h1>
+    """, unsafe_allow_html=True)
 
-    st.subheader(
-        "AI Powered Accessibility Platform"
-    )
-
-    st.success(
-        "Inclusive AI Learning Ecosystem"
-    )
+    st.markdown("""
+    <h3 style='text-align:center;color:gray;'>
+    AI Powered Accessibility Learning Platform
+    </h3>
+    """, unsafe_allow_html=True)
 
     st.markdown("---")
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
-
-        st.info("🧠 AI Notes Summarizer")
-
-        st.info("🎤 Speech To Text")
-
-        st.info("📖 Dyslexia Reading")
+        st.metric("🌍 Languages", "15+")
 
     with col2:
+        st.metric("🧠 AI Modules", "8+")
 
-        st.info("❓ AI Quiz Generator")
-
-        st.info("🧠 Personalized Learning")
-
-        st.info("🚀 Career Mentor")
+    with col3:
+        st.metric("🎓 Learning Tools", "10+")
 
     st.markdown("---")
 
-    c1, c2, c3 = st.columns(3)
+    c1, c2 = st.columns(2)
 
     with c1:
-        st.metric(
-            "Languages",
-            "15+"
-        )
+
+        st.success("🧠 AI Notes Summarizer")
+
+        st.success("🎤 Speech To Text")
+
+        st.success("📖 Dyslexia Reading")
+
+        st.success("❓ AI Quiz Generator")
 
     with c2:
-        st.metric(
-            "Features",
-            "8+"
-        )
 
-    with c3:
-        st.metric(
-            "AI Modules",
-            "8"
-        )
+        st.success("🧠 Personalized Learning")
 
+        st.success("😊 Emotion Detection")
+
+        st.success("🚀 Career Mentor")
+
+        st.success("♿ Accessibility Features")
+
+    st.markdown("---")
+
+    st.info("""
+EduAccess AI helps students learn through:
+
+✅ AI Summarization
+
+✅ Accessibility Support
+
+✅ Smart Quizzes
+
+✅ Speech Recognition
+
+✅ Personalized Learning
+
+✅ Career Guidance
+""")
 ##---------------------------------------------------------##
 ## AI Notes Summarizer ##
 ##----------------------------------------------------------##
