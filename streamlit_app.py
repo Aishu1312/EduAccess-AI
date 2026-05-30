@@ -4,6 +4,7 @@ import random
 import speech_recognition as sr
 from deep_translator import GoogleTranslator
 from PyPDF2 import PdfReader
+from gtts import gTTS
 
 # ---------------------------------------------------
 # PAGE CONFIG
