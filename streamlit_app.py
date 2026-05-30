@@ -228,21 +228,21 @@ elif feature == "🧠 AI Notes Summarizer":
 
     if uploaded_file:
 
-    try:
-        pdf = PdfReader(uploaded_file)
+        try:
+            pdf = PdfReader(uploaded_file)
 
-    except Exception as e:
-        st.error(f"PDF Error: {e}")
-        for page in pdf.pages:
+            for page in pdf.pages:
 
-            extracted = page.extract_text()
+                extracted = page.extract_text()
 
-            if extracted:
-                text += extracted
+                if extracted:
+                    text += extracted
 
-        st.success(
-            "PDF Loaded Successfully"
-        )
+            st.success("PDF Loaded Successfully")
+
+        except Exception as e:
+
+            st.error(f"PDF Error: {e}")
 
     text = st.text_area(
         "Paste Notes",
@@ -252,7 +252,7 @@ elif feature == "🧠 AI Notes Summarizer":
 
     summary_length = st.selectbox(
         "Summary Length",
-        ["Short","Medium","Long"]
+        ["Short", "Medium", "Long"]
     )
 
     if st.button("🚀 Generate Summary"):
@@ -289,13 +289,9 @@ elif feature == "🧠 AI Notes Summarizer":
                 final_summary
             )
 
-            st.session_state.summary = (
-                final_summary
-            )
+            st.session_state.summary = final_summary
 
-            st.success(
-                "Summary Generated"
-            )
+            st.success("Summary Generated")
 
             st.write(final_summary)
 
