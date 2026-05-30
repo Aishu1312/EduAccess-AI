@@ -302,16 +302,18 @@ if feature == "🏠 Home":
     with c3:
         st.metric("🚀 AI Modules", "8")
 
-##---------------------------------------------------------##
-## AI Notes Summarizer ##
-##----------------------------------------------------------##
+# --------------------------------------------------
+# AI NOTES SUMMARIZER
+# --------------------------------------------------
 
 elif feature == "🧠 AI Notes Summarizer":
 
-    st.header("🧠 AI Notes Summarizer")
+    st.header(
+        translate_text("🧠 AI Notes Summarizer")
+    )
 
     uploaded_file = st.file_uploader(
-        "Upload PDF",
+        translate_text("Upload PDF"),
         type=["pdf"]
     )
 
@@ -320,86 +322,278 @@ elif feature == "🧠 AI Notes Summarizer":
     if uploaded_file:
 
         try:
+
             pdf = PdfReader(uploaded_file)
 
             for page in pdf.pages:
 
-                extracted = page.extract_text()
+                page_text = page.extract_text()
 
-                if extracted:
-                    text += extracted
+                if page_text:
+                    text += page_text + "\n"
 
-            st.success("PDF Loaded Successfully")
+            st.success(
+                translate_text(
+                    "PDF Loaded Successfully"
+                )
+            )
 
         except Exception as e:
 
             st.error(f"PDF Error: {e}")
 
     text = st.text_area(
-        "Paste Notes",
+        translate_text("Paste Notes"),
         value=text,
-        height=250
+        height=300
     )
 
     summary_length = st.selectbox(
-        "Summary Length",
-        ["Short", "Medium", "Long"]
+        translate_text("Summary Length"),
+        [
+            "Short",
+            "Medium",
+            "Long"
+        ]
     )
 
-    if st.button("🚀 Generate Summary"):
+    if st.button(
+        translate_text("🚀 Generate Summary")
+    ):
 
-        if text.strip():
+        if text.strip() == "":
 
-            parser = PlaintextParser.from_string(
-                text,
-                Tokenizer("english")
+            st.warning(
+                translate_text(
+                    "Please enter or upload notes."
+                )
             )
 
-            summarizer = LsaSummarizer()
+        else:
+
+            sentences = text.split(".")
 
             if summary_length == "Short":
-                count = 3
+                count = min(5, len(sentences))
 
             elif summary_length == "Medium":
-                count = 6
+                count = min(10, len(sentences))
 
             else:
-                count = 10
+                count = min(20, len(sentences))
 
-            summary = summarizer(
-                parser.document,
-                count
-            )
-
-            final_summary = " ".join(
-                str(sentence)
-                for sentence in summary
+            final_summary = ".".join(
+                sentences[:count]
             )
 
             final_summary = translate_text(
                 final_summary
             )
 
-            st.session_state.summary = final_summary
+            st.session_state.summary = (
+                final_summary
+            )
 
-            st.success("Summary Generated")
+            st.session_state.summary_history.append(
+                final_summary
+            )
+
+            st.success(
+                translate_text(
+                    "Summary Generated Successfully"
+                )
+            )
 
             st.write(final_summary)
 
-##-------------------------------------##
-## Dyslexia Reading ##
-##-------------------------------------##
+# --------------------------------------------------
+# SPEECH TO TEXT
+# --------------------------------------------------
+
+elif feature == "🎤 Speech-to-Text":
+
+    st.header(
+        translate_text("🎤 Speech-to-Text")
+    )
+
+    st.write(
+        translate_text(
+            "Ask a question using your microphone."
+        )
+    )
+
+    audio = st.audio_input(
+        translate_text("🎙️ Record Question")
+    )
+
+    if audio:
+
+        try:
+
+            with tempfile.NamedTemporaryFile(
+                delete=False,
+                suffix=".wav"
+            ) as tmp:
+
+                tmp.write(audio.read())
+
+                audio_path = tmp.name
+
+            recognizer = sr.Recognizer()
+
+            with sr.AudioFile(audio_path) as source:
+
+                audio_data = recognizer.record(
+                    source
+                )
+
+            question = recognizer.recognize_google(
+                audio_data,
+                language=LANGUAGES[selected_language]
+            )
+
+            st.success(
+                translate_text(
+                    "Question Recognized"
+                )
+            )
+
+            st.subheader(
+                translate_text("📝 Your Question")
+            )
+
+            st.info(question)
+
+            q = question.lower()
+
+            # ---------------------------------------
+            # AI RESPONSES
+            # ---------------------------------------
+
+            if "python" in q:
+
+                answer = """
+Python is a high-level programming language
+known for simplicity, readability and
+powerful libraries.
+"""
+
+            elif "artificial intelligence" in q or "ai" in q:
+
+                answer = """
+Artificial Intelligence enables machines
+to learn, reason, make decisions and
+perform tasks that usually require
+human intelligence.
+"""
+
+            elif "machine learning" in q:
+
+                answer = """
+Machine Learning is a branch of AI
+where systems learn patterns from
+data and improve automatically.
+"""
+
+            elif "dbms" in q:
+
+                answer = """
+DBMS stands for Database Management System.
+It helps store, retrieve and manage data
+efficiently.
+"""
+
+            else:
+
+                answer = f"""
+Topic: {question}
+
+This topic is important for academic
+and professional learning.
+
+Study the fundamentals, solve practice
+questions and build projects related
+to this topic.
+"""
+
+            answer = translate_text(answer)
+
+            st.subheader(
+                translate_text(
+                    "🤖 AI Answer"
+                )
+            )
+
+            st.success(answer)
+
+            # ---------------------------------------
+            # FEMALE VOICE OUTPUT
+            # ---------------------------------------
+
+            lang_code = LANGUAGES[selected_language]
+
+            try:
+
+                tts = gTTS(
+                    text=answer,
+                    lang=lang_code
+                )
+
+            except:
+
+                tts = gTTS(
+                    text=answer,
+                    lang="en"
+                )
+
+            with tempfile.NamedTemporaryFile(
+                delete=False,
+                suffix=".mp3"
+            ) as fp:
+
+                tts.save(fp.name)
+
+                with open(
+                    fp.name,
+                    "rb"
+                ) as audio_file:
+
+                    st.audio(
+                        audio_file.read(),
+                        format="audio/mp3"
+                    )
+
+            st.session_state.speech_history.append(
+                {
+                    "question": question,
+                    "answer": answer
+                }
+            )
+
+        except Exception as e:
+
+            st.error(
+                f"Speech Error: {e}"
+            )
+
+# --------------------------------------------------
+# DYSLEXIA FRIENDLY READING
+# --------------------------------------------------
 
 elif feature == "📖 Dyslexia-Friendly Reading":
 
     st.header(
-        "📖 Dyslexia Friendly Reading"
+        translate_text(
+            "📖 Dyslexia-Friendly Reading"
+        )
     )
 
     if st.session_state.summary == "":
 
         st.warning(
-            "Generate Summary First"
+            translate_text(
+                "Generate a summary first."
+            )
         )
 
     else:
@@ -412,8 +606,8 @@ elif feature == "📖 Dyslexia-Friendly Reading":
             font-size:{font_size}px;
             padding:25px;
             background:#f4f4f4;
-            border-radius:15px;
             color:black;
+            border-radius:15px;
             ">
 
             {st.session_state.summary}
@@ -421,6 +615,12 @@ elif feature == "📖 Dyslexia-Friendly Reading":
             </div>
             """,
             unsafe_allow_html=True
+        )
+
+        st.success(
+            translate_text(
+                "Reading mode activated."
+            )
         )
 
 ##-----------------------------------------------------##
@@ -471,171 +671,59 @@ elif feature == "🎤 Speech-to-Text":
 
 elif feature == "❓ AI Quiz Generator":
 
-    st.header("❓ AI Adaptive Exam Quiz Generator")
-
-    st.write("""
-Prepare from Beginner → Intermediate → Advanced level.
-
-Questions are designed for:
-• Competitive Exams
-• Placements
-• University Preparation
-""")
-
-    if "user_answers" not in st.session_state:
-        st.session_state.user_answers = {}
-
-    if "submitted_questions" not in st.session_state:
-        st.session_state.submitted_questions = set()
-
-    # ---------------------------------------------------
-    # QUIZ HISTORY
-    # ---------------------------------------------------
-
-    with st.expander("📚 Quiz History"):
-
-        if st.session_state.quiz_history:
-
-            for idx, quiz in enumerate(
-                reversed(st.session_state.quiz_history),
-                start=1
-            ):
-
-                st.markdown(f"""
-### Quiz {idx}
-
-📘 Topic: {quiz['topic']}
-
-🏆 Score: {quiz['score']}
-""")
-
-        else:
-
-            st.info("No quiz history available")
-
-    # ---------------------------------------------------
-    # INPUTS
-    # ---------------------------------------------------
+    st.header("❓ AI Adaptive Quiz Generator")
 
     exam = st.text_input(
-        "📝 Enter Exam Name",
-        placeholder="Example: GATE, UPSC, Placement"
+        "Exam Name",
+        placeholder="GATE, Placement, UPSC, College Exam"
     )
 
-    topic = st.text_input(
-        "📘 Enter Topic",
-        placeholder="Example: Python, DBMS, AI"
+    topic = st.selectbox(
+        "Subject",
+        [
+            "Python",
+            "AI",
+            "Machine Learning",
+            "DBMS",
+            "Mixed"
+        ]
     )
 
     difficulty = st.selectbox(
-        "🎯 Select Difficulty",
+        "Difficulty",
         [
             "Beginner",
             "Intermediate",
-            "Advanced"
+            "Advanced",
+            "Mixed"
         ]
     )
 
     num_questions = st.slider(
-        "📊 Number of Questions",
-        1,
-        10,
-        5
+        "Number of Questions",
+        5,
+        50,
+        10
     )
 
-    # ---------------------------------------------------
-    # QUESTION BANKS
-    # ---------------------------------------------------
-
-    beginner_questions = [
-
-        {
-            "question": "What is Python?",
-            "options": [
-                "Programming Language",
-                "Database",
-                "Browser",
-                "Operating System"
-            ],
-            "answer": "Programming Language",
-            "explanation": "Python is a programming language."
-        },
-
-        {
-            "question": "Which keyword is used to define a function?",
-            "options": [
-                "def",
-                "func",
-                "define",
-                "function"
-            ],
-            "answer": "def",
-            "explanation": "The def keyword is used to create functions."
-        }
-    ]
-
-    intermediate_questions = [
-
-        {
-            "question": "What is the time complexity of Binary Search?",
-            "options": [
-                "O(log n)",
-                "O(n)",
-                "O(1)",
-                "O(n²)"
-            ],
-            "answer": "O(log n)",
-            "explanation": "Binary Search divides the search space into half."
-        }
-    ]
-
-    advanced_questions = [
-
-        {
-            "question": "Which algorithm is mainly used for classification?",
-            "options": [
-                "Logistic Regression",
-                "Linear Regression",
-                "Apriori",
-                "K-Means"
-            ],
-            "answer": "Logistic Regression",
-            "explanation": "Logistic Regression is used for classification tasks."
-        }
-    ]
-
-    # ---------------------------------------------------
-    # DIFFICULTY LOGIC
-    # ---------------------------------------------------
-
-    if difficulty == "Beginner":
-
-        question_pool = beginner_questions
-
-    elif difficulty == "Intermediate":
-
-        question_pool = (
-            beginner_questions +
-            intermediate_questions
-        )
-
-    else:
-
-        question_pool = (
-            beginner_questions +
-            intermediate_questions +
-            advanced_questions
-        )
-
-    # ---------------------------------------------------
-    # GENERATE QUIZ
-    # ---------------------------------------------------
+    QUESTION_BANK = generate_question_bank()
 
     if st.button("🚀 Generate Quiz"):
 
-        random.shuffle(question_pool)
+        pool = QUESTION_BANK
 
-        st.session_state.quiz_data = question_pool[:num_questions]
+        if difficulty != "Mixed":
+
+            pool = [
+                q for q in pool
+                if q["difficulty"] == difficulty
+            ]
+
+        random.shuffle(pool)
+
+        st.session_state.quiz_data = (
+            pool[:num_questions]
+        )
 
         st.session_state.quiz_started = True
 
@@ -643,84 +731,236 @@ Questions are designed for:
 
         st.session_state.user_answers = {}
 
-        st.session_state.submitted_questions = set()
-
-    # ---------------------------------------------------
-    # DISPLAY QUESTIONS
-    # ---------------------------------------------------
-
     if st.session_state.quiz_started:
+
+        st.markdown("---")
+
+        score = 0
 
         for idx, q in enumerate(
             st.session_state.quiz_data
         ):
 
-            st.markdown("---")
-
             st.subheader(
-                f"Q{idx+1}. {q['question']}"
+                f"Question {idx+1}"
             )
 
-            user_answer = st.radio(
+            st.write(q["question"])
+
+            answer = st.radio(
                 "Choose Answer",
                 q["options"],
-                key=f"radio_{idx}",
-                index=None
+                key=f"q_{idx}"
             )
 
-            if st.button(
-                f"Submit Q{idx+1}",
-                key=f"submit_{idx}"
+            st.session_state.user_answers[idx] = answer
+
+        if st.button("✅ Submit Quiz"):
+
+            score = 0
+
+            for idx, q in enumerate(
+                st.session_state.quiz_data
             ):
 
-                st.session_state.user_answers[idx] = user_answer
+                if (
+                    st.session_state.user_answers[idx]
+                    == q["answer"]
+                ):
+                    score += 2
 
-                st.session_state.submitted_questions.add(idx)
+            total = (
+                len(
+                    st.session_state.quiz_data
+                ) * 2
+            )
 
-                if user_answer == q["answer"]:
+            st.success(
+                f"🏆 Score: {score}/{total}"
+            )
 
-                    st.success("✅ Correct Answer")
+            percentage = (
+                score / total
+            ) * 100
 
-                    st.session_state.quiz_score += 2
+            st.info(
+                f"Percentage: {percentage:.2f}%"
+            )
 
-                    st.balloons()
+            st.session_state.quiz_history.append(
+                {
+                    "topic": topic,
+                    "score": f"{score}/{total}"
+                }
+            )
 
-                else:
+            with st.expander(
+                "📖 Solutions"
+            ):
 
-                    st.error("❌ Wrong Answer")
+                for q in (
+                    st.session_state.quiz_data
+                ):
 
-                st.info(
-                    f"✔ Correct Answer: {q['answer']}"
-                )
+                    st.write(
+                        f"✅ {q['question']}"
+                    )
 
-                st.warning(
-                    f"📖 Explanation: {q['explanation']}"
-                )
+                    st.write(
+                        f"Correct Answer: {q['answer']}"
+                    )
 
-        # ---------------------------------------------------
-        # FINAL SCORE
-        # ---------------------------------------------------
+                    st.write(
+                        q["explanation"]
+                    )
 
-        total = len(
-            st.session_state.quiz_data
-        ) * 2
+                    st.markdown("---")
 
-        st.markdown("---")
+# --------------------------------------------------
+# QUESTION BANK GENERATOR
+# --------------------------------------------------
 
-        st.header(
-            f"🏆 Final Score: {st.session_state.quiz_score}/{total}"
-        )
+def generate_question_bank():
 
-        if st.button("💾 Save Quiz"):
+    questions = []
 
-            st.session_state.quiz_history.append({
+    # ---------------- PYTHON ----------------
 
-                "topic": topic,
+    python_questions = [
+        {
+            "question":"What is Python?",
+            "options":["Programming Language","Database","Browser","Operating System"],
+            "answer":"Programming Language",
+            "explanation":"Python is a high-level programming language.",
+            "difficulty":"Beginner"
+        },
+        {
+            "question":"Which keyword defines a function in Python?",
+            "options":["def","function","func","define"],
+            "answer":"def",
+            "explanation":"Functions are created using def.",
+            "difficulty":"Beginner"
+        },
+        {
+            "question":"Which data type stores True/False values?",
+            "options":["Boolean","Integer","String","Float"],
+            "answer":"Boolean",
+            "explanation":"Boolean stores True and False.",
+            "difficulty":"Beginner"
+        },
+        {
+            "question":"Which symbol starts a comment?",
+            "options":["#","//","/*","--"],
+            "answer":"#",
+            "explanation":"Python comments begin with #.",
+            "difficulty":"Beginner"
+        },
+        {
+            "question":"Which function displays output?",
+            "options":["print()","display()","echo()","show()"],
+            "answer":"print()",
+            "explanation":"print() displays output.",
+            "difficulty":"Beginner"
+        }
+    ]
 
-                "score": f"{st.session_state.quiz_score}/{total}"
-            })
+    # ---------------- AI ----------------
 
-            st.success("✅ Quiz Saved Successfully")
+    ai_questions = [
+        {
+            "question":"What does AI stand for?",
+            "options":["Artificial Intelligence","Automatic Information","Artificial Integration","Automated Intelligence"],
+            "answer":"Artificial Intelligence",
+            "explanation":"AI means Artificial Intelligence.",
+            "difficulty":"Beginner"
+        },
+        {
+            "question":"Which field enables computers to learn from data?",
+            "options":["Machine Learning","Networking","DBMS","Cloud Computing"],
+            "answer":"Machine Learning",
+            "explanation":"Machine Learning allows systems to learn from data.",
+            "difficulty":"Intermediate"
+        },
+        {
+            "question":"Which AI field focuses on language understanding?",
+            "options":["NLP","CV","IoT","DBMS"],
+            "answer":"NLP",
+            "explanation":"NLP stands for Natural Language Processing.",
+            "difficulty":"Intermediate"
+        }
+    ]
+
+    # ---------------- ML ----------------
+
+    ml_questions = [
+        {
+            "question":"Which algorithm is used for classification?",
+            "options":["Logistic Regression","Linear Regression","K-Means","Apriori"],
+            "answer":"Logistic Regression",
+            "explanation":"Logistic Regression is a classification algorithm.",
+            "difficulty":"Intermediate"
+        },
+        {
+            "question":"Which algorithm is unsupervised?",
+            "options":["K-Means","Logistic Regression","Decision Tree","SVM"],
+            "answer":"K-Means",
+            "explanation":"K-Means is an unsupervised clustering algorithm.",
+            "difficulty":"Intermediate"
+        }
+    ]
+
+    # ---------------- DBMS ----------------
+
+    dbms_questions = [
+        {
+            "question":"What does DBMS stand for?",
+            "options":["Database Management System","Data Backup System","Database Monitoring Service","Data Management Service"],
+            "answer":"Database Management System",
+            "explanation":"DBMS manages databases.",
+            "difficulty":"Beginner"
+        },
+        {
+            "question":"Which language is used for databases?",
+            "options":["SQL","HTML","CSS","XML"],
+            "answer":"SQL",
+            "explanation":"SQL is used to manage databases.",
+            "difficulty":"Beginner"
+        },
+        {
+            "question":"Which normal form removes transitive dependency?",
+            "options":["3NF","1NF","BCNF","2NF"],
+            "answer":"3NF",
+            "explanation":"3NF removes transitive dependencies.",
+            "difficulty":"Advanced"
+        }
+    ]
+
+    questions.extend(python_questions)
+    questions.extend(ai_questions)
+    questions.extend(ml_questions)
+    questions.extend(dbms_questions)
+
+    # Duplicate automatically until 100+
+
+    base = questions.copy()
+
+    count = 1
+
+    while len(questions) < 120:
+
+        for q in base:
+
+            new_q = q.copy()
+
+            new_q["question"] = (
+                f"{q['question']} ({count})"
+            )
+
+            questions.append(new_q)
+
+        count += 1
+
+    return questions[:120]
 
 
 ##------------------------------------------------------------------##
