@@ -969,9 +969,11 @@ def generate_question_bank():
 
 elif feature == "♿ Accessibility Support":
 
-    st.header(
-        "♿ Accessibility Features"
-    )
+   st.success(
+    f"Score: {score}/{total}"
+)
+
+elif feature == "♿ Accessibility Support":
 
     st.success(
         "🌍 Multi-language Support"
