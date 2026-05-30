@@ -354,11 +354,6 @@ elif feature == "🎤 Speech-to-Text":
 # QUIZ GENERATOR
 # ---------------------------------------------------
 
-try:
-    do_something()
-
-except Exception as e:
-    st.error(str(e))
 
 elif feature == "❓ AI Quiz Generator":
 
