@@ -228,18 +228,11 @@ elif feature == "🧠 AI Notes Summarizer":
 
     if uploaded_file:
 
-        try:
-    pdf = PdfReader(uploaded_file)
+    try:
+        pdf = PdfReader(uploaded_file)
 
-    for page in pdf.pages:
-        extracted = page.extract_text()
-
-        if extracted:
-            text += extracted
-
-except Exception as e:
-    st.error(f"PDF Error: {e}")
-
+    except Exception as e:
+        st.error(f"PDF Error: {e}")
         for page in pdf.pages:
 
             extracted = page.extract_text()
@@ -373,19 +366,19 @@ elif feature == "🎤 Speech-to-Text":
         recognizer = sr.Recognizer()
 
         try:
+    with sr.AudioFile(audio_path) as source:
 
-            with sr.AudioFile(audio_path) as source:
+        audio_data = recognizer.record(source)
 
-                audio_data = recognizer.record(source)
+    try:
+        question = recognizer.recognize_google(
+            audio_data,
+            language=target_lang
+        )
 
-                try:
-    question = recognizer.recognize_google(
-        audio_data,
-        language=target_lang
-    )
-except:
-    question = ""
-    st.error("Speech recognition failed.")
+    except Exception:
+        question = ""
+        st.error("Speech recognition failed.")
 
             st.success("Question Recognized")
 
@@ -439,12 +432,10 @@ Study examples, projects and real-world use cases to understand it deeply.
             st.subheader("🤖 AI Answer")
             st.success(answer)
 
-            tts = gTTS(
-                text=answer,
-                lang="en"
-            )
-
-          import tempfile
+           tts = gTTS(
+    text=answer,
+    lang="en"
+)
 
 with tempfile.NamedTemporaryFile(
     delete=False,
@@ -452,19 +443,6 @@ with tempfile.NamedTemporaryFile(
 ) as fp:
 
     tts.save(fp.name)
-
-    with open(fp.name, "rb") as audio_file:
-        st.audio(audio_file.read())
-
-            with open(
-                "answer.mp3",
-                "rb"
-            ) as audio_file:
-
-                st.audio(
-                    audio_file.read(),
-                    format="audio/mp3"
-                )
 
         except Exception as e:
 
@@ -842,7 +820,6 @@ elif feature == "🧠 AI Personalized Learning":
 """)
 
 
-```python
 # ---------------------------------------------------
 # EMOTION-AWARE LEARNING
 # ---------------------------------------------------
@@ -963,7 +940,6 @@ elif feature == "😊 Emotion-Aware Learning":
 ✅ Avoid over-studying
 """)
 
-```python
 # ---------------------------------------------------
 # AI CAREER MENTOR
 # ---------------------------------------------------
@@ -989,10 +965,6 @@ elif feature == "🚀 AI Career Mentor":
 
 • Skills for Cybersecurity
 """)
-File "/mount/src/eduaccess-ai/streamlit_app.py", line 885
-      if st.button("Get Guidance"):
-     ^
-IndentationError: unexpected indent
     if st.button("🚀 Get Guidance"):
 
         query = career_query.lower()
