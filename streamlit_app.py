@@ -472,22 +472,71 @@ with tempfile.NamedTemporaryFile(
                 f"Error: {e}"
             )
 
-##---------------------------------------------------------------##
-## AI Quiz Generator (No Repeated Questions) ##
-##---------------------------------------------------------------##
+```python
+# ---------------------------------------------------
+# QUIZ GENERATOR
+# ---------------------------------------------------
 
 elif feature == "❓ AI Quiz Generator":
 
-    st.header(
-        "❓ AI Adaptive Quiz Generator"
+    st.header("❓ AI Adaptive Exam Quiz Generator")
+
+    st.write("""
+Prepare from Beginner → Intermediate → Advanced level.
+
+Questions are designed for:
+• Competitive Exams
+• Placements
+• University Preparation
+""")
+
+    if "user_answers" not in st.session_state:
+        st.session_state.user_answers = {}
+
+    if "submitted_questions" not in st.session_state:
+        st.session_state.submitted_questions = set()
+
+    # ---------------------------------------------------
+    # QUIZ HISTORY
+    # ---------------------------------------------------
+
+    with st.expander("📚 Quiz History"):
+
+        if st.session_state.quiz_history:
+
+            for idx, quiz in enumerate(
+                reversed(st.session_state.quiz_history),
+                start=1
+            ):
+
+                st.markdown(f"""
+### Quiz {idx}
+
+📘 Topic: {quiz['topic']}
+
+🏆 Score: {quiz['score']}
+""")
+
+        else:
+
+            st.info("No quiz history available")
+
+    # ---------------------------------------------------
+    # INPUTS
+    # ---------------------------------------------------
+
+    exam = st.text_input(
+        "📝 Enter Exam Name",
+        placeholder="Example: GATE, UPSC, Placement"
     )
 
     topic = st.text_input(
-        "Enter Topic"
+        "📘 Enter Topic",
+        placeholder="Example: Python, DBMS, AI"
     )
 
     difficulty = st.selectbox(
-        "Difficulty",
+        "🎯 Select Difficulty",
         [
             "Beginner",
             "Intermediate",
@@ -496,129 +545,192 @@ elif feature == "❓ AI Quiz Generator":
     )
 
     num_questions = st.slider(
-        "Number of Questions",
+        "📊 Number of Questions",
         1,
-        10,
-        5
+        5,
+        3
     )
 
-    topic_lower = topic.lower()
+    # ---------------------------------------------------
+    # QUESTION BANKS
+    # ---------------------------------------------------
 
-    if "python" in topic_lower:
+    beginner_questions = [
 
-        question_pool = [
+        {
+            "question": "What is Python?",
+            "options": [
+                "Programming Language",
+                "Database",
+                "Browser",
+                "Operating System"
+            ],
+            "answer": "Programming Language",
+            "explanation": "Python is a programming language."
+        },
 
-            {
-                "question":"Which keyword defines a function?",
-                "options":["def","function","define","func"],
-                "answer":"def"
-            },
+        {
+            "question": "Which keyword is used to define a function?",
+            "options": [
+                "def",
+                "func",
+                "define",
+                "function"
+            ],
+            "answer": "def",
+            "explanation": "The def keyword is used to create functions."
+        }
+    ]
 
-            {
-                "question":"Which datatype stores key value pairs?",
-                "options":["Dictionary","List","Tuple","Set"],
-                "answer":"Dictionary"
-            },
+    intermediate_questions = [
 
-            {
-                "question":"Which function prints output?",
-                "options":["echo()","print()","show()","display()"],
-                "answer":"print()"
-            },
+        {
+            "question": "What is the time complexity of Binary Search?",
+            "options": [
+                "O(log n)",
+                "O(n)",
+                "O(1)",
+                "O(n²)"
+            ],
+            "answer": "O(log n)",
+            "explanation": "Binary Search divides the search space into half."
+        }
+    ]
 
-            {
-                "question":"Which symbol starts comments?",
-                "options":["#","//","%","&"],
-                "answer":"#"
-            },
+    advanced_questions = [
 
-            {
-                "question":"Which loop runs until condition becomes false?",
-                "options":["for","while","switch","if"],
-                "answer":"while"
-            }
-        ]
+        {
+            "question": "Which algorithm is mainly used for classification?",
+            "options": [
+                "Logistic Regression",
+                "Linear Regression",
+                "Apriori",
+                "K-Means"
+            ],
+            "answer": "Logistic Regression",
+            "explanation": "Logistic Regression is used for classification tasks."
+        }
+    ]
+
+    # ---------------------------------------------------
+    # DIFFICULTY LOGIC
+    # ---------------------------------------------------
+
+    if difficulty == "Beginner":
+
+        question_pool = beginner_questions
+
+    elif difficulty == "Intermediate":
+
+        question_pool = (
+            beginner_questions +
+            intermediate_questions
+        )
 
     else:
 
-        question_pool = [
+        question_pool = (
+            beginner_questions +
+            intermediate_questions +
+            advanced_questions
+        )
 
-            {
-                "question":f"Best way to learn {topic}?",
-                "options":["Practice","Ignore","Skip","None"],
-                "answer":"Practice"
-            },
-
-            {
-                "question":f"What improves {topic} skills?",
-                "options":["Practice","Nothing","Avoiding","Skipping"],
-                "answer":"Practice"
-            },
-
-            {
-                "question":f"How to master {topic}?",
-                "options":["Consistency","No Revision","Skipping","None"],
-                "answer":"Consistency"
-            },
-
-            {
-                "question":f"Which helps learn {topic}?",
-                "options":["Books","Courses","Projects","All of these"],
-                "answer":"All of these"
-            },
-
-            {
-                "question":f"What is important in {topic}?",
-                "options":["Practice","Ignoring","Skipping","None"],
-                "answer":"Practice"
-            }
-        ]
+    # ---------------------------------------------------
+    # GENERATE QUIZ
+    # ---------------------------------------------------
 
     if st.button("🚀 Generate Quiz"):
 
-        selected_questions = random.sample(
-            question_pool,
-            min(
-                num_questions,
-                len(question_pool)
-            )
-        )
+        random.shuffle(question_pool)
 
-        st.session_state.quiz_data = (
-            selected_questions
-        )
+        st.session_state.quiz_data = question_pool[:num_questions]
+
+        st.session_state.quiz_started = True
 
         st.session_state.quiz_score = 0
-        st.session_state.quiz_started = True
+
+        st.session_state.user_answers = {}
+
+        st.session_state.submitted_questions = set()
+
+    # ---------------------------------------------------
+    # DISPLAY QUESTIONS
+    # ---------------------------------------------------
 
     if st.session_state.quiz_started:
 
-     if st.button("Submit Quiz"):
+        for idx, q in enumerate(
+            st.session_state.quiz_data
+        ):
 
-    score = 0
+            st.markdown("---")
 
-    for idx, q in enumerate(
-        st.session_state.quiz_data
-    ):
-        if st.session_state[f"quiz_{idx}"] == q["answer"]:
-            score += 1
-
-    st.success(
-        f"Final Score: {score}/{len(st.session_state.quiz_data)}"
-    )
-
-        if st.button("Submit Quiz"):
-
-            st.success(
-                f"Final Score: {score}/{len(st.session_state.quiz_data)}"
+            st.subheader(
+                f"Q{idx+1}. {q['question']}"
             )
 
-            st.session_state.quiz_history.append(
-                {
-                    "topic":topic,
-                    "score":score
-                }
+            user_answer = st.radio(
+                "Choose Answer",
+                q["options"],
+                key=f"radio_{idx}",
+                index=None
             )
+
+            if st.button(
+                f"Submit Q{idx+1}",
+                key=f"submit_{idx}"
+            ):
+
+                st.session_state.user_answers[idx] = user_answer
+
+                st.session_state.submitted_questions.add(idx)
+
+                if user_answer == q["answer"]:
+
+                    st.success("✅ Correct Answer")
+
+                    st.session_state.quiz_score += 2
+
+                    st.balloons()
+
+                else:
+
+                    st.error("❌ Wrong Answer")
+
+                st.info(
+                    f"✔ Correct Answer: {q['answer']}"
+                )
+
+                st.warning(
+                    f"📖 Explanation: {q['explanation']}"
+                )
+
+        # ---------------------------------------------------
+        # FINAL SCORE
+        # ---------------------------------------------------
+
+        total = len(
+            st.session_state.quiz_data
+        ) * 2
+
+        st.markdown("---")
+
+        st.header(
+            f"🏆 Final Score: {st.session_state.quiz_score}/{total}"
+        )
+
+        if st.button("💾 Save Quiz"):
+
+            st.session_state.quiz_history.append({
+
+                "topic": topic,
+
+                "score": f"{st.session_state.quiz_score}/{total}"
+            })
+
+            st.success("✅ Quiz Saved Successfully")
+```
+
 
 ##------------------------------------------------------------------##
 ## Accessibility Support ##
