@@ -852,30 +852,30 @@ elif feature == "❓ AI Quiz Generator":
 
     # GENERATE QUIZ
 
-    if st.button("🚀 Generate Quiz"):
+if st.button("🚀 Generate Quiz"):
 
-        random.shuffle(question_pool)
+    random.shuffle(question_pool)
 
-       selected_questions = []
+    selected_questions = []
 
-while len(selected_questions) < num_questions:
+    while len(selected_questions) < num_questions:
 
-    selected_questions.extend(question_pool)
+        selected_questions.extend(question_pool)
 
-random.shuffle(selected_questions)
+    random.shuffle(selected_questions)
 
-selected_questions = selected_questions[:num_questions]
+    selected_questions = selected_questions[:num_questions]
 
-        st.session_state.quiz_data = selected_questions
+    st.session_state.quiz_data = selected_questions
 
-        st.session_state.quiz_started = True
+    st.session_state.quiz_started = True
 
-        st.session_state.quiz_score = 0
+    st.session_state.quiz_score = 0
 
-        st.session_state.user_answers = {}
+    st.session_state.user_answers = {}
 
-        st.session_state.submitted_questions = set()
-
+    st.session_state.submitted_questions = set()
+    
     # DISPLAY QUIZ
 
     if st.session_state.quiz_started:
