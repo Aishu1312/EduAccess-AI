@@ -2,16 +2,19 @@ import streamlit as st
 import tempfile
 import random
 import os
-
 import speech_recognition as sr
 from gtts import gTTS
-
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.lsa import LsaSummarizer
-
 from deep_translator import GoogleTranslator
 from PyPDF2 import PdfReader
+import nltk
+
+try:
+    nltk.data.find("tokenizers/punkt")
+except LookupError:
+    nltk.download("punkt")
 
 # Page Configuration
 st.set_page_config(
