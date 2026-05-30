@@ -430,29 +430,38 @@ elif feature == "🧠 AI Notes Summarizer":
             st.warning("⚠️ Enter Notes")
 
 # ---------------------------------------------------
-# SPEECH TO TEXT
+# SPEECH TO TEXT + AI ANSWER
 # ---------------------------------------------------
 
 elif feature == "🎤 Speech-to-Text":
 
-    st.header("🎤 Speech-to-Text Assistant")
+    st.header("🎤 Speech-to-Text AI Assistant")
 
-    audio_file = st.file_uploader(
+    answer_level = st.selectbox(
+        "📚 Answer Level",
+        [
+            "Short",
+            "Intermediate",
+            "Advanced"
+        ]
+    )
+
+    uploaded_audio = st.file_uploader(
         "📂 Upload Audio",
         type=["wav", "mp3", "m4a"]
     )
 
-    audio_input = st.audio_input(
+    recorded_audio = st.audio_input(
         "🎙️ Record Voice"
     )
 
     audio_source = None
 
-    if audio_input:
-        audio_source = audio_input
+    if recorded_audio:
+        audio_source = recorded_audio
 
-    elif audio_file:
-        audio_source = audio_file
+    elif uploaded_audio:
+        audio_source = uploaded_audio
 
     if audio_source:
 
@@ -486,18 +495,189 @@ elif feature == "🎤 Speech-to-Text":
 
             st.info(question)
 
-            answer = f"""
-You asked:
+            q = question.lower()
 
+            # ----------------------------------
+            # AI ANSWERS
+            # ----------------------------------
+
+            if "artificial intelligence" in q or "ai" in q:
+
+                if answer_level == "Short":
+
+                    answer = """
+Artificial Intelligence (AI) is a technology that enables machines to think, learn, and make decisions like humans.
+
+Real-life examples:
+• ChatGPT
+• Siri
+• Google Assistant
+"""
+
+                elif answer_level == "Intermediate":
+
+                    answer = """
+Artificial Intelligence (AI) is a branch of computer science that enables machines to perform tasks that normally require human intelligence.
+
+Applications:
+• Chatbots
+• Self-driving cars
+• Recommendation systems
+• Healthcare diagnosis
+
+Real-life example:
+Netflix suggests movies based on your watching history using AI.
+"""
+
+                else:
+
+                    answer = """
+Artificial Intelligence (AI) is the simulation of human intelligence in machines.
+
+AI uses Machine Learning, Deep Learning, Computer Vision and NLP to solve complex problems.
+
+Applications:
+• Healthcare
+• Banking
+• Cybersecurity
+• Transportation
+• Education
+
+Real-life Examples:
+
+1. ChatGPT answers questions.
+
+2. Tesla cars use AI for autonomous driving.
+
+3. Amazon recommends products using AI.
+
+4. Google Translate uses AI for language translation.
+
+5. Face Unlock in smartphones uses AI-based facial recognition.
+"""
+
+            elif "python" in q:
+
+                if answer_level == "Short":
+
+                    answer = """
+Python is a popular programming language known for its simplicity and readability.
+
+Real-life Example:
+Used in web development and AI.
+"""
+
+                elif answer_level == "Intermediate":
+
+                    answer = """
+Python is a high-level programming language widely used for software development, data science and AI.
+
+Real-life Example:
+Instagram uses Python in its backend systems.
+"""
+
+                else:
+
+                    answer = """
+Python is one of the most widely used programming languages.
+
+Features:
+• Easy syntax
+• Large libraries
+• Cross-platform support
+
+Applications:
+• AI
+• Machine Learning
+• Data Science
+• Web Development
+
+Real-life Examples:
+
+• Instagram
+• Spotify
+• Netflix
+• ChatGPT
+"""
+
+            else:
+
+                if answer_level == "Short":
+
+                    answer = f"""
 {question}
 
-This topic is important for learning and understanding concepts effectively.
-Please refer to study materials and practical examples for better understanding.
+This is an important topic.
+
+Study basic concepts and examples.
+"""
+
+                elif answer_level == "Intermediate":
+
+                    answer = f"""
+{question}
+
+This topic is important for understanding practical applications.
+
+Study:
+• Theory
+• Examples
+• Use cases
+
+Practice regularly for better understanding.
+"""
+
+                else:
+
+                    answer = f"""
+Topic: {question}
+
+Detailed Explanation:
+
+This topic plays an important role in modern education and industry.
+
+Study:
+• Fundamental concepts
+• Practical examples
+• Real-world applications
+• Industry use cases
+
+Real-Life Examples:
+
+• Used in projects
+• Used in companies
+• Used in research
+• Used in modern technology systems
 """
 
             st.subheader("🤖 AI Answer")
 
             st.success(answer)
+
+            # ----------------------------------
+            # TEXT TO SPEECH
+            # ----------------------------------
+
+            tts = gTTS(
+                text=answer,
+                lang="en"
+            )
+
+            speech_file = "answer.mp3"
+
+            tts.save(speech_file)
+
+            st.subheader("🔊 Listen to Answer")
+
+            st.audio(speech_file)
+
+            # ----------------------------------
+            # HISTORY
+            # ----------------------------------
+
+            if "speech_history" not in st.session_state:
+
+                st.session_state.speech_history = []
 
             st.session_state.speech_history.append({
 
@@ -506,11 +686,27 @@ Please refer to study materials and practical examples for better understanding.
 
             })
 
+            with st.expander("📚 Question History"):
+
+                for idx, item in enumerate(
+                    reversed(st.session_state.speech_history),
+                    start=1
+                ):
+
+                    st.markdown(f"""
+### Question {idx}
+
+📝 {item['question']}
+
+🤖 {item['answer']}
+""")
+
         except Exception as e:
 
             st.error(
                 f"❌ Error: {str(e)}"
             )
+            
 # ---------------------------------------------------
 # DYSLEXIA MODE
 # ---------------------------------------------------
