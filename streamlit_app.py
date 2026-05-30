@@ -2,6 +2,11 @@ import streamlit as st
 import tempfile
 import random
 import speech_recognition as sr
+from gtts import gTTS
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.summarizers.lsa import LsaSummarizer
+import os
 from deep_translator import GoogleTranslator
 from PyPDF2 import PdfReader
 from gtts import gTTS
@@ -339,96 +344,56 @@ if feature == "🏠 Home":
 # ---------------------------------------------------
 # SUMMARIZER
 # ---------------------------------------------------
+if st.button("🚀 Generate Summary"):
 
-elif feature == "🧠 AI Notes Summarizer":
+    if text.strip():
 
-    st.header("🧠 AI Notes Summarizer")
+        parser = PlaintextParser.from_string(
+            text,
+            Tokenizer("english")
+        )
 
-    uploaded_file = st.file_uploader(
-        "📂 Upload PDF",
-        type=["pdf"]
-    )
+        summarizer = LsaSummarizer()
 
-    text = ""
+        if summary_length == "Short":
+            sentence_count = 3
 
-    if uploaded_file:
-
-        pdf_reader = PdfReader(uploaded_file)
-
-        for page in pdf_reader.pages:
-
-            extracted = page.extract_text()
-
-            if extracted:
-
-                text += extracted
-
-        st.success("✅ PDF Uploaded Successfully")
-
-    manual_text = st.text_area(
-        "📌 Paste Notes Here",
-        height=250
-    )
-
-    if manual_text:
-
-        text += manual_text
-
-    summary_length = st.selectbox(
-
-        "📏 Select Summary Length",
-
-        ["Short", "Medium", "Detailed"]
-    )
-
-    if st.button("🚀 Generate Summary"):
-
-        if text.strip() != "":
-
-            sentences = [
-
-                s.strip()
-
-                for s in text.split(".")
-                if s.strip()
-            ]
-
-            if summary_length == "Short":
-
-                num = max(2, len(sentences)//4)
-
-            elif summary_length == "Medium":
-
-                num = max(4, len(sentences)//2)
-
-            else:
-
-                num = len(sentences)
-
-            summary = ". ".join(sentences[:num]) + "."
-
-            translated_summary = translate_text(summary)
-
-            st.session_state.summary = translated_summary
-
-            st.success("✅ Summary Generated")
-
-            st.markdown(f"""
-            <div style="
-                background:#14532d;
-                padding:20px;
-                border-radius:15px;
-                color:white;
-                font-size:{font_size}px;
-                line-height:2;
-            ">
-            {translated_summary}
-            </div>
-            """, unsafe_allow_html=True)
+        elif summary_length == "Medium":
+            sentence_count = 6
 
         else:
+            sentence_count = 10
 
-            st.warning("⚠️ Enter Notes")
+        summary_sentences = summarizer(
+            parser.document,
+            sentence_count
+        )
+
+        summary = " ".join(
+            str(sentence)
+            for sentence in summary_sentences
+        )
+
+        translated_summary = translate_text(summary)
+
+        st.session_state.summary = translated_summary
+
+        st.success("✅ Summary Generated")
+
+        st.markdown(
+            f"""
+            <div style="
+            background:#14532d;
+            padding:20px;
+            border-radius:15px;
+            color:white;
+            font-size:{font_size}px;
+            line-height:2;">
+            {translated_summary}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 # ---------------------------------------------------
 # SPEECH TO TEXT + AI ANSWER
@@ -436,10 +401,10 @@ elif feature == "🧠 AI Notes Summarizer":
 
 elif feature == "🎤 Speech-to-Text":
 
-    st.header("🎤 Speech-to-Text AI Assistant")
+    st.header("🎤 Speech-to-Text")
 
-    answer_level = st.selectbox(
-        "📚 Answer Level",
+    answer_mode = st.selectbox(
+        "Answer Detail",
         [
             "Short",
             "Intermediate",
@@ -447,34 +412,20 @@ elif feature == "🎤 Speech-to-Text":
         ]
     )
 
-    uploaded_audio = st.file_uploader(
-        "📂 Upload Audio",
-        type=["wav", "mp3", "m4a"]
+    audio = st.audio_input(
+        "🎙️ Ask Your Question"
     )
 
-    recorded_audio = st.audio_input(
-        "🎙️ Record Voice"
-    )
+    if audio:
 
-    audio_source = None
-
-    if recorded_audio:
-        audio_source = recorded_audio
-
-    elif uploaded_audio:
-        audio_source = uploaded_audio
-
-    if audio_source:
-
-        st.audio(audio_source)
+        st.audio(audio)
 
         with tempfile.NamedTemporaryFile(
             delete=False,
             suffix=".wav"
         ) as tmp:
 
-            tmp.write(audio_source.read())
-
+            tmp.write(audio.read())
             audio_path = tmp.name
 
         recognizer = sr.Recognizer()
@@ -490,35 +441,29 @@ elif feature == "🎤 Speech-to-Text":
                     language=target_lang
                 )
 
-            st.success("✅ Speech Recognized")
+            st.success("✅ Question Recognized")
 
-            st.subheader("📝 Question")
+            st.markdown("### 📝 Question")
 
             st.info(question)
 
             q = question.lower()
 
-            # ----------------------------------
-            # AI ANSWERS
-            # ----------------------------------
-
             if "artificial intelligence" in q or "ai" in q:
 
-                if answer_level == "Short":
+                if answer_mode == "Short":
 
                     answer = """
-Artificial Intelligence (AI) is a technology that enables machines to think, learn, and make decisions like humans.
+Artificial Intelligence (AI) enables machines to perform tasks that normally require human intelligence such as learning, reasoning, and decision-making.
 
-Real-life examples:
-• ChatGPT
-• Siri
-• Google Assistant
+Example:
+Google Assistant and ChatGPT.
 """
 
-                elif answer_level == "Intermediate":
+                elif answer_mode == "Intermediate":
 
                     answer = """
-Artificial Intelligence (AI) is a branch of computer science that enables machines to perform tasks that normally require human intelligence.
+Artificial Intelligence (AI) is a technology that allows machines to mimic human intelligence.
 
 Applications:
 • Chatbots
@@ -526,8 +471,8 @@ Applications:
 • Recommendation systems
 • Healthcare diagnosis
 
-Real-life example:
-Netflix suggests movies based on your watching history using AI.
+Real-life Example:
+Netflix recommends movies using AI.
 """
 
                 else:
@@ -535,183 +480,92 @@ Netflix suggests movies based on your watching history using AI.
                     answer = """
 Artificial Intelligence (AI) is the simulation of human intelligence in machines.
 
-AI uses Machine Learning, Deep Learning, Computer Vision and NLP to solve complex problems.
+Major branches:
+• Machine Learning
+• Deep Learning
+• NLP
+• Computer Vision
 
 Applications:
 • Healthcare
-• Banking
-• Cybersecurity
-• Transportation
 • Education
-
-Real-life Examples:
-
-1. ChatGPT answers questions.
-
-2. Tesla cars use AI for autonomous driving.
-
-3. Amazon recommends products using AI.
-
-4. Google Translate uses AI for language translation.
-
-5. Face Unlock in smartphones uses AI-based facial recognition.
-"""
-
-            elif "python" in q:
-
-                if answer_level == "Short":
-
-                    answer = """
-Python is a popular programming language known for its simplicity and readability.
+• Banking
+• Transportation
+• Cybersecurity
 
 Real-life Example:
-Used in web development and AI.
-"""
-
-                elif answer_level == "Intermediate":
-
-                    answer = """
-Python is a high-level programming language widely used for software development, data science and AI.
-
-Real-life Example:
-Instagram uses Python in its backend systems.
-"""
-
-                else:
-
-                    answer = """
-Python is one of the most widely used programming languages.
-
-Features:
-• Easy syntax
-• Large libraries
-• Cross-platform support
-
-Applications:
-• AI
-• Machine Learning
-• Data Science
-• Web Development
-
-Real-life Examples:
-
-• Instagram
-• Spotify
-• Netflix
-• ChatGPT
+When Amazon recommends products or Google Maps suggests routes, AI is working behind the scenes.
 """
 
             else:
 
-                if answer_level == "Short":
-
-                    answer = f"""
-{question}
-
-This is an important topic.
-
-Study basic concepts and examples.
-"""
-
-                elif answer_level == "Intermediate":
-
-                    answer = f"""
-{question}
-
-This topic is important for understanding practical applications.
-
-Study:
-• Theory
-• Examples
-• Use cases
-
-Practice regularly for better understanding.
-"""
-
-                else:
-
-                    answer = f"""
+                answer = f"""
 Topic: {question}
 
-Detailed Explanation:
+This topic is important for learning.
 
-This topic plays an important role in modern education and industry.
+Real-life Example:
+Understanding {question} helps solve practical problems in education and industry.
 
-Study:
-• Fundamental concepts
-• Practical examples
-• Real-world applications
-• Industry use cases
-
-Real-Life Examples:
-
-• Used in projects
-• Used in companies
-• Used in research
-• Used in modern technology systems
+For deeper learning, refer to tutorials, projects, and case studies.
 """
 
-            st.subheader("🤖 AI Answer")
+            st.markdown("### 🤖 AI Answer")
 
             st.success(answer)
-
-            # ----------------------------------
-            # TEXT TO SPEECH
-            # ----------------------------------
 
             tts = gTTS(
                 text=answer,
                 lang="en"
             )
 
-            speech_file = "answer.mp3"
+            tts.save("answer.mp3")
 
-            tts.save(speech_file)
+            with open(
+                "answer.mp3",
+                "rb"
+            ) as audio_file:
 
-            st.subheader("🔊 Listen to Answer")
-
-            st.audio(speech_file)
-
-            # ----------------------------------
-            # HISTORY
-            # ----------------------------------
-
-            if "speech_history" not in st.session_state:
-
-                st.session_state.speech_history = []
-
-            st.session_state.speech_history.append({
-
-                "question": question,
-                "answer": answer
-
-            })
-
-            with st.expander("📚 Question History"):
-
-                for idx, item in enumerate(
-                    reversed(st.session_state.speech_history),
-                    start=1
-                ):
-
-                    st.markdown(f"""
-### Question {idx}
-
-📝 {item['question']}
-
-🤖 {item['answer']}
-""")
+                st.audio(
+                    audio_file.read(),
+                    format="audio/mp3"
+                )
 
         except Exception as e:
 
             st.error(
-                f"❌ Error: {str(e)}"
+                f"❌ Error: {e}"
             )
             
 # ---------------------------------------------------
 # DYSLEXIA MODE
 # ---------------------------------------------------
 
+st.markdown("""
+<style>
+
+.dyslexia-text {
+
+line-height:2.8;
+letter-spacing:2px;
+word-spacing:4px;
+font-size:24px;
+
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown(
+f"""
+<div class="dyslexia-text">
+
+{st.session_state.summary}
+
+</div>
+""",
+unsafe_allow_html=True
+)
 elif feature == "📖 Dyslexia-Friendly Reading":
 
     st.header("📖 Dyslexia-Friendly Reading")
@@ -1015,7 +869,15 @@ elif feature == "❓ AI Quiz Generator":
 
         random.shuffle(question_pool)
 
-        selected_questions = question_pool[:num_questions]
+       selected_questions = []
+
+while len(selected_questions) < num_questions:
+
+    selected_questions.extend(question_pool)
+
+random.shuffle(selected_questions)
+
+selected_questions = selected_questions[:num_questions]
 
         st.session_state.quiz_data = selected_questions
 
