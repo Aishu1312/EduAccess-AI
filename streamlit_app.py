@@ -435,20 +435,35 @@ elif feature == "🧠 AI Notes Summarizer":
 
 elif feature == "🎤 Speech-to-Text":
 
-    st.header("🎤 Speech-to-Text")
+    st.header("🎤 Speech-to-Text Assistant")
 
-    audio = st.audio_input(
+    audio_file = st.file_uploader(
+        "📂 Upload Audio",
+        type=["wav", "mp3", "m4a"]
+    )
+
+    audio_input = st.audio_input(
         "🎙️ Record Voice"
     )
 
-    if audio:
+    audio_source = None
+
+    if audio_input:
+        audio_source = audio_input
+
+    elif audio_file:
+        audio_source = audio_file
+
+    if audio_source:
+
+        st.audio(audio_source)
 
         with tempfile.NamedTemporaryFile(
             delete=False,
             suffix=".wav"
         ) as tmp:
 
-            tmp.write(audio.read())
+            tmp.write(audio_source.read())
 
             audio_path = tmp.name
 
@@ -460,22 +475,42 @@ elif feature == "🎤 Speech-to-Text":
 
                 audio_data = recognizer.record(source)
 
-                text = recognizer.recognize_google(
-
+                question = recognizer.recognize_google(
                     audio_data,
                     language=target_lang
                 )
 
             st.success("✅ Speech Recognized")
 
-            st.write(text)
+            st.subheader("📝 Question")
 
-            st.audio(audio)
+            st.info(question)
 
-        except:
+            answer = f"""
+You asked:
 
-            st.error("❌ Could not understand audio")
+{question}
 
+This topic is important for learning and understanding concepts effectively.
+Please refer to study materials and practical examples for better understanding.
+"""
+
+            st.subheader("🤖 AI Answer")
+
+            st.success(answer)
+
+            st.session_state.speech_history.append({
+
+                "question": question,
+                "answer": answer
+
+            })
+
+        except Exception as e:
+
+            st.error(
+                f"❌ Error: {str(e)}"
+            )
 # ---------------------------------------------------
 # DYSLEXIA MODE
 # ---------------------------------------------------
