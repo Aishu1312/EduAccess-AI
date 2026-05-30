@@ -669,76 +669,338 @@ elif feature == "🎤 Speech-to-Text":
 # ---------------------------------------------------
 
 
+# ---------------------------------------------------
+# QUIZ GENERATOR
+# ---------------------------------------------------
+
 elif feature == "❓ AI Quiz Generator":
 
     st.header("❓ AI Adaptive Quiz Generator")
 
-    exam = st.text_input(
-        "Exam Name",
-        placeholder="GATE, Placement, UPSC, College Exam"
-    )
+    st.write("""
+Prepare for:
+✅ Placements
+✅ University Exams
+✅ GATE
+✅ Technical Interviews
+✅ Competitive Exams
+""")
 
     topic = st.selectbox(
-        "Subject",
+        "📘 Select Subject",
         [
             "Python",
             "AI",
             "Machine Learning",
-            "DBMS",
-            "Mixed"
+            "DBMS"
         ]
     )
 
     difficulty = st.selectbox(
-        "Difficulty",
+        "🎯 Difficulty",
         [
             "Beginner",
             "Intermediate",
-            "Advanced",
-            "Mixed"
+            "Advanced"
         ]
     )
 
     num_questions = st.slider(
-        "Number of Questions",
-        5,
-        50,
-        10
+        "📊 Number of Questions",
+        1,
+        20,
+        5
     )
 
-    QUESTION_BANK = generate_question_bank()
+    # ---------------------------------------------------
+    # QUESTION BANK
+    # ---------------------------------------------------
+
+    PYTHON_QUESTIONS = [
+
+        {
+            "question":"What is Python?",
+            "options":[
+                "Programming Language",
+                "Database",
+                "Browser",
+                "OS"
+            ],
+            "answer":"Programming Language"
+        },
+
+        {
+            "question":"Which keyword creates a function?",
+            "options":[
+                "def",
+                "function",
+                "func",
+                "create"
+            ],
+            "answer":"def"
+        },
+
+        {
+            "question":"Which data type is mutable?",
+            "options":[
+                "Tuple",
+                "String",
+                "List",
+                "Integer"
+            ],
+            "answer":"List"
+        },
+
+        {
+            "question":"Which symbol is used for comments?",
+            "options":[
+                "//",
+                "#",
+                "/*",
+                "--"
+            ],
+            "answer":"#"
+        },
+
+        {
+            "question":"Which function prints output?",
+            "options":[
+                "echo()",
+                "show()",
+                "print()",
+                "display()"
+            ],
+            "answer":"print()"
+        }
+    ]
+
+    AI_QUESTIONS = [
+
+        {
+            "question":"What does AI stand for?",
+            "options":[
+                "Artificial Intelligence",
+                "Automated Internet",
+                "Artificial Integration",
+                "Auto Intelligence"
+            ],
+            "answer":"Artificial Intelligence"
+        },
+
+        {
+            "question":"Which is a branch of AI?",
+            "options":[
+                "Machine Learning",
+                "Networking",
+                "Compiler Design",
+                "DBMS"
+            ],
+            "answer":"Machine Learning"
+        },
+
+        {
+            "question":"ChatGPT belongs to?",
+            "options":[
+                "NLP",
+                "DBMS",
+                "Operating System",
+                "Networking"
+            ],
+            "answer":"NLP"
+        },
+
+        {
+            "question":"AI is mainly used to?",
+            "options":[
+                "Mimic human intelligence",
+                "Replace internet",
+                "Delete data",
+                "Compile programs"
+            ],
+            "answer":"Mimic human intelligence"
+        },
+
+        {
+            "question":"Which is AI application?",
+            "options":[
+                "Self Driving Cars",
+                "Keyboard",
+                "Monitor",
+                "Mouse"
+            ],
+            "answer":"Self Driving Cars"
+        }
+    ]
+
+    ML_QUESTIONS = [
+
+        {
+            "question":"Which algorithm is used for classification?",
+            "options":[
+                "Logistic Regression",
+                "Linear Regression",
+                "Apriori",
+                "KNN Tree"
+            ],
+            "answer":"Logistic Regression"
+        },
+
+        {
+            "question":"What is overfitting?",
+            "options":[
+                "Model memorizes training data",
+                "Model too simple",
+                "No training",
+                "No testing"
+            ],
+            "answer":"Model memorizes training data"
+        },
+
+        {
+            "question":"Which is supervised learning?",
+            "options":[
+                "Linear Regression",
+                "K-Means",
+                "Apriori",
+                "PCA"
+            ],
+            "answer":"Linear Regression"
+        },
+
+        {
+            "question":"K-Means belongs to?",
+            "options":[
+                "Clustering",
+                "Classification",
+                "Regression",
+                "NLP"
+            ],
+            "answer":"Clustering"
+        },
+
+        {
+            "question":"Dataset split includes?",
+            "options":[
+                "Train Test",
+                "Input Output",
+                "Rows Columns",
+                "CPU GPU"
+            ],
+            "answer":"Train Test"
+        }
+    ]
+
+    DBMS_QUESTIONS = [
+
+        {
+            "question":"What does DBMS stand for?",
+            "options":[
+                "Database Management System",
+                "Data Binary Management",
+                "Digital Base System",
+                "Database Machine System"
+            ],
+            "answer":"Database Management System"
+        },
+
+        {
+            "question":"Primary key must be?",
+            "options":[
+                "Unique",
+                "Null",
+                "Repeated",
+                "Optional"
+            ],
+            "answer":"Unique"
+        },
+
+        {
+            "question":"SQL stands for?",
+            "options":[
+                "Structured Query Language",
+                "System Query Language",
+                "Simple Query Language",
+                "Sequential Query Language"
+            ],
+            "answer":"Structured Query Language"
+        },
+
+        {
+            "question":"Which command retrieves data?",
+            "options":[
+                "SELECT",
+                "INSERT",
+                "UPDATE",
+                "DELETE"
+            ],
+            "answer":"SELECT"
+        },
+
+        {
+            "question":"Normalization reduces?",
+            "options":[
+                "Redundancy",
+                "Tables",
+                "Rows",
+                "Queries"
+            ],
+            "answer":"Redundancy"
+        }
+    ]
+
+    if topic == "Python":
+        question_pool = PYTHON_QUESTIONS
+
+    elif topic == "AI":
+        question_pool = AI_QUESTIONS
+
+    elif topic == "Machine Learning":
+        question_pool = ML_QUESTIONS
+
+    else:
+        question_pool = DBMS_QUESTIONS
+
+    # ---------------------------------------------------
+    # SESSION STATE
+    # ---------------------------------------------------
+
+    if "quiz_generated" not in st.session_state:
+        st.session_state.quiz_generated = False
+
+    if "quiz_score" not in st.session_state:
+        st.session_state.quiz_score = 0
+
+    if "quiz_questions" not in st.session_state:
+        st.session_state.quiz_questions = []
+
+    # ---------------------------------------------------
+    # GENERATE QUIZ
+    # ---------------------------------------------------
 
     if st.button("🚀 Generate Quiz"):
 
-        pool = QUESTION_BANK
+        available = question_pool.copy()
 
-        if difficulty != "Mixed":
+        random.shuffle(available)
 
-            pool = [
-                q for q in pool
-                if q["difficulty"] == difficulty
-            ]
+        st.session_state.quiz_questions = available[
+            :min(num_questions, len(available))
+        ]
 
-        random.shuffle(pool)
+        st.session_state.quiz_generated = True
 
-        st.session_state.quiz_data = (
-            pool[:num_questions]
-        )
+    # ---------------------------------------------------
+    # DISPLAY QUIZ
+    # ---------------------------------------------------
 
-        st.session_state.quiz_started = True
-
-        st.session_state.quiz_score = 0
-
-        st.session_state.user_answers = {}
-
-    if st.session_state.quiz_started:
+    if st.session_state.quiz_generated:
 
         st.markdown("---")
 
-        score = 0
+        answers = {}
 
         for idx, q in enumerate(
-            st.session_state.quiz_data
+            st.session_state.quiz_questions
         ):
 
             st.subheader(
@@ -747,31 +1009,26 @@ elif feature == "❓ AI Quiz Generator":
 
             st.write(q["question"])
 
-            answer = st.radio(
+            answers[idx] = st.radio(
                 "Choose Answer",
                 q["options"],
-                key=f"q_{idx}"
+                key=f"answer_{idx}"
             )
-
-            st.session_state.user_answers[idx] = answer
 
         if st.button("✅ Submit Quiz"):
 
             score = 0
 
             for idx, q in enumerate(
-                st.session_state.quiz_data
+                st.session_state.quiz_questions
             ):
 
-                if (
-                    st.session_state.user_answers[idx]
-                    == q["answer"]
-                ):
+                if answers[idx] == q["answer"]:
                     score += 2
 
             total = (
                 len(
-                    st.session_state.quiz_data
+                    st.session_state.quiz_questions
                 ) * 2
             )
 
@@ -784,183 +1041,40 @@ elif feature == "❓ AI Quiz Generator":
             ) * 100
 
             st.info(
-                f"Percentage: {percentage:.2f}%"
+                f"📊 Percentage: {percentage:.2f}%"
             )
 
-            st.session_state.quiz_history.append(
-                {
-                    "topic": topic,
-                    "score": f"{score}/{total}"
-                }
+            if percentage >= 80:
+                st.balloons()
+                st.success(
+                    "Excellent Performance!"
+                )
+
+            elif percentage >= 50:
+                st.warning(
+                    "Good Job. Keep Practicing."
+                )
+
+            else:
+                st.error(
+                    "Needs Improvement."
+                )
+
+            st.markdown("---")
+
+            st.subheader(
+                "📖 Answer Review"
             )
 
-            with st.expander(
-                "📖 Solutions"
-            ):
+            for q in st.session_state.quiz_questions:
 
-                for q in (
-                    st.session_state.quiz_data
-                ):
+                st.write(
+                    f"✅ {q['question']}"
+                )
 
-                    st.write(
-                        f"✅ {q['question']}"
-                    )
-
-                    st.write(
-                        f"Correct Answer: {q['answer']}"
-                    )
-
-                    st.write(
-                        q["explanation"]
-                    )
-
-                    st.markdown("---")
-
-# --------------------------------------------------
-# QUESTION BANK GENERATOR
-# --------------------------------------------------
-
-def generate_question_bank():
-
-    questions = []
-
-    # ---------------- PYTHON ----------------
-
-    python_questions = [
-        {
-            "question":"What is Python?",
-            "options":["Programming Language","Database","Browser","Operating System"],
-            "answer":"Programming Language",
-            "explanation":"Python is a high-level programming language.",
-            "difficulty":"Beginner"
-        },
-        {
-            "question":"Which keyword defines a function in Python?",
-            "options":["def","function","func","define"],
-            "answer":"def",
-            "explanation":"Functions are created using def.",
-            "difficulty":"Beginner"
-        },
-        {
-            "question":"Which data type stores True/False values?",
-            "options":["Boolean","Integer","String","Float"],
-            "answer":"Boolean",
-            "explanation":"Boolean stores True and False.",
-            "difficulty":"Beginner"
-        },
-        {
-            "question":"Which symbol starts a comment?",
-            "options":["#","//","/*","--"],
-            "answer":"#",
-            "explanation":"Python comments begin with #.",
-            "difficulty":"Beginner"
-        },
-        {
-            "question":"Which function displays output?",
-            "options":["print()","display()","echo()","show()"],
-            "answer":"print()",
-            "explanation":"print() displays output.",
-            "difficulty":"Beginner"
-        }
-    ]
-
-    # ---------------- AI ----------------
-
-    ai_questions = [
-        {
-            "question":"What does AI stand for?",
-            "options":["Artificial Intelligence","Automatic Information","Artificial Integration","Automated Intelligence"],
-            "answer":"Artificial Intelligence",
-            "explanation":"AI means Artificial Intelligence.",
-            "difficulty":"Beginner"
-        },
-        {
-            "question":"Which field enables computers to learn from data?",
-            "options":["Machine Learning","Networking","DBMS","Cloud Computing"],
-            "answer":"Machine Learning",
-            "explanation":"Machine Learning allows systems to learn from data.",
-            "difficulty":"Intermediate"
-        },
-        {
-            "question":"Which AI field focuses on language understanding?",
-            "options":["NLP","CV","IoT","DBMS"],
-            "answer":"NLP",
-            "explanation":"NLP stands for Natural Language Processing.",
-            "difficulty":"Intermediate"
-        }
-    ]
-
-    # ---------------- ML ----------------
-
-    ml_questions = [
-        {
-            "question":"Which algorithm is used for classification?",
-            "options":["Logistic Regression","Linear Regression","K-Means","Apriori"],
-            "answer":"Logistic Regression",
-            "explanation":"Logistic Regression is a classification algorithm.",
-            "difficulty":"Intermediate"
-        },
-        {
-            "question":"Which algorithm is unsupervised?",
-            "options":["K-Means","Logistic Regression","Decision Tree","SVM"],
-            "answer":"K-Means",
-            "explanation":"K-Means is an unsupervised clustering algorithm.",
-            "difficulty":"Intermediate"
-        }
-    ]
-
-    # ---------------- DBMS ----------------
-
-    dbms_questions = [
-        {
-            "question":"What does DBMS stand for?",
-            "options":["Database Management System","Data Backup System","Database Monitoring Service","Data Management Service"],
-            "answer":"Database Management System",
-            "explanation":"DBMS manages databases.",
-            "difficulty":"Beginner"
-        },
-        {
-            "question":"Which language is used for databases?",
-            "options":["SQL","HTML","CSS","XML"],
-            "answer":"SQL",
-            "explanation":"SQL is used to manage databases.",
-            "difficulty":"Beginner"
-        },
-        {
-            "question":"Which normal form removes transitive dependency?",
-            "options":["3NF","1NF","BCNF","2NF"],
-            "answer":"3NF",
-            "explanation":"3NF removes transitive dependencies.",
-            "difficulty":"Advanced"
-        }
-    ]
-
-    questions.extend(python_questions)
-    questions.extend(ai_questions)
-    questions.extend(ml_questions)
-    questions.extend(dbms_questions)
-
-    # Duplicate automatically until 100+
-
-    base = questions.copy()
-
-    count = 1
-
-    while len(questions) < 120:
-
-        for q in base:
-
-            new_q = q.copy()
-
-            new_q["question"] = (
-                f"{q['question']} ({count})"
-            )
-
-            questions.append(new_q)
-
-        count += 1
-
-    return questions[:120]
+                st.info(
+                    f"Correct Answer: {q['answer']}"
+                )
 
 
 ##------------------------------------------------------------------##
