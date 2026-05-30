@@ -228,7 +228,17 @@ elif feature == "🧠 AI Notes Summarizer":
 
     if uploaded_file:
 
-        pdf = PdfReader(uploaded_file)
+        try:
+    pdf = PdfReader(uploaded_file)
+
+    for page in pdf.pages:
+        extracted = page.extract_text()
+
+        if extracted:
+            text += extracted
+
+except Exception as e:
+    st.error(f"PDF Error: {e}")
 
         for page in pdf.pages:
 
@@ -368,10 +378,14 @@ elif feature == "🎤 Speech-to-Text":
 
                 audio_data = recognizer.record(source)
 
-                question = recognizer.recognize_google(
-                    audio_data,
-                    language=target_lang
-                )
+                try:
+    question = recognizer.recognize_google(
+        audio_data,
+        language=target_lang
+    )
+except:
+    question = ""
+    st.error("Speech recognition failed.")
 
             st.success("Question Recognized")
 
@@ -430,7 +444,17 @@ Study examples, projects and real-world use cases to understand it deeply.
                 lang="en"
             )
 
-            tts.save("answer.mp3")
+          import tempfile
+
+with tempfile.NamedTemporaryFile(
+    delete=False,
+    suffix=".mp3"
+) as fp:
+
+    tts.save(fp.name)
+
+    with open(fp.name, "rb") as audio_file:
+        st.audio(audio_file.read())
 
             with open(
                 "answer.mp3",
@@ -569,28 +593,19 @@ elif feature == "❓ AI Quiz Generator":
 
     if st.session_state.quiz_started:
 
-        score = 0
+     if st.button("Submit Quiz"):
 
-        for idx, q in enumerate(
-            st.session_state.quiz_data
-        ):
+    score = 0
 
-            st.markdown("---")
+    for idx, q in enumerate(
+        st.session_state.quiz_data
+    ):
+        if st.session_state[f"quiz_{idx}"] == q["answer"]:
+            score += 1
 
-            st.subheader(
-                f"Question {idx+1}"
-            )
-
-            st.write(q["question"])
-
-            answer = st.radio(
-                "Choose Answer",
-                q["options"],
-                key=f"quiz_{idx}"
-            )
-
-            if answer == q["answer"]:
-                score += 1
+    st.success(
+        f"Final Score: {score}/{len(st.session_state.quiz_data)}"
+    )
 
         if st.button("Submit Quiz"):
 
