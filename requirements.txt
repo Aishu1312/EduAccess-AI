@@ -1,36 +1,10 @@
-# EduAccess AI - Final Year Major Project
-# Core
 streamlit>=1.32.0
-
-# AI
-google-generativeai>=0.5.0
-
-# Text-to-Speech (28 languages)
+google-genai>=0.8.0
 gTTS>=2.3.2
-
-# Translation (28 languages)
 deep-translator>=1.11.4
-
-# PDF reading
 PyPDF2>=3.0.1
-
-# PDF generation (certificates + export)
 reportlab>=4.1.0
-
-# Data & visualization
 pandas>=2.0.0
-numpy>=1.26.0
 plotly>=5.18.0
-
-# NLP utilities
 nltk>=3.8.1
-
-# Image processing (OCR feature)
 Pillow>=10.0.0
-
-# Optional: OCR (comment out if Streamlit Cloud has issues)
-# easyocr>=1.7.0
-# opencv-python-headless>=4.9.0
-
-# Optional: advanced NLP summarizer fallback
-# sumy>=0.11.0
