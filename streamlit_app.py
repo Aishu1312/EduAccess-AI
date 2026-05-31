@@ -518,15 +518,26 @@ elif feature == "❓ AI Quiz Generator":
 
     st.header(translate_text("❓ AI Adaptive Quiz Generator"))
 
-    st.write(
-        translate_text(
-            "Generate quizzes for any subject, technology, exam or topic."
-        )
-    )
+    SUBJECTS = [
 
-    topic = st.text_input(
-        translate_text("📘 Enter Topic"),
-        placeholder="Python, Excel, Java, DBMS, AI, Power BI, Cybersecurity"
+        "Python",
+        "AI",
+        "Machine Learning",
+        "DBMS",
+        "Data Science",
+        "Cyber Security",
+        "Operating System",
+        "Computer Networks",
+        "Java",
+        "C++",
+        "Discrete Mathematics",
+        "Statistical Methods & Modelling",
+        "Mathematics"
+    ]
+
+    topic = st.selectbox(
+        translate_text("📘 Select Subject"),
+        SUBJECTS
     )
 
     difficulty = st.selectbox(
@@ -541,244 +552,253 @@ elif feature == "❓ AI Quiz Generator":
     num_questions = st.slider(
         translate_text("📊 Number of Questions"),
         1,
-        50,
-        10
+        20,
+        5
     )
 
-    # ------------------------------
-    # QUESTION GENERATOR
-    # ------------------------------
+    QUESTION_BANK = {
 
-   def generate_questions(topic, difficulty, count):
+        "Python": [
 
-    topic = topic.strip()
-
-    question_bank = {
-
-        "Python": {
-
-            "Beginner": [
-                {
-                    "question": "Which keyword is used to define a function in Python?",
-                    "options": ["func", "define", "def", "function"],
-                    "answer": "def",
-                    "explanation": "The 'def' keyword is used to define functions in Python."
-                },
-                {
-                    "question": "Which data type stores multiple values?",
-                    "options": ["List", "Integer", "Float", "Boolean"],
-                    "answer": "List",
-                    "explanation": "A list can store multiple values in a single variable."
-                }
-            ],
-
-            "Intermediate": [
-                {
-                    "question": "What is the output of len([1,2,3,4])?",
-                    "options": ["3", "4", "5", "Error"],
-                    "answer": "4",
-                    "explanation": "len() returns the number of elements."
-                },
-                {
-                    "question": "Which data structure stores key-value pairs?",
-                    "options": ["Tuple", "Dictionary", "Set", "List"],
-                    "answer": "Dictionary",
-                    "explanation": "Dictionaries store data as key-value pairs."
-                }
-            ],
-
-            "Advanced": [
-                {
-                    "question": "Which Python feature supports asynchronous programming?",
-                    "options": ["asyncio", "tkinter", "numpy", "pandas"],
-                    "answer": "asyncio",
-                    "explanation": "asyncio enables asynchronous programming."
-                },
-                {
-                    "question": "What is a generator in Python?",
-                    "options": [
-                        "Special iterator",
-                        "Compiler",
-                        "Database",
-                        "Framework"
-                    ],
-                    "answer": "Special iterator",
-                    "explanation": "Generators produce values lazily using yield."
-                }
-            ]
-        },
-
-        "Mathematics": {
-
-            "Beginner": [
-                {
-                    "question": "What is 15% of 200?",
-                    "options": ["20", "25", "30", "35"],
-                    "answer": "30",
-                    "explanation": "15% × 200 = 30."
-                }
-            ],
-
-            "Intermediate": [
-                {
-                    "question": "What is the derivative of x²?",
-                    "options": ["x", "2x", "x²", "2"],
-                    "answer": "2x",
-                    "explanation": "Using differentiation rules d(x²)/dx = 2x."
-                }
-            ],
-
-            "Advanced": [
-                {
-                    "question": "What is the determinant of [[1,2],[3,4]]?",
-                    "options": ["-2", "2", "4", "1"],
-                    "answer": "-2",
-                    "explanation": "(1×4) − (2×3) = -2."
-                }
-            ]
-        },
-
-        "DBMS": {
-
-            "Beginner": [
-                {
-                    "question": "What does DBMS stand for?",
-                    "options": [
-                        "Database Management System",
-                        "Data Binary Management",
-                        "Digital Base Management",
-                        "Database Machine System"
-                    ],
-                    "answer": "Database Management System",
-                    "explanation": "DBMS stands for Database Management System."
-                }
-            ],
-
-            "Intermediate": [
-                {
-                    "question": "Which SQL command retrieves data?",
-                    "options": [
-                        "SELECT",
-                        "INSERT",
-                        "DELETE",
-                        "UPDATE"
-                    ],
-                    "answer": "SELECT",
-                    "explanation": "SELECT retrieves records from a database."
-                }
-            ],
-
-            "Advanced": [
-                {
-                    "question": "Which normalization removes transitive dependency?",
-                    "options": [
-                        "1NF",
-                        "2NF",
-                        "3NF",
-                        "BCNF"
-                    ],
-                    "answer": "3NF",
-                    "explanation": "3NF removes transitive dependency."
-                }
-            ]
-        }
-    }
-
-    if topic in question_bank:
-
-        pool = question_bank[topic][difficulty]
-
-    else:
-
-        pool = []
-
-        for i in range(100):
-
-            pool.append({
-
+            {
                 "question":
-                f"{topic}: Question {i+1} ({difficulty})",
+                "Which keyword defines a function in Python?",
 
-                "options": [
+                "options":
+                ["def", "func", "define", "function"],
 
-                    f"{topic} Concept A",
+                "answer":
+                "def",
 
-                    f"{topic} Concept B",
+                "difficulty":
+                "Beginner",
 
-                    f"{topic} Concept C",
+                "explanation":
+                "The def keyword is used to define functions."
+            },
 
-                    f"{topic} Concept D"
+            {
+                "question":
+                "Which data structure stores key-value pairs?",
+
+                "options":
+                ["List", "Dictionary", "Tuple", "Set"],
+
+                "answer":
+                "Dictionary",
+
+                "difficulty":
+                "Intermediate",
+
+                "explanation":
+                "Dictionary stores data in key-value pairs."
+            },
+
+            {
+                "question":
+                "What does asyncio provide?",
+
+                "options":
+                [
+                    "Asynchronous Programming",
+                    "Database",
+                    "GUI",
+                    "Compiler"
                 ],
 
                 "answer":
-                f"{topic} Concept A",
+                "Asynchronous Programming",
+
+                "difficulty":
+                "Advanced",
 
                 "explanation":
-                f"{topic} Concept A is the correct answer for this generated question."
-            })
+                "asyncio supports asynchronous programming."
+            }
+        ],
 
-    unique_pool = []
+        "AI": [
 
-    seen = set()
+            {
+                "question":
+                "What does AI stand for?",
 
-    for q in pool:
+                "options":
+                [
+                    "Artificial Intelligence",
+                    "Automatic Internet",
+                    "Artificial Integration",
+                    "Automated Information"
+                ],
 
-        if q["question"] not in seen:
+                "answer":
+                "Artificial Intelligence",
 
-            unique_pool.append(q)
+                "difficulty":
+                "Beginner",
 
-            seen.add(q["question"])
+                "explanation":
+                "AI stands for Artificial Intelligence."
+            },
 
-    while len(unique_pool) < count:
+            {
+                "question":
+                "Which branch of AI focuses on learning from data?",
 
-        random.shuffle(pool)
+                "options":
+                [
+                    "Machine Learning",
+                    "Networking",
+                    "Compiler Design",
+                    "Cloud Computing"
+                ],
 
-        unique_pool.extend(pool)
+                "answer":
+                "Machine Learning",
 
-    random.shuffle(unique_pool)
+                "difficulty":
+                "Intermediate",
 
-    return unique_pool[:count]
+                "explanation":
+                "Machine Learning enables systems to learn from data."
+            }
+        ],
 
-    # ------------------------------
-    # GENERATE QUIZ
-    # ------------------------------
+        "DBMS": [
+
+            {
+                "question":
+                "What does DBMS stand for?",
+
+                "options":
+                [
+                    "Database Management System",
+                    "Data Binary Management",
+                    "Database Machine System",
+                    "Data Backup Management"
+                ],
+
+                "answer":
+                "Database Management System",
+
+                "difficulty":
+                "Beginner",
+
+                "explanation":
+                "DBMS manages databases."
+            },
+
+            {
+                "question":
+                "Which SQL command retrieves data?",
+
+                "options":
+                [
+                    "SELECT",
+                    "UPDATE",
+                    "INSERT",
+                    "DELETE"
+                ],
+
+                "answer":
+                "SELECT",
+
+                "difficulty":
+                "Intermediate",
+
+                "explanation":
+                "SELECT retrieves records from tables."
+            }
+        ],
+
+        "Mathematics": [
+
+            {
+                "question":
+                "What is 20% of 150?",
+
+                "options":
+                ["25", "30", "35", "40"],
+
+                "answer":
+                "30",
+
+                "difficulty":
+                "Beginner",
+
+                "explanation":
+                "20% × 150 = 30."
+            },
+
+            {
+                "question":
+                "Derivative of x²?",
+
+                "options":
+                ["x", "2x", "x²", "2"],
+
+                "answer":
+                "2x",
+
+                "difficulty":
+                "Intermediate",
+
+                "explanation":
+                "d(x²)/dx = 2x."
+            }
+        ]
+    }
 
     if st.button(
         translate_text("🚀 Generate Quiz")
     ):
 
-        if topic.strip() == "":
+        pool = QUESTION_BANK.get(
+            topic,
+            []
+        )
+
+        filtered = [
+
+            q for q in pool
+
+            if q["difficulty"]
+            == difficulty
+        ]
+
+        if len(filtered) == 0:
 
             st.warning(
-                translate_text(
-                    "Please enter a topic."
-                )
+                "No questions available."
             )
 
         else:
 
+            random.shuffle(filtered)
+
+            selected = []
+
+            while len(selected) < num_questions:
+
+                selected.extend(filtered)
+
+            random.shuffle(selected)
+
             st.session_state.quiz_questions = (
-                generate_questions(
-                    topic,
-                    difficulty,
-                    num_questions
-                )
+                selected[:num_questions]
             )
 
             st.session_state.quiz_generated = True
 
-    # ------------------------------
-    # DISPLAY QUIZ
-    # ------------------------------
-
     if (
-        "quiz_generated" in st.session_state
+        "quiz_generated"
+        in st.session_state
         and st.session_state.quiz_generated
     ):
 
-        answers = {}
-
         st.markdown("---")
+
+        answers = {}
 
         for idx, q in enumerate(
             st.session_state.quiz_questions
@@ -789,27 +809,19 @@ elif feature == "❓ AI Quiz Generator":
             )
 
             st.write(
-                translate_text(
-                    q["question"]
-                )
+                q["question"]
             )
 
             answers[idx] = st.radio(
 
-                translate_text(
-                    "Choose Answer"
-                ),
+                "Choose Answer",
 
                 q["options"],
 
                 key=f"quiz_{idx}"
             )
 
-        if st.button(
-            translate_text(
-                "✅ Submit Quiz"
-            )
-        ):
+        if st.button("✅ Submit Quiz"):
 
             score = 0
 
@@ -821,12 +833,10 @@ elif feature == "❓ AI Quiz Generator":
 
                 user_answer = answers[idx]
 
-                correct = (
+                if (
                     user_answer
                     == q["answer"]
-                )
-
-                if correct:
+                ):
                     score += 2
 
                 review.append({
@@ -850,23 +860,13 @@ elif feature == "❓ AI Quiz Generator":
                 ) * 2
             )
 
-            percentage = (
-                score / total
-            ) * 100
-
             st.success(
                 f"🏆 Score: {score}/{total}"
             )
 
-            st.info(
-                f"📊 Percentage: {percentage:.2f}%"
-            )
-
             st.markdown("---")
 
-            st.subheader(
-                "📖 Answer Review"
-            )
+            st.subheader("📖 Answer Review")
 
             for item in review:
 
@@ -890,16 +890,19 @@ elif feature == "❓ AI Quiz Generator":
 
             quiz_record = {
 
-                "category": "Quiz",
+                "category":
+                "Quiz",
 
                 "timestamp":
                 datetime.now().strftime(
                     "%d-%m-%Y %H:%M"
                 ),
 
-                "topic": topic,
+                "topic":
+                topic,
 
-                "difficulty": difficulty,
+                "difficulty":
+                difficulty,
 
                 "score":
                 f"{score}/{total}",
@@ -913,7 +916,7 @@ elif feature == "❓ AI Quiz Generator":
             )
 
             st.success(
-                "✅ Quiz saved to History"
+                "✅ Quiz Saved To History"
             )
 
             st.session_state.quiz_generated = False
