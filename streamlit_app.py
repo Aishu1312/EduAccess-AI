@@ -619,140 +619,181 @@ elif feature == "📖 Dyslexia-Friendly Reading":
         )
         st.success(translate_text("Reading mode activated."))
 
-# ==========================================
-# QUIZ QUESTION GENERATOR
-# ==========================================
+# ==================================================
+# QUIZ GENERATOR
+# ==================================================
 
-def generate_questions(topic, difficulty, count):
+elif feature == "❓ AI Quiz Generator":
 
-    question_bank = {
+    st.header("❓ AI Adaptive Quiz Generator")
 
-        "Python": [
-            {
-                "question": "Which keyword is used to define a function in Python?",
-                "options": ["def", "func", "function", "create"],
-                "answer": "def",
-                "explanation": "Python functions are created using the def keyword."
-            },
-            {
-                "question": "Which data type is mutable?",
-                "options": ["Tuple", "String", "List", "Integer"],
-                "answer": "List",
-                "explanation": "Lists can be modified after creation."
-            },
-            {
-                "question": "What is the output of len('Python')?",
-                "options": ["5", "6", "7", "8"],
-                "answer": "6",
-                "explanation": "Python contains 6 characters."
-            },
-            {
-                "question": "Which collection stores key-value pairs?",
-                "options": ["List", "Tuple", "Dictionary", "Set"],
-                "answer": "Dictionary",
-                "explanation": "Dictionary stores data as key-value pairs."
-            },
-            {
-                "question": "Which symbol is used for comments?",
-                "options": ["#", "//", "/*", "--"],
-                "answer": "#",
-                "explanation": "Python comments begin with #."
-            }
-        ],
+    topic = st.text_input(
+        "📘 Enter Subject",
+        placeholder="Python, AI, Mathematics, DBMS..."
+    )
 
-        "AI": [
-            {
-                "question": "What does AI stand for?",
-                "options": [
-                    "Artificial Intelligence",
-                    "Artificial Integration",
-                    "Automated Internet",
-                    "Auto Intelligence"
-                ],
-                "answer": "Artificial Intelligence",
-                "explanation": "AI stands for Artificial Intelligence."
-            },
-            {
-                "question": "Which branch allows computers to learn from data?",
-                "options": [
-                    "Machine Learning",
-                    "Networking",
-                    "Compiler Design",
-                    "Operating System"
-                ],
-                "answer": "Machine Learning",
-                "explanation": "Machine Learning enables systems to learn from data."
-            },
-            {
-                "question": "ChatGPT belongs to which field?",
-                "options": [
-                    "NLP",
-                    "Networking",
-                    "Cyber Security",
-                    "DBMS"
-                ],
-                "answer": "NLP",
-                "explanation": "ChatGPT uses Natural Language Processing."
-            }
-        ],
-
-        "Mathematics": [
-            {
-                "question": "What is the derivative of x²?",
-                "options": ["2x", "x", "x²", "2"],
-                "answer": "2x",
-                "explanation": "The derivative of x² is 2x."
-            },
-            {
-                "question": "What is √144?",
-                "options": ["10", "11", "12", "14"],
-                "answer": "12",
-                "explanation": "12 × 12 = 144."
-            },
-            {
-                "question": "How many degrees are in a triangle?",
-                "options": ["90", "180", "270", "360"],
-                "answer": "180",
-                "explanation": "The sum of angles in a triangle is 180°."
-            }
+    difficulty = st.selectbox(
+        "🎯 Difficulty",
+        [
+            "Beginner",
+            "Intermediate",
+            "Advanced"
         ]
-    }
+    )
 
-    if topic not in question_bank:
+    num_questions = st.slider(
+        "📊 Number of Questions",
+        1,
+        30,
+        10
+    )
 
-        generated = []
+    if "quiz_generated" not in st.session_state:
+        st.session_state.quiz_generated = False
 
-        for i in range(max(count, 5)):
+    if "quiz_questions" not in st.session_state:
+        st.session_state.quiz_questions = []
 
-            generated.append({
+    if st.button("🚀 Generate Quiz"):
 
-                "question":
-                f"Which statement about {topic} is correct? ({i+1})",
+        if topic.strip() == "":
 
-                "options":
-                random.sample([
-                    f"{topic} helps solve real-world problems",
-                    f"{topic} is a sport",
-                    f"{topic} is a food item",
-                    f"{topic} is a movie genre"
-                ], 4),
+            st.warning("Please enter a subject.")
 
-                "answer":
-                f"{topic} helps solve real-world problems",
+        else:
 
-                "explanation":
-                f"{topic} is an academic/professional subject."
-            })
+            st.session_state.quiz_questions = generate_questions(
+                topic,
+                difficulty,
+                num_questions
+            )
 
-        return generated[:count]
+            st.session_state.quiz_generated = True
 
-    pool = question_bank[topic].copy()
+    if st.session_state.quiz_generated:
 
-    random.shuffle(pool)
+        st.markdown("---")
 
-    count = min(count, len(pool))
+        answers = {}
 
-    return pool[:count]
+        for idx, q in enumerate(
+            st.session_state.quiz_questions
+        ):
+
+            st.subheader(
+                f"Question {idx + 1}"
+            )
+
+            st.write(
+                q["question"]
+            )
+
+            answers[idx] = st.radio(
+                "Choose Answer",
+                q["options"],
+                key=f"quiz_{idx}"
+            )
+
+        if st.button("✅ Submit Quiz"):
+
+            score = 0
+
+            review = []
+
+            for idx, q in enumerate(
+                st.session_state.quiz_questions
+            ):
+
+                user_answer = answers[idx]
+
+                if user_answer == q["answer"]:
+                    score += 2
+
+                review.append({
+
+                    "question":
+                    q["question"],
+
+                    "user_answer":
+                    user_answer,
+
+                    "correct_answer":
+                    q["answer"],
+
+                    "explanation":
+                    q["explanation"]
+                })
+
+            total = len(
+                st.session_state.quiz_questions
+            ) * 2
+
+            percentage = (
+                score / total
+            ) * 100
+
+            st.success(
+                f"🏆 Score: {score}/{total}"
+            )
+
+            st.info(
+                f"📊 Percentage: {percentage:.2f}%"
+            )
+
+            st.markdown("---")
+
+            st.subheader(
+                "📖 Answer Review"
+            )
+
+            for item in review:
+
+                st.write(
+                    f"❓ {item['question']}"
+                )
+
+                st.success(
+                    f"Your Answer: {item['user_answer']}"
+                )
+
+                st.info(
+                    f"Correct Answer: {item['correct_answer']}"
+                )
+
+                st.warning(
+                    f"Reason: {item['explanation']}"
+                )
+
+                st.markdown("---")
+
+            quiz_record = {
+
+                "category": "Quiz",
+
+                "timestamp":
+                datetime.now().strftime(
+                    "%d-%m-%Y %H:%M"
+                ),
+
+                "topic": topic,
+
+                "difficulty": difficulty,
+
+                "score":
+                f"{score}/{total}",
+
+                "questions":
+                review
+            }
+
+            save_to_history(
+                "Quiz",
+                quiz_record
+            )
+
+            st.success(
+                "✅ Quiz saved to History"
+            )
 
 # ==================================================
 # ACCESSIBILITY SUPPORT
