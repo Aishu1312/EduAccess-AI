@@ -984,274 +984,224 @@ elif feature == "🚀 AI Career Mentor":
 
 elif feature == "📜 History":
 
-st.header(translate_text("📜 Your Learning History"))
+    st.header(translate_text("📜 Your Learning History"))
 
-history = load_history()
+    history = load_history()
 
-if not history:
+    if not history:
 
-    st.info(
-        translate_text(
-            "No history available yet."
-        )
-    )
-
-else:
-
-    st.success(
-        translate_text(
-            f"Total Records: {len(history)}"
-        )
-    )
-
-    st.markdown("---")
-
-    categories = ["All"]
-
-    for item in history:
-
-        if item.get("category") not in categories:
-
-            categories.append(
-                item.get("category")
+        st.info(
+            translate_text(
+                "No history available yet."
             )
-
-    selected_category = st.selectbox(
-        translate_text("📂 Filter by Category"),
-        categories
-    )
-
-    if selected_category == "All":
-
-        filtered_history = history
+        )
 
     else:
 
-        filtered_history = [
-
-            h for h in history
-
-            if h.get("category")
-            == selected_category
-        ]
-
-    st.markdown("---")
-
-    for record in reversed(filtered_history):
-
-        category = record.get(
-            "category",
-            "Unknown"
+        st.success(
+            translate_text(
+                f"Total Records: {len(history)}"
+            )
         )
 
-        timestamp = record.get(
-            "timestamp",
-            ""
+        st.markdown("---")
+
+        categories = ["All"]
+
+        for item in history:
+
+            if item.get("category") not in categories:
+
+                categories.append(
+                    item.get("category")
+                )
+
+        selected_category = st.selectbox(
+            translate_text("📂 Filter by Category"),
+            categories
         )
 
-        with st.expander(
-            f"📌 {category} | {timestamp}"
-        ):
+        if selected_category == "All":
 
-            # -----------------------
-            # QUIZ HISTORY
-            # -----------------------
+            filtered_history = history
 
-            if category == "Quiz":
+        else:
 
-                st.subheader("❓ Quiz Details")
+            filtered_history = [
 
-                st.write(
-                    f"📘 Topic: "
-                    f"{record.get('topic','N/A')}"
-                )
+                h for h in history
 
-                st.write(
-                    f"🏆 Score: "
-                    f"{record.get('score','N/A')}"
-                )
+                if h.get("category")
+                == selected_category
+            ]
 
-                questions = record.get(
-                    "questions",
-                    []
-                )
+        st.markdown("---")
 
-                for idx, q in enumerate(
-                    questions,
-                    start=1
-                ):
+        for record in reversed(filtered_history):
 
-                    st.markdown("---")
+            category = record.get(
+                "category",
+                "Unknown"
+            )
 
-                    st.markdown(
-                        f"### Q{idx}"
+            timestamp = record.get(
+                "timestamp",
+                ""
+            )
+
+            with st.expander(
+                f"📌 {category} | {timestamp}"
+            ):
+
+                # -----------------------
+                # QUIZ HISTORY
+                # -----------------------
+
+                if category == "Quiz":
+
+                    st.subheader("❓ Quiz Details")
+
+                    st.write(
+                        f"📘 Topic: "
+                        f"{record.get('topic','N/A')}"
                     )
 
                     st.write(
-                        q.get(
+                        f"🏆 Score: "
+                        f"{record.get('score','N/A')}"
+                    )
+
+                    questions = record.get(
+                        "questions",
+                        []
+                    )
+
+                    for idx, q in enumerate(
+                        questions,
+                        start=1
+                    ):
+
+                        st.markdown("---")
+
+                        st.markdown(
+                            f"### Q{idx}"
+                        )
+
+                        st.write(
+                            q.get(
+                                "question",
+                                ""
+                            )
+                        )
+
+                        st.success(
+                            f"Your Answer: "
+                            f"{q.get('user_answer','')}"
+                        )
+
+                        st.info(
+                            f"Correct Answer: "
+                            f"{q.get('correct_answer','')}"
+                        )
+
+                        st.warning(
+                            f"Reason: "
+                            f"{q.get('explanation','')}"
+                        )
+
+                # -----------------------
+                # SUMMARY HISTORY
+                # -----------------------
+
+                elif category == "Summary":
+
+                    st.subheader(
+                        "🧠 Notes Summary"
+                    )
+
+                    st.write(
+                        record.get(
+                            "summary",
+                            ""
+                        )
+                    )
+
+                # -----------------------
+                # SPEECH HISTORY
+                # -----------------------
+
+                elif category == "Speech":
+
+                    st.subheader(
+                        "🎤 Speech Interaction"
+                    )
+
+                    st.markdown(
+                        "### 📝 Question"
+                    )
+
+                    st.info(
+                        record.get(
                             "question",
                             ""
                         )
                     )
 
+                    st.markdown(
+                        "### 🤖 Answer"
+                    )
+
                     st.success(
-                        f"Your Answer: "
-                        f"{q.get('user_answer','')}"
+                        record.get(
+                            "answer",
+                            ""
+                        )
                     )
 
-                    st.info(
-                        f"Correct Answer: "
-                        f"{q.get('correct_answer','')}"
+                # -----------------------
+                # DEFAULT
+                # -----------------------
+
+                else:
+
+                    st.write(
+                        record.get(
+                            "content",
+                            ""
+                        )
                     )
 
-                    st.warning(
-                        f"Reason: "
-                        f"{q.get('explanation','')}"
+        st.markdown("---")
+
+        if st.button(
+            translate_text(
+                "🗑️ Clear All History"
+            )
+        ):
+
+            try:
+
+                if os.path.exists(
+                    HISTORY_FILE
+                ):
+
+                    os.remove(
+                        HISTORY_FILE
                     )
-
-            # -----------------------
-            # SUMMARY HISTORY
-            # -----------------------
-
-            elif category == "Summary":
-
-                st.subheader(
-                    "🧠 Notes Summary"
-                )
-
-                st.write(
-                    record.get(
-                        "summary",
-                        ""
-                    )
-                )
-
-            # -----------------------
-            # SPEECH HISTORY
-            # -----------------------
-
-            elif category == "Speech":
-
-                st.subheader(
-                    "🎤 Speech Interaction"
-                )
-
-                st.markdown(
-                    "### 📝 Question"
-                )
-
-                st.info(
-                    record.get(
-                        "question",
-                        ""
-                    )
-                )
-
-                st.markdown(
-                    "### 🤖 Answer"
-                )
 
                 st.success(
-                    record.get(
-                        "answer",
-                        ""
+                    translate_text(
+                        "History Cleared Successfully"
                     )
                 )
 
-            # -----------------------
-            # DEFAULT
-            # -----------------------
+                st.rerun()
 
-            else:
+            except Exception as e:
 
-                st.write(
-                    record.get(
-                        "content",
-                        ""
-                    )
+                st.error(
+                    f"Error: {e}"
                 )
-
-    st.markdown("---")
-
-if st.button("💾 Save Quiz"):
-
-```
-quiz_record = {
-
-    "category": "Quiz",
-
-    "timestamp":
-    datetime.now().strftime(
-        "%d-%m-%Y %H:%M"
-    ),
-
-    "topic": topic,
-
-    "score":
-    f"{st.session_state.quiz_score}/{total}",
-
-    "questions": []
-}
-
-for idx, q in enumerate(
-    st.session_state.quiz_data
-):
-
-    quiz_record["questions"].append({
-
-        "question":
-        q["question"],
-
-        "user_answer":
-        st.session_state.user_answers.get(
-            idx,
-            "Not Attempted"
-        ),
-
-        "correct_answer":
-        q["answer"],
-
-        "explanation":
-        q["explanation"]
-    })
-
-save_history(
-    quiz_record
-)
-
-st.success(
-    "✅ Quiz Saved Successfully"
-)
-
-    if st.button(
-        translate_text(
-            "🗑️ Clear All History"
-        )
-    ):
-
-        try:
-
-            if os.path.exists(
-                HISTORY_FILE
-            ):
-
-                os.remove(
-                    HISTORY_FILE
-                )
-
-            st.success(
-                translate_text(
-                    "History Cleared Successfully"
-                )
-            )
-
-            st.rerun()
-
-        except Exception as e:
-
-            st.error(
-                f"Error: {e}"
-            )
 
 
 # ==================================================
