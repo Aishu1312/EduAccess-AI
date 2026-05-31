@@ -182,8 +182,7 @@ FEATURES = {
 
 feature = st.sidebar.selectbox(
     "Choose Feature",
-    list(FEATURES.keys()),
-    format_func=lambda x: FEATURES[x]
+    list(FEATURES.keys())
 )
 
 # ==========================================
