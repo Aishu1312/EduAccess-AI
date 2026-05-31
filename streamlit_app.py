@@ -518,6 +518,20 @@ elif feature == "❓ AI Quiz Generator":
 
     st.header("❓ AI Adaptive Quiz Generator")
 
+    # --------------------------------------
+    # SESSION STATE
+    # --------------------------------------
+
+    if "quiz_generated" not in st.session_state:
+        st.session_state.quiz_generated = False
+
+    if "quiz_questions" not in st.session_state:
+        st.session_state.quiz_questions = []
+
+    # --------------------------------------
+    # INPUTS
+    # --------------------------------------
+
     topic = st.text_input(
         "📘 Enter Subject"
     )
@@ -533,17 +547,21 @@ elif feature == "❓ AI Quiz Generator":
 
     num_questions = st.slider(
         "📊 Number of Questions",
-        1,
-        20,
-        5
+        5,
+        30,
+        10
     )
+
+    # --------------------------------------
+    # GENERATE QUIZ
+    # --------------------------------------
 
     if st.button("🚀 Generate Quiz"):
 
         if topic.strip() == "":
 
             st.warning(
-                "Please enter a topic."
+                "Please enter a subject."
             )
 
         else:
@@ -558,11 +576,11 @@ elif feature == "❓ AI Quiz Generator":
 
             st.session_state.quiz_generated = True
 
-    if (
-        "quiz_generated" in st.session_state
-        and
-        st.session_state.quiz_generated
-    ):
+    # --------------------------------------
+    # DISPLAY QUIZ
+    # --------------------------------------
+
+    if st.session_state.quiz_generated:
 
         answers = {}
 
@@ -573,7 +591,7 @@ elif feature == "❓ AI Quiz Generator":
         ):
 
             st.subheader(
-                f"Question {idx+1}"
+                f"Question {idx + 1}"
             )
 
             st.write(
@@ -583,22 +601,42 @@ elif feature == "❓ AI Quiz Generator":
             answers[idx] = st.radio(
                 "Choose Answer",
                 q["options"],
-                key=f"q_{idx}"
+                key=f"quiz_{idx}"
             )
+
+        # ----------------------------------
+        # SUBMIT QUIZ
+        # ----------------------------------
 
         if st.button("✅ Submit Quiz"):
 
             score = 0
 
-            st.markdown("---")
+            review = []
 
             for idx, q in enumerate(
                 st.session_state.quiz_questions
             ):
 
-                if answers[idx] == q["answer"]:
+                user_answer = answers[idx]
 
+                if user_answer == q["answer"]:
                     score += 2
+
+                review.append({
+
+                    "question":
+                    q["question"],
+
+                    "user_answer":
+                    user_answer,
+
+                    "correct_answer":
+                    q["answer"],
+
+                    "explanation":
+                    q["explanation"]
+                })
 
             total = (
                 len(
@@ -606,9 +644,37 @@ elif feature == "❓ AI Quiz Generator":
                 ) * 2
             )
 
+            percentage = (
+                score / total
+            ) * 100
+
             st.success(
                 f"🏆 Score: {score}/{total}"
             )
+
+            st.info(
+                f"📊 Percentage: {percentage:.2f}%"
+            )
+
+            if percentage >= 80:
+
+                st.balloons()
+
+                st.success(
+                    "🌟 Excellent Performance!"
+                )
+
+            elif percentage >= 50:
+
+                st.warning(
+                    "👍 Good Job. Keep Practicing."
+                )
+
+            else:
+
+                st.error(
+                    "📚 Needs Improvement."
+                )
 
             st.markdown("---")
 
@@ -616,23 +682,86 @@ elif feature == "❓ AI Quiz Generator":
                 "📖 Answer Review"
             )
 
-            for idx, q in enumerate(
-                st.session_state.quiz_questions
+            for idx, item in enumerate(
+                review,
+                start=1
             ):
 
+                st.markdown(
+                    f"### Q{idx}"
+                )
+
                 st.write(
-                    f"Q{idx+1}: {q['question']}"
+                    item["question"]
+                )
+
+                st.success(
+                    f"Your Answer: {item['user_answer']}"
                 )
 
                 st.info(
-                    f"Correct Answer: {q['answer']}"
+                    f"Correct Answer: {item['correct_answer']}"
                 )
 
                 st.warning(
-                    f"Reason: {q['explanation']}"
+                    f"Reason: {item['explanation']}"
                 )
 
                 st.markdown("---")
+
+            # ----------------------------------
+            # SAVE TO HISTORY
+            # ----------------------------------
+
+            quiz_record = {
+
+                "category": "Quiz",
+
+                "timestamp":
+                datetime.now().strftime(
+                    "%d-%m-%Y %H:%M"
+                ),
+
+                "topic":
+                topic,
+
+                "difficulty":
+                difficulty,
+
+                "score":
+                f"{score}/{total}",
+
+                "questions":
+                review
+            }
+
+            save_history(
+                quiz_record
+            )
+
+            st.success(
+                "✅ Quiz Saved to History"
+            )
+
+        # ----------------------------------
+        # GENERATE NEW QUIZ
+        # ----------------------------------
+
+        st.markdown("---")
+
+        if st.button(
+            "🔄 Generate New Quiz"
+        ):
+
+            st.session_state.quiz_questions = (
+                generate_questions(
+                    topic,
+                    difficulty,
+                    num_questions
+                )
+            )
+
+            st.rerun()
 
 # ==================================================
 # ACCESSIBILITY SUPPORT
