@@ -153,31 +153,31 @@ high_contrast = st.sidebar.checkbox(
 
 FEATURES = {
 
-    "🏠 Home": tr("🏠 Home"),
+    "🏠 Home": "🏠 Home",
 
     "🧠 AI Notes Summarizer":
-    tr("🧠 AI Notes Summarizer"),
+    "🧠 AI Notes Summarizer",
 
     "🎤 Speech-to-Text":
-    tr("🎤 Speech-to-Text"),
+    "🎤 Speech-to-Text",
 
     "📖 Dyslexia-Friendly Reading":
-    tr("📖 Dyslexia-Friendly Reading"),
+    "📖 Dyslexia-Friendly Reading",
 
     "❓ AI Quiz Generator":
-    tr("❓ AI Quiz Generator"),
+    "❓ AI Quiz Generator",
 
     "♿ Accessibility Support":
-    tr("♿ Accessibility Support"),
+    "♿ Accessibility Support",
 
     "🧠 AI Personalized Learning":
-    tr("🧠 AI Personalized Learning"),
+    "🧠 AI Personalized Learning",
 
     "😊 Emotion-Aware Learning":
-    tr("😊 Emotion-Aware Learning"),
+    "😊 Emotion-Aware Learning",
 
     "🚀 AI Career Mentor":
-    tr("🚀 AI Career Mentor")
+    "🚀 AI Career Mentor"
 }
 
 feature = st.sidebar.selectbox(
