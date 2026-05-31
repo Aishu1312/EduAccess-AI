@@ -295,6 +295,32 @@ if feature == "🏠 Home":
     with c3:
         st.metric(translate_text("🚀 AI Modules"), "5")
 
+    st.markdown("---")
+
+    st.header("🎯 Why EduAccess AI?")
+
+    st.success("""
+✅ Helps students learn faster and smarter
+
+✅ Supports 15+ languages for inclusive learning
+
+✅ AI-powered Notes Summarization
+
+✅ Speech-to-Text with Voice Assistance
+
+✅ Dyslexia-Friendly Reading Support
+
+✅ Adaptive Quiz Generation
+
+✅ Personalized Learning Recommendations
+
+✅ Emotion-Aware Learning Guidance
+
+✅ AI Career Mentorship and Roadmaps
+
+✅ Accessibility-focused educational ecosystem
+""")
+
 # ==================================================
 # AI NOTES SUMMARIZER
 # ==================================================
