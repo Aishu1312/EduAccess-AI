@@ -997,16 +997,6 @@ elif feature == "📜 History":
 
         st.markdown("---")
 
-        history_json = json.dumps(history, ensure_ascii=False, indent=2)
-        st.download_button(
-            label=translate_text("⬇️ Download History as JSON"),
-            data=history_json,
-            file_name="eduaccess_history.json",
-            mime="application/json"
-        )
-
-        st.markdown("---")
-
         CATEGORY_OPTIONS = [translate_text("All")] + list(
             dict.fromkeys(h["category"] for h in history)
         )
