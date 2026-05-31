@@ -295,64 +295,88 @@ for key, value in defaults.items():
 
 if feature == "🏠 Home":
 
-   st.title(
-    tr("🚀 EduAccess AI")
-)
-    st.subheader(tr("AI-Powered Accessibility Platform for Students"))
-   st.success(
-    tr("Inclusive AI Learning Ecosystem")
-)
+    st.title(
+        tr("🚀 EduAccess AI")
+    )
+
+    st.subheader(
+        tr("AI-Powered Accessibility Platform for Students")
+    )
+
+    st.success(
+        tr("Inclusive AI Learning Ecosystem")
+    )
 
     st.markdown("---")
 
-    st.header(
-    "🌟 Core Features"
-)
+    st.header("🌟 Core Features")
 
     col1, col2 = st.columns(2)
 
     with col1:
+
         st.markdown(f"""
         <div class="feature-card"
         style="background:linear-gradient(135deg,#2563eb,#1e3a8a);">
-       <h2>{tr("🧠 AI Notes Summarizer")}</h2>
 
-<p>
-{tr("Generate concise AI-powered summaries from notes and PDFs.")}
-</p>
+        <h2>{tr("🧠 AI Notes Summarizer")}</h2>
+
+        <p>
+        {tr("Generate concise AI-powered summaries from notes and PDFs.")}
+        </p>
+
         </div>
         """, unsafe_allow_html=True)
 
         st.markdown(f"""
         <div class="feature-card"
         style="background:linear-gradient(135deg,#16a34a,#166534);">
-        <h2>🎤 {translate_text("Speech-to-Text")}</h2>
-        <p>{translate_text("Convert spoken language into text with multilingual support.")}</p>
+
+        <h2>{tr("🎤 Speech-to-Text")}</h2>
+
+        <p>
+        {tr("Convert spoken language into text with multilingual support.")}
+        </p>
+
         </div>
         """, unsafe_allow_html=True)
 
     with col2:
+
         st.markdown(f"""
         <div class="feature-card"
         style="background:linear-gradient(135deg,#f59e0b,#b45309);">
-        <h2>📖 {translate_text("Dyslexia-Friendly Reading")}</h2>
-        <p>{translate_text("Accessible reading mode with improved readability.")}</p>
+
+        <h2>{tr("📖 Dyslexia-Friendly Reading")}</h2>
+
+        <p>
+        {tr("Accessible reading mode with improved readability.")}
+        </p>
+
         </div>
         """, unsafe_allow_html=True)
 
         st.markdown(f"""
         <div class="feature-card"
         style="background:linear-gradient(135deg,#dc2626,#7f1d1d);">
-        <h2>❓ {translate_text("AI Quiz Generator")}</h2>
-        <p>{translate_text("Adaptive quizzes with Easy, Medium and Hard levels.")}</p>
+
+        <h2>{tr("❓ AI Quiz Generator")}</h2>
+
+        <p>
+        {tr("Adaptive quizzes with Easy, Medium and Hard levels.")}
+        </p>
+
         </div>
         """, unsafe_allow_html=True)
 
     st.markdown("---")
 
-    st.header(translate_text("🚀 Advanced AI Features"))
+    st.header(
+        tr("🚀 Advanced AI Features")
+    )
 
     advanced_features = [
+
         "🧠 AI Personalized Learning",
         "😊 Emotion-Aware Learning",
         "🚀 AI Career Mentor",
@@ -361,28 +385,30 @@ if feature == "🏠 Home":
     ]
 
     for item in advanced_features:
-        st.info(translate_text(item))
+        st.info(tr(item))
 
     st.markdown("---")
 
     c1, c2, c3 = st.columns(3)
 
     with c1:
-        st.metric(translate_text("🌍 Languages"), "15+")
+        st.metric(tr("🌍 Languages"), "15+")
 
     with c2:
-        st.metric(translate_text("⚙️ Features"), "5+")
+        st.metric(tr("⚙️ Features"), "5+")
 
     with c3:
-        st.metric(translate_text("🚀 AI Modules"), "5")
+        st.metric(tr("🚀 AI Modules"), "5")
 
     st.markdown("---")
 
-   st.header(
-    tr("🎯 Why EduAccess AI?")
-)
+    st.header(
+        tr("🎯 Why EduAccess AI?")
+    )
 
-    st.success("""
+    st.success(
+        tr(
+            """
 ✅ Helps students learn faster and smarter
 
 ✅ Supports 15+ languages for inclusive learning
@@ -402,8 +428,9 @@ if feature == "🏠 Home":
 ✅ AI Career Mentorship and Roadmaps
 
 ✅ Accessibility-focused educational ecosystem
-""")
-
+"""
+        )
+    )
 # ==================================================
 # AI NOTES SUMMARIZER
 # ==================================================
