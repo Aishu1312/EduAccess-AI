@@ -619,195 +619,101 @@ elif feature == "📖 Dyslexia-Friendly Reading":
         )
         st.success(translate_text("Reading mode activated."))
 
-# ==================================================
-# QUIZ GENERATOR
-# ==================================================
+# ==========================================
+# QUIZ QUESTION GENERATOR
+# ==========================================
 
-elif feature == "❓ AI Quiz Generator":
+def generate_questions(topic, difficulty, count):
 
-    st.header("❓ AI Adaptive Quiz Generator")
+    question_bank = {
 
-    SUBJECTS = [
+        "Python": [
+            {
+                "question": "Which keyword is used to define a function in Python?",
+                "options": ["def", "func", "function", "create"],
+                "answer": "def",
+                "explanation": "Python functions are created using the def keyword."
+            },
+            {
+                "question": "Which data type is mutable?",
+                "options": ["Tuple", "String", "List", "Integer"],
+                "answer": "List",
+                "explanation": "Lists can be modified after creation."
+            },
+            {
+                "question": "What is the output of len('Python')?",
+                "options": ["5", "6", "7", "8"],
+                "answer": "6",
+                "explanation": "Python contains 6 characters."
+            }
+        ],
 
-        "Python",
-        "AI",
-        "Machine Learning",
-        "DBMS",
-        "Data Science",
-        "Cyber Security",
-        "Operating System",
-        "Computer Networks",
-        "Java",
-        "C++",
-        "Fundamentals of Management",
-        "Fundamentals of Economics",
-        "Human Resource Management",
-        "Indian Knowledge System",
-        "Software Design with UML",
-        "Discrete Mathematics",
-        "Statistical Methods & Modelling",
-        "Software Engineering",
-        "Cloud Computing",
-        "Big Data Analytics",
-        "Data Mining",
-        "Business Intelligence",
-        "Blockchain",
-        "IoT",
-        "Digital Marketing",
-        "Finance",
-        "Accounting",
-        "Marketing",
-        "Physics",
-        "Chemistry",
-        "Biology",
-        "Mathematics",
-        "English",
-        "History",
-        "Geography",
-        "Political Science"
-    ]
+        "AI": [
+            {
+                "question": "What does AI stand for?",
+                "options": [
+                    "Artificial Intelligence",
+                    "Artificial Integration",
+                    "Automated Internet",
+                    "Auto Intelligence"
+                ],
+                "answer": "Artificial Intelligence",
+                "explanation": "AI stands for Artificial Intelligence."
+            },
+            {
+                "question": "Which branch allows computers to learn from data?",
+                "options": [
+                    "Machine Learning",
+                    "Networking",
+                    "Compiler Design",
+                    "Operating System"
+                ],
+                "answer": "Machine Learning",
+                "explanation": "Machine Learning enables systems to learn from data."
+            }
+        ],
 
-    topic = st.selectbox(
-        "📘 Select Subject",
-        SUBJECTS
-    )
-
-    difficulty = st.selectbox(
-        "🎯 Difficulty",
-        [
-            "Beginner",
-            "Intermediate",
-            "Advanced"
+        "Mathematics": [
+            {
+                "question": "What is the derivative of x²?",
+                "options": ["2x", "x", "x²", "2"],
+                "answer": "2x",
+                "explanation": "The derivative of x² is 2x."
+            },
+            {
+                "question": "What is √144?",
+                "options": ["10", "11", "12", "14"],
+                "answer": "12",
+                "explanation": "12 × 12 = 144."
+            }
         ]
-    )
+    }
 
-    num_questions = st.slider(
-        "📊 Number of Questions",
-        1,
-        30,
-        10
-    )
+    if topic not in question_bank:
+        question_bank[topic] = [
+            {
+                "question": f"What is the primary purpose of {topic}?",
+                "options": [
+                    f"Understanding {topic}",
+                    "Sports",
+                    "Cooking",
+                    "Gaming"
+                ],
+                "answer": f"Understanding {topic}",
+                "explanation": f"{topic} focuses on learning concepts."
+            }
+        ]
 
-    if "quiz_generated" not in st.session_state:
+    pool = question_bank[topic]
 
-        st.session_state.quiz_generated = False
+    questions = []
 
-    if "quiz_questions" not in st.session_state:
+    while len(questions) < count:
+        questions.extend(pool)
 
-        st.session_state.quiz_questions = []
+    random.shuffle(questions)
 
-    if st.button("🚀 Generate Quiz"):
-
-        st.session_state.quiz_questions = (
-            generate_questions(
-                topic,
-                difficulty,
-                num_questions
-            )
-        )
-
-        st.session_state.quiz_generated = True
-
-    if st.session_state.quiz_generated:
-
-        answers = {}
-
-        st.markdown("---")
-
-        for idx, q in enumerate(
-            st.session_state.quiz_questions
-        ):
-
-            st.subheader(
-                f"Question {idx+1}"
-            )
-
-            st.write(
-                q["question"]
-            )
-
-            answers[idx] = st.radio(
-                "Choose Answer",
-                q["options"],
-                key=f"q_{idx}"
-            )
-
-        if st.button("✅ Submit Quiz"):
-
-            score = 0
-
-            review = []
-
-            for idx, q in enumerate(
-                st.session_state.quiz_questions
-            ):
-
-                user_answer = answers[idx]
-
-                if user_answer == q["answer"]:
-
-                    score += 2
-
-                review.append({
-
-                    "question":
-                    q["question"],
-
-                    "user_answer":
-                    user_answer,
-
-                    "correct_answer":
-                    q["answer"],
-
-                    "explanation":
-                    q["explanation"]
-                })
-
-            total = (
-                len(
-                    st.session_state.quiz_questions
-                ) * 2
-            )
-
-            percentage = (
-                score / total
-            ) * 100
-
-            st.success(
-                f"🏆 Score: {score}/{total}"
-            )
-
-            st.info(
-                f"📊 Percentage: {percentage:.2f}%"
-            )
-
-            st.markdown("---")
-
-            st.subheader(
-                "📖 Answer Review"
-            )
-
-            for item in review:
-
-                st.write(
-                    f"❓ {item['question']}"
-                )
-
-                st.success(
-                    f"Your Answer: {item['user_answer']}"
-                )
-
-                st.info(
-                    f"Correct Answer: {item['correct_answer']}"
-                )
-
-                st.warning(
-                    f"Reason: {item['explanation']}"
-                )
-
-                st.markdown("---")
-
-            st.session_state.quiz_generated = False
+    return questions[:count]
 
 # ==================================================
 # ACCESSIBILITY SUPPORT
