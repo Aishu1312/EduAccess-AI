@@ -510,416 +510,330 @@ elif feature == "📖 Dyslexia-Friendly Reading":
         )
         st.success(translate_text("Reading mode activated."))
 
-# ==================================================
-# QUIZ GENERATOR
-# ==================================================
+# ==========================================
+# ADVANCED QUESTION GENERATOR
+# ==========================================
 
-elif feature == "❓ AI Quiz Generator":
-
-    st.header(translate_text("❓ AI Adaptive Quiz Generator"))
-
-    SUBJECTS = [
-
-        "Python",
-        "AI",
-        "Machine Learning",
-        "DBMS",
-        "Data Science",
-        "Cyber Security",
-        "Operating System",
-        "Computer Networks",
-        "Java",
-        "C++",
-        "Discrete Mathematics",
-        "Statistical Methods & Modelling",
-        "Mathematics"
-    ]
-
-    topic = st.selectbox(
-        translate_text("📘 Select Subject"),
-        SUBJECTS
-    )
-
-    difficulty = st.selectbox(
-        translate_text("🎯 Difficulty"),
-        [
-            "Beginner",
-            "Intermediate",
-            "Advanced"
-        ]
-    )
-
-    num_questions = st.slider(
-        translate_text("📊 Number of Questions"),
-        1,
-        20,
-        5
-    )
+def generate_questions(
+    topic,
+    difficulty,
+    count
+):
 
     QUESTION_BANK = {
 
         "Python": [
 
             {
-                "question":
-                "Which keyword defines a function in Python?",
-
-                "options":
-                ["def", "func", "define", "function"],
-
-                "answer":
-                "def",
-
-                "difficulty":
-                "Beginner",
-
-                "explanation":
-                "The def keyword is used to define functions."
-            },
-
-            {
-                "question":
-                "Which data structure stores key-value pairs?",
-
-                "options":
-                ["List", "Dictionary", "Tuple", "Set"],
-
-                "answer":
-                "Dictionary",
-
-                "difficulty":
-                "Intermediate",
-
-                "explanation":
-                "Dictionary stores data in key-value pairs."
-            },
-
-            {
-                "question":
-                "What does asyncio provide?",
-
-                "options":
-                [
-                    "Asynchronous Programming",
-                    "Database",
-                    "GUI",
-                    "Compiler"
+                "question": "Which data type is mutable in Python?",
+                "options": [
+                    "Tuple",
+                    "String",
+                    "List",
+                    "Integer"
                 ],
+                "answer": "List",
+                "explanation": "Lists can be modified after creation."
+            },
 
-                "answer":
-                "Asynchronous Programming",
+            {
+                "question": "What is the output of len('Python')?",
+                "options": [
+                    "5",
+                    "6",
+                    "7",
+                    "8"
+                ],
+                "answer": "6",
+                "explanation": "Python contains 6 characters."
+            },
 
-                "difficulty":
-                "Advanced",
+            {
+                "question": "Which keyword is used to define a function?",
+                "options": [
+                    "func",
+                    "define",
+                    "def",
+                    "function"
+                ],
+                "answer": "def",
+                "explanation": "Functions are created using def."
+            },
 
-                "explanation":
-                "asyncio supports asynchronous programming."
+            {
+                "question": "Which collection stores key-value pairs?",
+                "options": [
+                    "Tuple",
+                    "Set",
+                    "Dictionary",
+                    "List"
+                ],
+                "answer": "Dictionary",
+                "explanation": "Dictionary stores data as key-value pairs."
+            },
+
+            {
+                "question": "Which symbol is used for comments?",
+                "options": [
+                    "#",
+                    "//",
+                    "/*",
+                    "--"
+                ],
+                "answer": "#",
+                "explanation": "Python comments begin with #."
             }
         ],
 
         "AI": [
 
             {
-                "question":
-                "What does AI stand for?",
-
-                "options":
-                [
+                "question": "What does AI stand for?",
+                "options": [
                     "Artificial Intelligence",
-                    "Automatic Internet",
+                    "Automated Internet",
                     "Artificial Integration",
-                    "Automated Information"
+                    "Auto Intelligence"
                 ],
-
-                "answer":
-                "Artificial Intelligence",
-
-                "difficulty":
-                "Beginner",
-
-                "explanation":
-                "AI stands for Artificial Intelligence."
+                "answer": "Artificial Intelligence",
+                "explanation": "AI means Artificial Intelligence."
             },
 
             {
-                "question":
-                "Which branch of AI focuses on learning from data?",
-
-                "options":
-                [
-                    "Machine Learning",
+                "question": "Which field allows machines to learn from data?",
+                "options": [
                     "Networking",
+                    "Machine Learning",
                     "Compiler Design",
-                    "Cloud Computing"
+                    "Cloud Storage"
                 ],
+                "answer": "Machine Learning",
+                "explanation": "Machine Learning is a branch of AI."
+            },
 
-                "answer":
-                "Machine Learning",
+            {
+                "question": "ChatGPT belongs to which AI domain?",
+                "options": [
+                    "Networking",
+                    "NLP",
+                    "Cyber Security",
+                    "DBMS"
+                ],
+                "answer": "NLP",
+                "explanation": "ChatGPT is based on Natural Language Processing."
+            },
 
-                "difficulty":
-                "Intermediate",
+            {
+                "question": "Which is an AI application?",
+                "options": [
+                    "Self Driving Cars",
+                    "Keyboard",
+                    "Monitor",
+                    "Mouse"
+                ],
+                "answer": "Self Driving Cars",
+                "explanation": "Autonomous vehicles use AI."
+            },
 
-                "explanation":
-                "Machine Learning enables systems to learn from data."
+            {
+                "question": "Which company developed ChatGPT?",
+                "options": [
+                    "Google",
+                    "Microsoft",
+                    "OpenAI",
+                    "IBM"
+                ],
+                "answer": "OpenAI",
+                "explanation": "ChatGPT was developed by OpenAI."
             }
         ],
 
-        "DBMS": [
+        "Machine Learning": [
 
             {
-                "question":
-                "What does DBMS stand for?",
-
-                "options":
-                [
-                    "Database Management System",
-                    "Data Binary Management",
-                    "Database Machine System",
-                    "Data Backup Management"
+                "question": "Which algorithm is used for classification?",
+                "options": [
+                    "Logistic Regression",
+                    "K-Means",
+                    "Apriori",
+                    "PCA"
                 ],
-
-                "answer":
-                "Database Management System",
-
-                "difficulty":
-                "Beginner",
-
-                "explanation":
-                "DBMS manages databases."
+                "answer": "Logistic Regression",
+                "explanation": "Logistic Regression is used for classification."
             },
 
             {
-                "question":
-                "Which SQL command retrieves data?",
-
-                "options":
-                [
-                    "SELECT",
-                    "UPDATE",
-                    "INSERT",
-                    "DELETE"
+                "question": "K-Means belongs to?",
+                "options": [
+                    "Classification",
+                    "Regression",
+                    "Clustering",
+                    "NLP"
                 ],
+                "answer": "Clustering",
+                "explanation": "K-Means is a clustering algorithm."
+            },
 
-                "answer":
-                "SELECT",
+            {
+                "question": "What is overfitting?",
+                "options": [
+                    "Memorizing training data",
+                    "No training",
+                    "No testing",
+                    "Data cleaning"
+                ],
+                "answer": "Memorizing training data",
+                "explanation": "Overfitting occurs when a model memorizes data."
+            },
 
-                "difficulty":
-                "Intermediate",
+            {
+                "question": "Which is supervised learning?",
+                "options": [
+                    "Linear Regression",
+                    "K-Means",
+                    "PCA",
+                    "Apriori"
+                ],
+                "answer": "Linear Regression",
+                "explanation": "Linear Regression is supervised learning."
+            },
 
-                "explanation":
-                "SELECT retrieves records from tables."
+            {
+                "question": "Dataset split usually contains?",
+                "options": [
+                    "Train and Test",
+                    "CPU and GPU",
+                    "Rows and Columns",
+                    "Input and Output"
+                ],
+                "answer": "Train and Test",
+                "explanation": "Models are trained and evaluated using train-test split."
             }
         ],
 
         "Mathematics": [
 
             {
-                "question":
-                "What is 20% of 150?",
-
-                "options":
-                ["25", "30", "35", "40"],
-
-                "answer":
-                "30",
-
-                "difficulty":
-                "Beginner",
-
-                "explanation":
-                "20% × 150 = 30."
+                "question": "What is the derivative of x²?",
+                "options": [
+                    "x",
+                    "2x",
+                    "x²",
+                    "2"
+                ],
+                "answer": "2x",
+                "explanation": "The derivative of x² is 2x."
             },
 
             {
-                "question":
-                "Derivative of x²?",
+                "question": "What is 15% of 200?",
+                "options": [
+                    "20",
+                    "25",
+                    "30",
+                    "35"
+                ],
+                "answer": "30",
+                "explanation": "15% × 200 = 30."
+            },
 
-                "options":
-                ["x", "2x", "x²", "2"],
+            {
+                "question": "How many degrees are in a triangle?",
+                "options": [
+                    "90",
+                    "180",
+                    "270",
+                    "360"
+                ],
+                "answer": "180",
+                "explanation": "Sum of angles in a triangle is 180°."
+            },
 
-                "answer":
-                "2x",
+            {
+                "question": "Which branch studies probability?",
+                "options": [
+                    "Statistics",
+                    "Algebra",
+                    "Geometry",
+                    "Calculus"
+                ],
+                "answer": "Statistics",
+                "explanation": "Probability is part of Statistics."
+            },
 
-                "difficulty":
-                "Intermediate",
-
-                "explanation":
-                "d(x²)/dx = 2x."
+            {
+                "question": "What is √144?",
+                "options": [
+                    "10",
+                    "11",
+                    "12",
+                    "14"
+                ],
+                "answer": "12",
+                "explanation": "12 × 12 = 144."
             }
         ]
     }
 
-    if st.button(
-        translate_text("🚀 Generate Quiz")
-    ):
+    # ----------------------------------
+    # GENERIC SUBJECT SUPPORT
+    # ----------------------------------
 
-        pool = QUESTION_BANK.get(
-            topic,
-            []
-        )
+    if topic not in QUESTION_BANK:
 
-        filtered = [
+        QUESTION_BANK[topic] = [
 
-            q for q in pool
+            {
+                "question":
+                f"What is the primary purpose of {topic}?",
 
-            if q["difficulty"]
-            == difficulty
+                "options": [
+                    f"Understanding {topic}",
+                    "Cooking",
+                    "Sports",
+                    "Gaming"
+                ],
+
+                "answer":
+                f"Understanding {topic}",
+
+                "explanation":
+                f"{topic} focuses on learning its concepts."
+            },
+
+            {
+                "question":
+                f"Which improves skills in {topic}?",
+
+                "options": [
+                    "Practice",
+                    "Ignoring",
+                    "Skipping",
+                    "Guessing"
+                ],
+
+                "answer":
+                "Practice",
+
+                "explanation":
+                "Practice improves understanding."
+            }
         ]
 
-        if len(filtered) == 0:
+    pool = QUESTION_BANK[topic].copy()
 
-            st.warning(
-                "No questions available."
-            )
+    random.shuffle(pool)
 
-        else:
+    if count > len(pool):
 
-            random.shuffle(filtered)
+        count = len(pool)
 
-            selected = []
+    selected_questions = random.sample(
+        pool,
+        count
+    )
 
-            while len(selected) < num_questions:
-
-                selected.extend(filtered)
-
-            random.shuffle(selected)
-
-            st.session_state.quiz_questions = (
-                selected[:num_questions]
-            )
-
-            st.session_state.quiz_generated = True
-
-    if (
-        "quiz_generated"
-        in st.session_state
-        and st.session_state.quiz_generated
-    ):
-
-        st.markdown("---")
-
-        answers = {}
-
-        for idx, q in enumerate(
-            st.session_state.quiz_questions
-        ):
-
-            st.subheader(
-                f"Q{idx+1}"
-            )
-
-            st.write(
-                q["question"]
-            )
-
-            answers[idx] = st.radio(
-
-                "Choose Answer",
-
-                q["options"],
-
-                key=f"quiz_{idx}"
-            )
-
-        if st.button("✅ Submit Quiz"):
-
-            score = 0
-
-            review = []
-
-            for idx, q in enumerate(
-                st.session_state.quiz_questions
-            ):
-
-                user_answer = answers[idx]
-
-                if (
-                    user_answer
-                    == q["answer"]
-                ):
-                    score += 2
-
-                review.append({
-
-                    "question":
-                    q["question"],
-
-                    "user_answer":
-                    user_answer,
-
-                    "correct_answer":
-                    q["answer"],
-
-                    "explanation":
-                    q["explanation"]
-                })
-
-            total = (
-                len(
-                    st.session_state.quiz_questions
-                ) * 2
-            )
-
-            st.success(
-                f"🏆 Score: {score}/{total}"
-            )
-
-            st.markdown("---")
-
-            st.subheader("📖 Answer Review")
-
-            for item in review:
-
-                st.write(
-                    f"❓ {item['question']}"
-                )
-
-                st.success(
-                    f"Your Answer: {item['user_answer']}"
-                )
-
-                st.info(
-                    f"Correct Answer: {item['correct_answer']}"
-                )
-
-                st.warning(
-                    f"Reason: {item['explanation']}"
-                )
-
-                st.markdown("---")
-
-            quiz_record = {
-
-                "category":
-                "Quiz",
-
-                "timestamp":
-                datetime.now().strftime(
-                    "%d-%m-%Y %H:%M"
-                ),
-
-                "topic":
-                topic,
-
-                "difficulty":
-                difficulty,
-
-                "score":
-                f"{score}/{total}",
-
-                "questions":
-                review
-            }
-
-            save_history(
-                quiz_record
-            )
-
-            st.success(
-                "✅ Quiz Saved To History"
-            )
-
-            st.session_state.quiz_generated = False
+    return selected_questions
 
 
 # ==================================================
