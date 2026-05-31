@@ -623,32 +623,53 @@ elif feature == "📖 Dyslexia-Friendly Reading":
 # QUIZ QUESTION GENERATOR
 # ==========================================
 
+import random
+
 def generate_questions(topic, difficulty, count):
 
     question_bank = {
 
         "Python": [
+
             {
                 "question": "Which keyword is used to define a function in Python?",
                 "options": ["def", "func", "function", "create"],
                 "answer": "def",
                 "explanation": "Python functions are created using the def keyword."
             },
+
             {
                 "question": "Which data type is mutable?",
                 "options": ["Tuple", "String", "List", "Integer"],
                 "answer": "List",
                 "explanation": "Lists can be modified after creation."
             },
+
             {
                 "question": "What is the output of len('Python')?",
                 "options": ["5", "6", "7", "8"],
                 "answer": "6",
                 "explanation": "Python contains 6 characters."
+            },
+
+            {
+                "question": "Which symbol is used for comments?",
+                "options": ["#", "//", "/*", "--"],
+                "answer": "#",
+                "explanation": "Python comments begin with #."
+            },
+
+            {
+                "question": "Which collection stores key-value pairs?",
+                "options": ["List", "Tuple", "Dictionary", "Set"],
+                "answer": "Dictionary",
+                "explanation": "Dictionary stores data as key-value pairs."
             }
+
         ],
 
         "AI": [
+
             {
                 "question": "What does AI stand for?",
                 "options": [
@@ -660,6 +681,7 @@ def generate_questions(topic, difficulty, count):
                 "answer": "Artificial Intelligence",
                 "explanation": "AI stands for Artificial Intelligence."
             },
+
             {
                 "question": "Which branch allows computers to learn from data?",
                 "options": [
@@ -670,50 +692,96 @@ def generate_questions(topic, difficulty, count):
                 ],
                 "answer": "Machine Learning",
                 "explanation": "Machine Learning enables systems to learn from data."
+            },
+
+            {
+                "question": "ChatGPT belongs to which field?",
+                "options": [
+                    "NLP",
+                    "Networking",
+                    "Cyber Security",
+                    "DBMS"
+                ],
+                "answer": "NLP",
+                "explanation": "ChatGPT uses Natural Language Processing."
             }
+
         ],
 
         "Mathematics": [
+
             {
                 "question": "What is the derivative of x²?",
                 "options": ["2x", "x", "x²", "2"],
                 "answer": "2x",
                 "explanation": "The derivative of x² is 2x."
             },
+
             {
                 "question": "What is √144?",
                 "options": ["10", "11", "12", "14"],
                 "answer": "12",
                 "explanation": "12 × 12 = 144."
+            },
+
+            {
+                "question": "How many degrees are in a triangle?",
+                "options": ["90", "180", "270", "360"],
+                "answer": "180",
+                "explanation": "The sum of angles in a triangle is 180°."
             }
+
         ]
     }
 
+    # ---------------------------------
+    # GENERIC SUBJECT SUPPORT
+    # ---------------------------------
+
     if topic not in question_bank:
-        question_bank[topic] = [
-            {
-                "question": f"What is the primary purpose of {topic}?",
-                "options": [
-                    f"Understanding {topic}",
-                    "Sports",
-                    "Cooking",
-                    "Gaming"
-                ],
-                "answer": f"Understanding {topic}",
-                "explanation": f"{topic} focuses on learning concepts."
-            }
-        ]
 
-    pool = question_bank[topic]
+        generated_questions = []
 
-    questions = []
+        for i in range(max(count, 5)):
 
-    while len(questions) < count:
-        questions.extend(pool)
+            generated_questions.append({
 
-    random.shuffle(questions)
+                "question":
+                f"Which statement about {topic} is correct? ({i+1})",
 
-    return questions[:count]
+                "options": random.sample(
+                    [
+                        f"{topic} helps solve real-world problems",
+                        f"{topic} is a sport",
+                        f"{topic} is a food item",
+                        f"{topic} is a movie genre"
+                    ],
+                    4
+                ),
+
+                "answer":
+                f"{topic} helps solve real-world problems",
+
+                "explanation":
+                f"{topic} is an academic/professional subject."
+            })
+
+        return generated_questions[:count]
+
+    # ---------------------------------
+    # DIFFICULTY FILTER
+    # ---------------------------------
+
+    pool = question_bank[topic].copy()
+
+    random.shuffle(pool)
+
+    # If user asks more than available
+    if count > len(pool):
+        count = len(pool)
+
+    return pool[:count]
+    
 
 # ==================================================
 # ACCESSIBILITY SUPPORT
