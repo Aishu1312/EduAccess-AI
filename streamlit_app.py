@@ -216,6 +216,26 @@ def translate_text(text):
     except Exception:
         return text
 
+# ==========================================
+# SAFE TRANSLATION
+# ==========================================
+
+DO_NOT_TRANSLATE = [
+
+    "Choose Language",
+    "Font Size",
+    "Dark Contrast Mode",
+    "Core Features"
+]
+
+def tr(text):
+
+    if text in DO_NOT_TRANSLATE:
+
+        return text
+
+    return translate_text(text)
+
 # --------------------------------------------------
 # HIGH CONTRAST MODE
 # --------------------------------------------------
@@ -256,7 +276,9 @@ for key, value in defaults.items():
 
 if feature == "🏠 Home":
 
-    st.title(translate_text("🚀 EduAccess AI"))
+   st.title(
+    tr("🚀 EduAccess AI")
+)
     st.subheader(translate_text("AI-Powered Accessibility Platform for Students"))
     st.success(translate_text("Inclusive AI Learning Ecosystem"))
 
@@ -330,7 +352,9 @@ if feature == "🏠 Home":
 
     st.markdown("---")
 
-    st.header("🎯 Why EduAccess AI?")
+   st.header(
+    tr("🎯 Why EduAccess AI?")
+)
 
     st.success("""
 ✅ Helps students learn faster and smarter
