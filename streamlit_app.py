@@ -549,98 +549,195 @@ elif feature == "❓ AI Quiz Generator":
     # QUESTION GENERATOR
     # ------------------------------
 
-    def generate_questions(topic, difficulty, count):
+   def generate_questions(topic, difficulty, count):
 
-        questions = []
+    topic = topic.strip()
 
-        templates = [
+    question_bank = {
 
-            (
-                f"What is the primary purpose of {topic}?",
-                [
-                    f"Core functionality of {topic}",
-                    "Database storage",
-                    "Operating system",
-                    "Network cable"
+        "Python": {
+
+            "Beginner": [
+                {
+                    "question": "Which keyword is used to define a function in Python?",
+                    "options": ["func", "define", "def", "function"],
+                    "answer": "def",
+                    "explanation": "The 'def' keyword is used to define functions in Python."
+                },
+                {
+                    "question": "Which data type stores multiple values?",
+                    "options": ["List", "Integer", "Float", "Boolean"],
+                    "answer": "List",
+                    "explanation": "A list can store multiple values in a single variable."
+                }
+            ],
+
+            "Intermediate": [
+                {
+                    "question": "What is the output of len([1,2,3,4])?",
+                    "options": ["3", "4", "5", "Error"],
+                    "answer": "4",
+                    "explanation": "len() returns the number of elements."
+                },
+                {
+                    "question": "Which data structure stores key-value pairs?",
+                    "options": ["Tuple", "Dictionary", "Set", "List"],
+                    "answer": "Dictionary",
+                    "explanation": "Dictionaries store data as key-value pairs."
+                }
+            ],
+
+            "Advanced": [
+                {
+                    "question": "Which Python feature supports asynchronous programming?",
+                    "options": ["asyncio", "tkinter", "numpy", "pandas"],
+                    "answer": "asyncio",
+                    "explanation": "asyncio enables asynchronous programming."
+                },
+                {
+                    "question": "What is a generator in Python?",
+                    "options": [
+                        "Special iterator",
+                        "Compiler",
+                        "Database",
+                        "Framework"
+                    ],
+                    "answer": "Special iterator",
+                    "explanation": "Generators produce values lazily using yield."
+                }
+            ]
+        },
+
+        "Mathematics": {
+
+            "Beginner": [
+                {
+                    "question": "What is 15% of 200?",
+                    "options": ["20", "25", "30", "35"],
+                    "answer": "30",
+                    "explanation": "15% × 200 = 30."
+                }
+            ],
+
+            "Intermediate": [
+                {
+                    "question": "What is the derivative of x²?",
+                    "options": ["x", "2x", "x²", "2"],
+                    "answer": "2x",
+                    "explanation": "Using differentiation rules d(x²)/dx = 2x."
+                }
+            ],
+
+            "Advanced": [
+                {
+                    "question": "What is the determinant of [[1,2],[3,4]]?",
+                    "options": ["-2", "2", "4", "1"],
+                    "answer": "-2",
+                    "explanation": "(1×4) − (2×3) = -2."
+                }
+            ]
+        },
+
+        "DBMS": {
+
+            "Beginner": [
+                {
+                    "question": "What does DBMS stand for?",
+                    "options": [
+                        "Database Management System",
+                        "Data Binary Management",
+                        "Digital Base Management",
+                        "Database Machine System"
+                    ],
+                    "answer": "Database Management System",
+                    "explanation": "DBMS stands for Database Management System."
+                }
+            ],
+
+            "Intermediate": [
+                {
+                    "question": "Which SQL command retrieves data?",
+                    "options": [
+                        "SELECT",
+                        "INSERT",
+                        "DELETE",
+                        "UPDATE"
+                    ],
+                    "answer": "SELECT",
+                    "explanation": "SELECT retrieves records from a database."
+                }
+            ],
+
+            "Advanced": [
+                {
+                    "question": "Which normalization removes transitive dependency?",
+                    "options": [
+                        "1NF",
+                        "2NF",
+                        "3NF",
+                        "BCNF"
+                    ],
+                    "answer": "3NF",
+                    "explanation": "3NF removes transitive dependency."
+                }
+            ]
+        }
+    }
+
+    if topic in question_bank:
+
+        pool = question_bank[topic][difficulty]
+
+    else:
+
+        pool = []
+
+        for i in range(100):
+
+            pool.append({
+
+                "question":
+                f"{topic}: Question {i+1} ({difficulty})",
+
+                "options": [
+
+                    f"{topic} Concept A",
+
+                    f"{topic} Concept B",
+
+                    f"{topic} Concept C",
+
+                    f"{topic} Concept D"
                 ],
-                f"Core functionality of {topic}",
-                f"{topic} is mainly used for its core functionality."
-            ),
 
-            (
-                f"Which statement about {topic} is correct?",
-                [
-                    f"{topic} helps solve practical problems",
-                    f"{topic} is a hardware device",
-                    f"{topic} is a browser",
-                    f"{topic} is a keyboard"
-                ],
-                f"{topic} helps solve practical problems",
-                f"{topic} is widely used in real-world applications."
-            ),
+                "answer":
+                f"{topic} Concept A",
 
-            (
-                f"Which skill is most important for learning {topic}?",
-                [
-                    "Practice",
-                    "Ignoring concepts",
-                    "Skipping exercises",
-                    "Memorization only"
-                ],
-                "Practice",
-                "Regular practice improves understanding."
-            ),
+                "explanation":
+                f"{topic} Concept A is the correct answer for this generated question."
+            })
 
-            (
-                f"Which industry commonly uses {topic}?",
-                [
-                    "Technology",
-                    "None",
-                    "Only sports",
-                    "Only agriculture"
-                ],
-                "Technology",
-                f"{topic} is heavily used in technology industries."
-            ),
+    unique_pool = []
 
-            (
-                f"What improves expertise in {topic}?",
-                [
-                    "Projects",
-                    "Avoiding practice",
-                    "Guesswork",
-                    "No revision"
-                ],
-                "Projects",
-                "Projects provide hands-on experience."
-            )
-        ]
+    seen = set()
 
-        while len(questions) < count:
+    for q in pool:
 
-            for template in templates:
+        if q["question"] not in seen:
 
-                q, options, answer, explanation = template
+            unique_pool.append(q)
 
-                questions.append({
+            seen.add(q["question"])
 
-                    "question":
-                    f"{q} ({len(questions)+1})",
+    while len(unique_pool) < count:
 
-                    "options":
-                    random.sample(options, len(options)),
+        random.shuffle(pool)
 
-                    "answer":
-                    answer,
+        unique_pool.extend(pool)
 
-                    "explanation":
-                    explanation
-                })
+    random.shuffle(unique_pool)
 
-                if len(questions) >= count:
-                    break
-
-        return questions[:count]
+    return unique_pool[:count]
 
     # ------------------------------
     # GENERATE QUIZ
