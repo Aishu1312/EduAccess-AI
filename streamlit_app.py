@@ -518,22 +518,49 @@ elif feature == "❓ AI Quiz Generator":
 
     st.header("❓ AI Adaptive Quiz Generator")
 
-    # --------------------------------------
-    # SESSION STATE
-    # --------------------------------------
+    SUBJECTS = [
 
-    if "quiz_generated" not in st.session_state:
-        st.session_state.quiz_generated = False
+        "Python",
+        "AI",
+        "Machine Learning",
+        "DBMS",
+        "Data Science",
+        "Cyber Security",
+        "Operating System",
+        "Computer Networks",
+        "Java",
+        "C++",
+        "Fundamentals of Management",
+        "Fundamentals of Economics",
+        "Human Resource Management",
+        "Indian Knowledge System",
+        "Software Design with UML",
+        "Discrete Mathematics",
+        "Statistical Methods & Modelling",
+        "Software Engineering",
+        "Cloud Computing",
+        "Big Data Analytics",
+        "Data Mining",
+        "Business Intelligence",
+        "Blockchain",
+        "IoT",
+        "Digital Marketing",
+        "Finance",
+        "Accounting",
+        "Marketing",
+        "Physics",
+        "Chemistry",
+        "Biology",
+        "Mathematics",
+        "English",
+        "History",
+        "Geography",
+        "Political Science"
+    ]
 
-    if "quiz_questions" not in st.session_state:
-        st.session_state.quiz_questions = []
-
-    # --------------------------------------
-    # INPUTS
-    # --------------------------------------
-
-    topic = st.text_input(
-        "📘 Enter Subject"
+    topic = st.selectbox(
+        "📘 Select Subject",
+        SUBJECTS
     )
 
     difficulty = st.selectbox(
@@ -547,38 +574,30 @@ elif feature == "❓ AI Quiz Generator":
 
     num_questions = st.slider(
         "📊 Number of Questions",
-        5,
+        1,
         30,
         10
     )
 
-    # --------------------------------------
-    # GENERATE QUIZ
-    # --------------------------------------
+    if "quiz_generated" not in st.session_state:
+
+        st.session_state.quiz_generated = False
+
+    if "quiz_questions" not in st.session_state:
+
+        st.session_state.quiz_questions = []
 
     if st.button("🚀 Generate Quiz"):
 
-        if topic.strip() == "":
-
-            st.warning(
-                "Please enter a subject."
+        st.session_state.quiz_questions = (
+            generate_questions(
+                topic,
+                difficulty,
+                num_questions
             )
+        )
 
-        else:
-
-            st.session_state.quiz_questions = (
-                generate_questions(
-                    topic,
-                    difficulty,
-                    num_questions
-                )
-            )
-
-            st.session_state.quiz_generated = True
-
-    # --------------------------------------
-    # DISPLAY QUIZ
-    # --------------------------------------
+        st.session_state.quiz_generated = True
 
     if st.session_state.quiz_generated:
 
@@ -591,7 +610,7 @@ elif feature == "❓ AI Quiz Generator":
         ):
 
             st.subheader(
-                f"Question {idx + 1}"
+                f"Question {idx+1}"
             )
 
             st.write(
@@ -601,12 +620,8 @@ elif feature == "❓ AI Quiz Generator":
             answers[idx] = st.radio(
                 "Choose Answer",
                 q["options"],
-                key=f"quiz_{idx}"
+                key=f"q_{idx}"
             )
-
-        # ----------------------------------
-        # SUBMIT QUIZ
-        # ----------------------------------
 
         if st.button("✅ Submit Quiz"):
 
@@ -621,6 +636,7 @@ elif feature == "❓ AI Quiz Generator":
                 user_answer = answers[idx]
 
                 if user_answer == q["answer"]:
+
                     score += 2
 
                 review.append({
@@ -656,43 +672,16 @@ elif feature == "❓ AI Quiz Generator":
                 f"📊 Percentage: {percentage:.2f}%"
             )
 
-            if percentage >= 80:
-
-                st.balloons()
-
-                st.success(
-                    "🌟 Excellent Performance!"
-                )
-
-            elif percentage >= 50:
-
-                st.warning(
-                    "👍 Good Job. Keep Practicing."
-                )
-
-            else:
-
-                st.error(
-                    "📚 Needs Improvement."
-                )
-
             st.markdown("---")
 
             st.subheader(
                 "📖 Answer Review"
             )
 
-            for idx, item in enumerate(
-                review,
-                start=1
-            ):
-
-                st.markdown(
-                    f"### Q{idx}"
-                )
+            for item in review:
 
                 st.write(
-                    item["question"]
+                    f"❓ {item['question']}"
                 )
 
                 st.success(
@@ -709,59 +698,7 @@ elif feature == "❓ AI Quiz Generator":
 
                 st.markdown("---")
 
-            # ----------------------------------
-            # SAVE TO HISTORY
-            # ----------------------------------
-
-            quiz_record = {
-
-                "category": "Quiz",
-
-                "timestamp":
-                datetime.now().strftime(
-                    "%d-%m-%Y %H:%M"
-                ),
-
-                "topic":
-                topic,
-
-                "difficulty":
-                difficulty,
-
-                "score":
-                f"{score}/{total}",
-
-                "questions":
-                review
-            }
-
-            save_history(
-                quiz_record
-            )
-
-            st.success(
-                "✅ Quiz Saved to History"
-            )
-
-        # ----------------------------------
-        # GENERATE NEW QUIZ
-        # ----------------------------------
-
-        st.markdown("---")
-
-        if st.button(
-            "🔄 Generate New Quiz"
-        ):
-
-            st.session_state.quiz_questions = (
-                generate_questions(
-                    topic,
-                    difficulty,
-                    num_questions
-                )
-            )
-
-            st.rerun()
+            st.session_state.quiz_generated = False
 
 # ==================================================
 # ACCESSIBILITY SUPPORT
