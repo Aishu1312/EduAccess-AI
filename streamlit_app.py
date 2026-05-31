@@ -151,10 +151,9 @@ high_contrast = st.sidebar.checkbox(
     "🌗 Dark Contrast Mode"
 )
 
-feature = {
+FEATURES = {
 
-    "🏠 Home":
-    tr("🏠 Home"),
+    "🏠 Home": tr("🏠 Home"),
 
     "🧠 AI Notes Summarizer":
     tr("🧠 AI Notes Summarizer"),
@@ -184,7 +183,7 @@ feature = {
 feature = st.sidebar.selectbox(
     "Choose Feature",
     list(FEATURES.keys()),
-    format_func=lambda x: features [x]
+    format_func=lambda x: FEATURES[x]
 )
 
 # ==========================================
