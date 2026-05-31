@@ -510,330 +510,195 @@ elif feature == "📖 Dyslexia-Friendly Reading":
         )
         st.success(translate_text("Reading mode activated."))
 
-# ==========================================
-# ADVANCED QUESTION GENERATOR
-# ==========================================
+# ==================================================
+# QUIZ GENERATOR
+# ==================================================
 
-def generate_questions(
-    topic,
-    difficulty,
-    count
-):
+elif feature == "❓ AI Quiz Generator":
 
-    QUESTION_BANK = {
+    st.header(translate_text("❓ AI Adaptive Quiz Generator"))
 
-        "Python": [
+    SUBJECTS = [
 
-            {
-                "question": "Which data type is mutable in Python?",
-                "options": [
-                    "Tuple",
-                    "String",
-                    "List",
-                    "Integer"
-                ],
-                "answer": "List",
-                "explanation": "Lists can be modified after creation."
-            },
+        "Python",
+        "AI",
+        "Machine Learning",
+        "DBMS",
+        "Data Science",
+        "Cyber Security",
+        "Operating System",
+        "Computer Networks",
+        "Java",
+        "C++",
+        "Fundamentals of Management",
+        "Fundamentals of Economics",
+        "Human Resource Management",
+        "Indian Knowledge System",
+        "Software Design with UML",
+        "Discrete Mathematics",
+        "Statistical Methods & Modelling",
+        "Software Engineering",
+        "Cloud Computing",
+        "Big Data Analytics",
+        "Data Mining",
+        "Business Intelligence",
+        "Blockchain",
+        "IoT",
+        "Digital Marketing",
+        "Finance",
+        "Accounting",
+        "Marketing",
+        "Physics",
+        "Chemistry",
+        "Biology",
+        "Mathematics",
+        "English",
+        "History",
+        "Geography",
+        "Political Science"
+    ]
 
-            {
-                "question": "What is the output of len('Python')?",
-                "options": [
-                    "5",
-                    "6",
-                    "7",
-                    "8"
-                ],
-                "answer": "6",
-                "explanation": "Python contains 6 characters."
-            },
-
-            {
-                "question": "Which keyword is used to define a function?",
-                "options": [
-                    "func",
-                    "define",
-                    "def",
-                    "function"
-                ],
-                "answer": "def",
-                "explanation": "Functions are created using def."
-            },
-
-            {
-                "question": "Which collection stores key-value pairs?",
-                "options": [
-                    "Tuple",
-                    "Set",
-                    "Dictionary",
-                    "List"
-                ],
-                "answer": "Dictionary",
-                "explanation": "Dictionary stores data as key-value pairs."
-            },
-
-            {
-                "question": "Which symbol is used for comments?",
-                "options": [
-                    "#",
-                    "//",
-                    "/*",
-                    "--"
-                ],
-                "answer": "#",
-                "explanation": "Python comments begin with #."
-            }
-        ],
-
-        "AI": [
-
-            {
-                "question": "What does AI stand for?",
-                "options": [
-                    "Artificial Intelligence",
-                    "Automated Internet",
-                    "Artificial Integration",
-                    "Auto Intelligence"
-                ],
-                "answer": "Artificial Intelligence",
-                "explanation": "AI means Artificial Intelligence."
-            },
-
-            {
-                "question": "Which field allows machines to learn from data?",
-                "options": [
-                    "Networking",
-                    "Machine Learning",
-                    "Compiler Design",
-                    "Cloud Storage"
-                ],
-                "answer": "Machine Learning",
-                "explanation": "Machine Learning is a branch of AI."
-            },
-
-            {
-                "question": "ChatGPT belongs to which AI domain?",
-                "options": [
-                    "Networking",
-                    "NLP",
-                    "Cyber Security",
-                    "DBMS"
-                ],
-                "answer": "NLP",
-                "explanation": "ChatGPT is based on Natural Language Processing."
-            },
-
-            {
-                "question": "Which is an AI application?",
-                "options": [
-                    "Self Driving Cars",
-                    "Keyboard",
-                    "Monitor",
-                    "Mouse"
-                ],
-                "answer": "Self Driving Cars",
-                "explanation": "Autonomous vehicles use AI."
-            },
-
-            {
-                "question": "Which company developed ChatGPT?",
-                "options": [
-                    "Google",
-                    "Microsoft",
-                    "OpenAI",
-                    "IBM"
-                ],
-                "answer": "OpenAI",
-                "explanation": "ChatGPT was developed by OpenAI."
-            }
-        ],
-
-        "Machine Learning": [
-
-            {
-                "question": "Which algorithm is used for classification?",
-                "options": [
-                    "Logistic Regression",
-                    "K-Means",
-                    "Apriori",
-                    "PCA"
-                ],
-                "answer": "Logistic Regression",
-                "explanation": "Logistic Regression is used for classification."
-            },
-
-            {
-                "question": "K-Means belongs to?",
-                "options": [
-                    "Classification",
-                    "Regression",
-                    "Clustering",
-                    "NLP"
-                ],
-                "answer": "Clustering",
-                "explanation": "K-Means is a clustering algorithm."
-            },
-
-            {
-                "question": "What is overfitting?",
-                "options": [
-                    "Memorizing training data",
-                    "No training",
-                    "No testing",
-                    "Data cleaning"
-                ],
-                "answer": "Memorizing training data",
-                "explanation": "Overfitting occurs when a model memorizes data."
-            },
-
-            {
-                "question": "Which is supervised learning?",
-                "options": [
-                    "Linear Regression",
-                    "K-Means",
-                    "PCA",
-                    "Apriori"
-                ],
-                "answer": "Linear Regression",
-                "explanation": "Linear Regression is supervised learning."
-            },
-
-            {
-                "question": "Dataset split usually contains?",
-                "options": [
-                    "Train and Test",
-                    "CPU and GPU",
-                    "Rows and Columns",
-                    "Input and Output"
-                ],
-                "answer": "Train and Test",
-                "explanation": "Models are trained and evaluated using train-test split."
-            }
-        ],
-
-        "Mathematics": [
-
-            {
-                "question": "What is the derivative of x²?",
-                "options": [
-                    "x",
-                    "2x",
-                    "x²",
-                    "2"
-                ],
-                "answer": "2x",
-                "explanation": "The derivative of x² is 2x."
-            },
-
-            {
-                "question": "What is 15% of 200?",
-                "options": [
-                    "20",
-                    "25",
-                    "30",
-                    "35"
-                ],
-                "answer": "30",
-                "explanation": "15% × 200 = 30."
-            },
-
-            {
-                "question": "How many degrees are in a triangle?",
-                "options": [
-                    "90",
-                    "180",
-                    "270",
-                    "360"
-                ],
-                "answer": "180",
-                "explanation": "Sum of angles in a triangle is 180°."
-            },
-
-            {
-                "question": "Which branch studies probability?",
-                "options": [
-                    "Statistics",
-                    "Algebra",
-                    "Geometry",
-                    "Calculus"
-                ],
-                "answer": "Statistics",
-                "explanation": "Probability is part of Statistics."
-            },
-
-            {
-                "question": "What is √144?",
-                "options": [
-                    "10",
-                    "11",
-                    "12",
-                    "14"
-                ],
-                "answer": "12",
-                "explanation": "12 × 12 = 144."
-            }
-        ]
-    }
-
-    # ----------------------------------
-    # GENERIC SUBJECT SUPPORT
-    # ----------------------------------
-
-    if topic not in QUESTION_BANK:
-
-        QUESTION_BANK[topic] = [
-
-            {
-                "question":
-                f"What is the primary purpose of {topic}?",
-
-                "options": [
-                    f"Understanding {topic}",
-                    "Cooking",
-                    "Sports",
-                    "Gaming"
-                ],
-
-                "answer":
-                f"Understanding {topic}",
-
-                "explanation":
-                f"{topic} focuses on learning its concepts."
-            },
-
-            {
-                "question":
-                f"Which improves skills in {topic}?",
-
-                "options": [
-                    "Practice",
-                    "Ignoring",
-                    "Skipping",
-                    "Guessing"
-                ],
-
-                "answer":
-                "Practice",
-
-                "explanation":
-                "Practice improves understanding."
-            }
-        ]
-
-    pool = QUESTION_BANK[topic].copy()
-
-    random.shuffle(pool)
-
-    if count > len(pool):
-
-        count = len(pool)
-
-    selected_questions = random.sample(
-        pool,
-        count
+    topic = st.selectbox(
+        translate_text("📘 Select Subject"),
+        SUBJECTS
     )
 
-    return selected_questions
+    difficulty = st.selectbox(
+        translate_text("🎯 Difficulty"),
+        [
+            "Beginner",
+            "Intermediate",
+            "Advanced"
+        ]
+    )
+
+    num_questions = st.slider(
+        translate_text("📊 Number of Questions"),
+        1,
+        50,
+        10
+    )
+
+    if st.button(
+        translate_text("🚀 Generate Quiz")
+    ):
+
+        st.session_state.quiz_questions = generate_questions(
+            topic,
+            difficulty,
+            num_questions
+        )
+
+        st.session_state.quiz_generated = True
+
+    if st.session_state.get("quiz_generated", False):
+
+        answers = {}
+
+        st.markdown("---")
+
+        for idx, q in enumerate(
+            st.session_state.quiz_questions
+        ):
+
+            st.subheader(
+                f"Q{idx+1}"
+            )
+
+            st.write(
+                translate_text(
+                    q["question"]
+                )
+            )
+
+            answers[idx] = st.radio(
+                translate_text("Choose Answer"),
+                q["options"],
+                key=f"quiz_{idx}"
+            )
+
+        if st.button(
+            translate_text("✅ Submit Quiz")
+        ):
+
+            score = 0
+
+            total = (
+                len(
+                    st.session_state.quiz_questions
+                ) * 2
+            )
+
+            st.markdown("---")
+
+            st.subheader(
+                translate_text(
+                    "📖 Answer Review"
+                )
+            )
+
+            for idx, q in enumerate(
+                st.session_state.quiz_questions
+            ):
+
+                user_answer = answers[idx]
+
+                if user_answer == q["answer"]:
+                    score += 2
+
+                st.write(
+                    f"❓ {q['question']}"
+                )
+
+                st.success(
+                    f"Your Answer: {user_answer}"
+                )
+
+                st.info(
+                    f"Correct Answer: {q['answer']}"
+                )
+
+                st.warning(
+                    f"Reason: {q['explanation']}"
+                )
+
+                st.markdown("---")
+
+            percentage = (
+                score / total
+            ) * 100
+
+            st.success(
+                f"🏆 Score: {score}/{total}"
+            )
+
+            st.info(
+                f"📊 Percentage: {percentage:.2f}%"
+            )
+
+            if percentage >= 80:
+                st.balloons()
+                st.success(
+                    translate_text(
+                        "Excellent Performance!"
+                    )
+                )
+
+            elif percentage >= 50:
+
+                st.warning(
+                    translate_text(
+                        "Good Job. Keep Practicing."
+                    )
+                )
+
+            else:
+
+                st.error(
+                    translate_text(
+                        "Needs Improvement."
+                    )
+                )
 
 
 # ==================================================
@@ -842,19 +707,63 @@ def generate_questions(
 
 elif feature == "♿ Accessibility Support":
 
-    st.header(translate_text("♿ Accessibility Support"))
+    st.header(
+        translate_text(
+            "♿ Accessibility Support"
+        )
+    )
 
-    st.success(translate_text("🌍 Multi-language Support"))
-    st.success(translate_text("🔠 Adjustable Font Size"))
-    st.success(translate_text("🌗 High Contrast Mode"))
-    st.success(translate_text("📖 Dyslexia Reading Mode"))
-    st.success(translate_text("🎤 Speech Assistance"))
+    st.success(
+        translate_text(
+            "🌍 Multi-language Support"
+        )
+    )
+
+    st.success(
+        translate_text(
+            "🔠 Adjustable Font Size"
+        )
+    )
+
+    st.success(
+        translate_text(
+            "🌗 High Contrast Mode"
+        )
+    )
+
+    st.success(
+        translate_text(
+            "📖 Dyslexia Reading Mode"
+        )
+    )
+
+    st.success(
+        translate_text(
+            "🎤 Speech Assistance"
+        )
+    )
 
     st.markdown("---")
 
-    st.info(translate_text(
-        "Use the sidebar to adjust font size, toggle high contrast, and switch language."
-    ))
+    st.info(
+        translate_text(
+            "Use the sidebar to change language, font size and accessibility settings."
+        )
+    )
+
+    st.markdown("---")
+
+    st.subheader(
+        translate_text(
+            "Why Accessibility Matters?"
+        )
+    )
+
+    st.write(
+        translate_text(
+            "Accessibility ensures that every learner, including students with visual, hearing, language or learning difficulties, can access education equally."
+        )
+    )
 
 # ==================================================
 # AI PERSONALIZED LEARNING
