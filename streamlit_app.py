@@ -144,27 +144,47 @@ font_size = st.sidebar.slider(
     "🔠 Font Size",
     16,
     40,
-    22
+    23
 )
 
 high_contrast = st.sidebar.checkbox(
-    "🌗 High Contrast Mode"
+    "🌗 Dark Contrast Mode"
 )
+
+feature = {
+
+    "🏠 Home":
+    tr("🏠 Home"),
+
+    "🧠 AI Notes Summarizer":
+    tr("🧠 AI Notes Summarizer"),
+
+    "🎤 Speech-to-Text":
+    tr("🎤 Speech-to-Text"),
+
+    "📖 Dyslexia-Friendly Reading":
+    tr("📖 Dyslexia-Friendly Reading"),
+
+    "❓ AI Quiz Generator":
+    tr("❓ AI Quiz Generator"),
+
+    "♿ Accessibility Support":
+    tr("♿ Accessibility Support"),
+
+    "🧠 AI Personalized Learning":
+    tr("🧠 AI Personalized Learning"),
+
+    "😊 Emotion-Aware Learning":
+    tr("😊 Emotion-Aware Learning"),
+
+    "🚀 AI Career Mentor":
+    tr("🚀 AI Career Mentor")
+}
 
 feature = st.sidebar.selectbox(
     "Choose Feature",
-    [
-        "🏠 Home",
-        "🧠 AI Notes Summarizer",
-        "🎤 Speech-to-Text",
-        "📖 Dyslexia-Friendly Reading",
-        "❓ AI Quiz Generator",
-        "♿ Accessibility Support",
-        "🧠 AI Personalized Learning",
-        "😊 Emotion-Aware Learning",
-        "🚀 AI Career Mentor",
-        "📜 History"
-    ]
+    list(FEATURES.keys()),
+    format_func=lambda x: features [x]
 )
 
 # ==========================================
@@ -279,12 +299,16 @@ if feature == "🏠 Home":
    st.title(
     tr("🚀 EduAccess AI")
 )
-    st.subheader(translate_text("AI-Powered Accessibility Platform for Students"))
-    st.success(translate_text("Inclusive AI Learning Ecosystem"))
+    st.subheader(tr("AI-Powered Accessibility Platform for Students"))
+   st.success(
+    tr("Inclusive AI Learning Ecosystem")
+)
 
     st.markdown("---")
 
-    st.header(translate_text("🌟 Core Features"))
+    st.header(
+    "🌟 Core Features"
+)
 
     col1, col2 = st.columns(2)
 
@@ -292,8 +316,11 @@ if feature == "🏠 Home":
         st.markdown(f"""
         <div class="feature-card"
         style="background:linear-gradient(135deg,#2563eb,#1e3a8a);">
-        <h2>🧠 {translate_text("AI Notes Summarizer")}</h2>
-        <p>{translate_text("Generate concise AI-powered summaries from notes and PDFs.")}</p>
+       <h2>{tr("🧠 AI Notes Summarizer")}</h2>
+
+<p>
+{tr("Generate concise AI-powered summaries from notes and PDFs.")}
+</p>
         </div>
         """, unsafe_allow_html=True)
 
