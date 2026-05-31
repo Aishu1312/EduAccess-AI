@@ -510,6 +510,7 @@ elif feature == "📖 Dyslexia-Friendly Reading":
         )
         st.success(translate_text("Reading mode activated."))
 
+```python
 # ==================================================
 # QUIZ GENERATOR
 # ==================================================
@@ -518,210 +519,310 @@ elif feature == "❓ AI Quiz Generator":
 
     st.header(translate_text("❓ AI Adaptive Quiz Generator"))
 
-    st.write(translate_text(
-        "Prepare for: Placements, University Exams, GATE, Technical Interviews, Competitive Exams"
-    ))
-
-    TOPIC_OPTIONS = ["Python", "AI", "Machine Learning", "DBMS"]
-    topic_idx = st.selectbox(
-        translate_text("📘 Select Subject"),
-        range(len(TOPIC_OPTIONS)),
-        format_func=lambda i: translate_text(TOPIC_OPTIONS[i])
+    st.write(
+        translate_text(
+            "Generate quizzes for any subject, technology, exam or topic."
+        )
     )
-    topic = TOPIC_OPTIONS[topic_idx]
 
-    DIFFICULTY_OPTIONS = ["Beginner", "Intermediate", "Advanced"]
-    diff_idx = st.selectbox(
+    topic = st.text_input(
+        translate_text("📘 Enter Topic"),
+        placeholder="Python, Excel, Java, DBMS, AI, Power BI, Cybersecurity"
+    )
+
+    difficulty = st.selectbox(
         translate_text("🎯 Difficulty"),
-        range(len(DIFFICULTY_OPTIONS)),
-        format_func=lambda i: translate_text(DIFFICULTY_OPTIONS[i])
+        [
+            "Beginner",
+            "Intermediate",
+            "Advanced"
+        ]
     )
-    difficulty = DIFFICULTY_OPTIONS[diff_idx]
 
     num_questions = st.slider(
         translate_text("📊 Number of Questions"),
-        1, 20, 5
+        1,
+        50,
+        10
     )
 
-    PYTHON_QUESTIONS = [
-        {
-            "question": "What is Python?",
-            "options": ["Programming Language", "Database", "Browser", "OS"],
-            "answer": "Programming Language"
-        },
-        {
-            "question": "Which keyword creates a function?",
-            "options": ["def", "function", "func", "create"],
-            "answer": "def"
-        },
-        {
-            "question": "Which data type is mutable?",
-            "options": ["Tuple", "String", "List", "Integer"],
-            "answer": "List"
-        },
-        {
-            "question": "Which symbol is used for comments?",
-            "options": ["//", "#", "/*", "--"],
-            "answer": "#"
-        },
-        {
-            "question": "Which function prints output?",
-            "options": ["echo()", "show()", "print()", "display()"],
-            "answer": "print()"
-        }
-    ]
+    # ------------------------------
+    # QUESTION GENERATOR
+    # ------------------------------
 
-    AI_QUESTIONS = [
-        {
-            "question": "What does AI stand for?",
-            "options": ["Artificial Intelligence", "Automated Internet", "Artificial Integration", "Auto Intelligence"],
-            "answer": "Artificial Intelligence"
-        },
-        {
-            "question": "Which is a branch of AI?",
-            "options": ["Machine Learning", "Networking", "Compiler Design", "DBMS"],
-            "answer": "Machine Learning"
-        },
-        {
-            "question": "ChatGPT belongs to?",
-            "options": ["NLP", "DBMS", "Operating System", "Networking"],
-            "answer": "NLP"
-        },
-        {
-            "question": "AI is mainly used to?",
-            "options": ["Mimic human intelligence", "Replace internet", "Delete data", "Compile programs"],
-            "answer": "Mimic human intelligence"
-        },
-        {
-            "question": "Which is an AI application?",
-            "options": ["Self Driving Cars", "Keyboard", "Monitor", "Mouse"],
-            "answer": "Self Driving Cars"
-        }
-    ]
+    def generate_questions(topic, difficulty, count):
 
-    ML_QUESTIONS = [
-        {
-            "question": "Which algorithm is used for classification?",
-            "options": ["Logistic Regression", "Linear Regression", "Apriori", "KNN Tree"],
-            "answer": "Logistic Regression"
-        },
-        {
-            "question": "What is overfitting?",
-            "options": ["Model memorizes training data", "Model too simple", "No training", "No testing"],
-            "answer": "Model memorizes training data"
-        },
-        {
-            "question": "Which is supervised learning?",
-            "options": ["Linear Regression", "K-Means", "Apriori", "PCA"],
-            "answer": "Linear Regression"
-        },
-        {
-            "question": "K-Means belongs to?",
-            "options": ["Clustering", "Classification", "Regression", "NLP"],
-            "answer": "Clustering"
-        },
-        {
-            "question": "Dataset split includes?",
-            "options": ["Train Test", "Input Output", "Rows Columns", "CPU GPU"],
-            "answer": "Train Test"
-        }
-    ]
+        questions = []
 
-    DBMS_QUESTIONS = [
-        {
-            "question": "What does DBMS stand for?",
-            "options": ["Database Management System", "Data Binary Management", "Digital Base System", "Database Machine System"],
-            "answer": "Database Management System"
-        },
-        {
-            "question": "Primary key must be?",
-            "options": ["Unique", "Null", "Repeated", "Optional"],
-            "answer": "Unique"
-        },
-        {
-            "question": "SQL stands for?",
-            "options": ["Structured Query Language", "System Query Language", "Simple Query Language", "Sequential Query Language"],
-            "answer": "Structured Query Language"
-        },
-        {
-            "question": "Which command retrieves data?",
-            "options": ["SELECT", "INSERT", "UPDATE", "DELETE"],
-            "answer": "SELECT"
-        },
-        {
-            "question": "Normalization reduces?",
-            "options": ["Redundancy", "Tables", "Rows", "Queries"],
-            "answer": "Redundancy"
-        }
-    ]
+        templates = [
 
-    if topic == "Python":
-        question_pool = PYTHON_QUESTIONS
-    elif topic == "AI":
-        question_pool = AI_QUESTIONS
-    elif topic == "Machine Learning":
-        question_pool = ML_QUESTIONS
-    else:
-        question_pool = DBMS_QUESTIONS
+            (
+                f"What is the primary purpose of {topic}?",
+                [
+                    f"Core functionality of {topic}",
+                    "Database storage",
+                    "Operating system",
+                    "Network cable"
+                ],
+                f"Core functionality of {topic}",
+                f"{topic} is mainly used for its core functionality."
+            ),
 
-    if st.button(translate_text("🚀 Generate Quiz")):
-        available = question_pool.copy()
-        random.shuffle(available)
-        st.session_state.quiz_questions = available[:min(num_questions, len(available))]
-        st.session_state.quiz_generated = True
+            (
+                f"Which statement about {topic} is correct?",
+                [
+                    f"{topic} helps solve practical problems",
+                    f"{topic} is a hardware device",
+                    f"{topic} is a browser",
+                    f"{topic} is a keyboard"
+                ],
+                f"{topic} helps solve practical problems",
+                f"{topic} is widely used in real-world applications."
+            ),
 
-    if st.session_state.quiz_generated and st.session_state.quiz_questions:
+            (
+                f"Which skill is most important for learning {topic}?",
+                [
+                    "Practice",
+                    "Ignoring concepts",
+                    "Skipping exercises",
+                    "Memorization only"
+                ],
+                "Practice",
+                "Regular practice improves understanding."
+            ),
 
-        st.markdown("---")
+            (
+                f"Which industry commonly uses {topic}?",
+                [
+                    "Technology",
+                    "None",
+                    "Only sports",
+                    "Only agriculture"
+                ],
+                "Technology",
+                f"{topic} is heavily used in technology industries."
+            ),
+
+            (
+                f"What improves expertise in {topic}?",
+                [
+                    "Projects",
+                    "Avoiding practice",
+                    "Guesswork",
+                    "No revision"
+                ],
+                "Projects",
+                "Projects provide hands-on experience."
+            )
+        ]
+
+        while len(questions) < count:
+
+            for template in templates:
+
+                q, options, answer, explanation = template
+
+                questions.append({
+
+                    "question":
+                    f"{q} ({len(questions)+1})",
+
+                    "options":
+                    random.sample(options, len(options)),
+
+                    "answer":
+                    answer,
+
+                    "explanation":
+                    explanation
+                })
+
+                if len(questions) >= count:
+                    break
+
+        return questions[:count]
+
+    # ------------------------------
+    # GENERATE QUIZ
+    # ------------------------------
+
+    if st.button(
+        translate_text("🚀 Generate Quiz")
+    ):
+
+        if topic.strip() == "":
+
+            st.warning(
+                translate_text(
+                    "Please enter a topic."
+                )
+            )
+
+        else:
+
+            st.session_state.quiz_questions = (
+                generate_questions(
+                    topic,
+                    difficulty,
+                    num_questions
+                )
+            )
+
+            st.session_state.quiz_generated = True
+
+    # ------------------------------
+    # DISPLAY QUIZ
+    # ------------------------------
+
+    if (
+        "quiz_generated" in st.session_state
+        and st.session_state.quiz_generated
+    ):
 
         answers = {}
 
-        for idx, q in enumerate(st.session_state.quiz_questions):
-            st.subheader(f"{translate_text('Question')} {idx + 1}")
-            st.write(translate_text(q["question"]))
-            translated_options = [translate_text(opt) for opt in q["options"]]
-            answers[idx] = st.radio(
-                translate_text("Choose Answer"),
-                translated_options,
-                key=f"answer_{idx}"
+        st.markdown("---")
+
+        for idx, q in enumerate(
+            st.session_state.quiz_questions
+        ):
+
+            st.subheader(
+                f"Q{idx+1}"
             )
 
-        if st.button(translate_text("✅ Submit Quiz")):
+            st.write(
+                translate_text(
+                    q["question"]
+                )
+            )
+
+            answers[idx] = st.radio(
+
+                translate_text(
+                    "Choose Answer"
+                ),
+
+                q["options"],
+
+                key=f"quiz_{idx}"
+            )
+
+        if st.button(
+            translate_text(
+                "✅ Submit Quiz"
+            )
+        ):
+
             score = 0
 
-            for idx, q in enumerate(st.session_state.quiz_questions):
-                translated_correct = translate_text(q["answer"])
-                if answers[idx] == translated_correct:
+            review = []
+
+            for idx, q in enumerate(
+                st.session_state.quiz_questions
+            ):
+
+                user_answer = answers[idx]
+
+                correct = (
+                    user_answer
+                    == q["answer"]
+                )
+
+                if correct:
                     score += 2
 
-            total = len(st.session_state.quiz_questions) * 2
+                review.append({
 
-            st.success(f"🏆 {translate_text('Score')}: {score}/{total}")
+                    "question":
+                    q["question"],
 
-            percentage = (score / total) * 100
+                    "user_answer":
+                    user_answer,
 
-            st.info(f"📊 {translate_text('Percentage')}: {percentage:.2f}%")
+                    "correct_answer":
+                    q["answer"],
 
-            if percentage >= 80:
-                st.balloons()
-                st.success(translate_text("Excellent Performance!"))
-            elif percentage >= 50:
-                st.warning(translate_text("Good Job. Keep Practicing."))
-            else:
-                st.error(translate_text("Needs Improvement."))
+                    "explanation":
+                    q["explanation"]
+                })
+
+            total = (
+                len(
+                    st.session_state.quiz_questions
+                ) * 2
+            )
+
+            percentage = (
+                score / total
+            ) * 100
+
+            st.success(
+                f"🏆 Score: {score}/{total}"
+            )
+
+            st.info(
+                f"📊 Percentage: {percentage:.2f}%"
+            )
 
             st.markdown("---")
 
-            st.subheader(translate_text("📖 Answer Review"))
+            st.subheader(
+                "📖 Answer Review"
+            )
 
-            for q in st.session_state.quiz_questions:
-                st.write(f"✅ {translate_text(q['question'])}")
-                st.info(f"{translate_text('Correct Answer')}: {translate_text(q['answer'])}")
+            for item in review:
 
-            result_text = f"Topic: {topic} | Difficulty: {difficulty} | Score: {score}/{total} ({percentage:.1f}%)"
-            save_to_history("❓ Quiz Result", result_text)
+                st.write(
+                    f"❓ {item['question']}"
+                )
+
+                st.success(
+                    f"Your Answer: {item['user_answer']}"
+                )
+
+                st.info(
+                    f"Correct Answer: {item['correct_answer']}"
+                )
+
+                st.warning(
+                    f"Reason: {item['explanation']}"
+                )
+
+                st.markdown("---")
+
+            quiz_record = {
+
+                "category": "Quiz",
+
+                "timestamp":
+                datetime.now().strftime(
+                    "%d-%m-%Y %H:%M"
+                ),
+
+                "topic": topic,
+
+                "difficulty": difficulty,
+
+                "score":
+                f"{score}/{total}",
+
+                "questions":
+                review
+            }
+
+            save_history(
+                quiz_record
+            )
+
+            st.success(
+                "✅ Quiz saved to History"
+            )
 
             st.session_state.quiz_generated = False
+```
+
 
 # ==================================================
 # ACCESSIBILITY SUPPORT
