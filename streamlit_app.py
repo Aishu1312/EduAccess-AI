@@ -510,7 +510,6 @@ elif feature == "📖 Dyslexia-Friendly Reading":
         )
         st.success(translate_text("Reading mode activated."))
 
-```python
 # ==================================================
 # QUIZ GENERATOR
 # ==================================================
@@ -821,7 +820,6 @@ elif feature == "❓ AI Quiz Generator":
             )
 
             st.session_state.quiz_generated = False
-```
 
 
 # ==================================================
