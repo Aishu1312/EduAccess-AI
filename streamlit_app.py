@@ -167,6 +167,39 @@ feature = st.sidebar.selectbox(
     ]
 )
 
+# ==========================================
+# GLOBAL FONT SIZE
+# ==========================================
+
+st.markdown(
+    f"""
+    <style>
+
+    html,
+    body,
+    [class*="css"] {{
+        font-size: {font_size}px !important;
+    }}
+
+    p,
+    li,
+    div,
+    span,
+    label,
+    .stMarkdown,
+    .stText,
+    .stRadio,
+    .stSelectbox,
+    .stButton,
+    .stAlert {{
+        font-size: {font_size}px !important;
+    }}
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # --------------------------------------------------
 # TRANSLATION FUNCTION  (defined after selected_language)
 # --------------------------------------------------
