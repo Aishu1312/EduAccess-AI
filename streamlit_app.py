@@ -290,10 +290,10 @@ if feature == "🏠 Home":
         st.metric(translate_text("🌍 Languages"), "15+")
 
     with c2:
-        st.metric(translate_text("⚙️ Features"), "10")
+        st.metric(translate_text("⚙️ Features"), "5+")
 
     with c3:
-        st.metric(translate_text("🚀 AI Modules"), "8")
+        st.metric(translate_text("🚀 AI Modules"), "5")
 
 # ==================================================
 # AI NOTES SUMMARIZER
