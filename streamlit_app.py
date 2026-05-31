@@ -620,56 +620,14 @@ elif feature == "📖 Dyslexia-Friendly Reading":
         st.success(translate_text("Reading mode activated."))
 
 # ==================================================
-# QUIZ QUESTION GENERATOR FUNCTION
-# ==================================================
-
-def generate_questions(topic, difficulty, count):
-
-    questions = []
-
-    for i in range(count):
-
-        question_text = f"{topic} ({difficulty}) Question {i+1}"
-
-        options = [
-
-            f"{topic} Concept A {i+1}",
-            f"{topic} Concept B {i+1}",
-            f"{topic} Concept C {i+1}",
-            f"{topic} Concept D {i+1}"
-        ]
-
-        random.shuffle(options)
-
-        correct_answer = options[0]
-
-        questions.append({
-
-            "question": question_text,
-
-            "options": options,
-
-            "answer": correct_answer,
-
-            "explanation":
-            f"{correct_answer} is the correct answer related to {topic}."
-        })
-
-    return questions
-
-
-# ==================================================
 # QUIZ GENERATOR
 # ==================================================
 
-elif feature == "❓ AI Quiz Generator":
+if feature == "❓ AI Quiz Generator":
 
-    st.header(
-        translate_text("❓ AI Adaptive Quiz Generator")
-    )
+    st.header("❓ AI Adaptive Quiz Generator")
 
     SUBJECTS = [
-
         "Python",
         "AI",
         "Machine Learning",
@@ -709,123 +667,101 @@ elif feature == "❓ AI Quiz Generator":
     ]
 
     topic = st.selectbox(
-
-        translate_text("📘 Select Subject"),
-
+        "📘 Select Subject",
         SUBJECTS
     )
 
     difficulty = st.selectbox(
-
-        translate_text("🎯 Difficulty"),
-
+        "🎯 Difficulty",
         [
-            translate_text("Beginner"),
-            translate_text("Intermediate"),
-            translate_text("Advanced")
+            "Beginner",
+            "Intermediate",
+            "Advanced"
         ]
     )
 
     num_questions = st.slider(
-
-        translate_text("📊 Number of Questions"),
-
+        "📊 Number of Questions",
         1,
         30,
         10
     )
 
-    if st.button(
+    if "quiz_generated" not in st.session_state:
+        st.session_state.quiz_generated = False
 
-        translate_text("🚀 Generate Quiz")
-    ):
+    if "quiz_questions" not in st.session_state:
+        st.session_state.quiz_questions = []
 
-        st.session_state.quiz_questions = (
+    if st.button("🚀 Generate Quiz"):
 
-            generate_questions(
+        questions = []
 
-                topic,
+        for i in range(num_questions):
 
-                difficulty,
+            options = [
+                f"{topic} Concept A {i+1}",
+                f"{topic} Concept B {i+1}",
+                f"{topic} Concept C {i+1}",
+                f"{topic} Concept D {i+1}"
+            ]
 
-                num_questions
-            )
-        )
+            random.shuffle(options)
 
+            questions.append({
+
+                "question":
+                f"{topic} ({difficulty}) Question {i+1}",
+
+                "options":
+                options,
+
+                "answer":
+                options[0],
+
+                "explanation":
+                f"{options[0]} is the correct answer."
+            })
+
+        st.session_state.quiz_questions = questions
         st.session_state.quiz_generated = True
 
-    if (
-
-        "quiz_generated" in st.session_state
-
-        and
-
-        st.session_state.quiz_generated
-    ):
-
-        answers = {}
+    if st.session_state.quiz_generated:
 
         st.markdown("---")
 
-        for idx, q in enumerate(
+        answers = {}
 
+        for idx, q in enumerate(
             st.session_state.quiz_questions
         ):
 
             st.subheader(
-
-                f"{translate_text('Question')} {idx+1}"
+                f"Question {idx + 1}"
             )
 
             st.write(
-
-                translate_text(
-                    q["question"]
-                )
+                q["question"]
             )
 
-            translated_options = [
-
-                translate_text(option)
-
-                for option in q["options"]
-            ]
-
             answers[idx] = st.radio(
-
-                translate_text(
-                    "Choose Answer"
-                ),
-
-                translated_options,
-
+                "Choose Answer",
+                q["options"],
                 key=f"quiz_{idx}"
             )
 
-        if st.button(
-
-            translate_text("✅ Submit Quiz")
-        ):
+        if st.button("✅ Submit Quiz"):
 
             score = 0
-
             review = []
 
             for idx, q in enumerate(
-
                 st.session_state.quiz_questions
             ):
 
                 user_answer = answers[idx]
 
-                original_answer = q["answer"]
-
-                translated_correct = translate_text(
-                    original_answer
-                )
-
-                if user_answer == translated_correct:
-
+                if user_answer == q["answer"]:
                     score += 2
 
                 review.append({
@@ -837,101 +773,59 @@ elif feature == "❓ AI Quiz Generator":
                     user_answer,
 
                     "correct_answer":
-                    original_answer,
+                    q["answer"],
 
                     "explanation":
                     q["explanation"]
                 })
 
             total = (
-
                 len(
                     st.session_state.quiz_questions
                 ) * 2
             )
 
             percentage = (
-
                 score / total
             ) * 100
 
             st.success(
-
-                f"🏆 {translate_text('Score')}: {score}/{total}"
+                f"🏆 Score: {score}/{total}"
             )
 
             st.info(
-
-                f"📊 {translate_text('Percentage')}: {percentage:.2f}%"
+                f"📊 Percentage: {percentage:.2f}%"
             )
 
             st.markdown("---")
 
             st.subheader(
-
-                translate_text(
-                    "📖 Answer Review"
-                )
+                "📖 Answer Review"
             )
 
             for item in review:
 
                 st.write(
-
-                    translate_text(
-                        item["question"]
-                    )
+                    item["question"]
                 )
 
                 st.success(
-
-                    f"{translate_text('Your Answer')}: {item['user_answer']}"
+                    f"Your Answer: {item['user_answer']}"
                 )
 
                 st.info(
-
-                    f"{translate_text('Correct Answer')}: {translate_text(item['correct_answer'])}"
+                    f"Correct Answer: {item['correct_answer']}"
                 )
 
                 st.warning(
-
-                    f"{translate_text('Reason')}: {translate_text(item['explanation'])}"
+                    f"Reason: {item['explanation']}"
                 )
 
                 st.markdown("---")
 
-            quiz_record = {
-
-                "category": "Quiz",
-
-                "timestamp":
-                datetime.now().strftime(
-                    "%d-%m-%Y %H:%M"
-                ),
-
-                "topic": topic,
-
-                "difficulty": difficulty,
-
-                "score":
-                f"{score}/{total}",
-
-                "questions":
-                review
-            }
-
-            save_history(
-                quiz_record
-            )
-
-            st.success(
-
-                translate_text(
-                    "✅ Quiz saved to History"
-                )
-            )
-
             st.session_state.quiz_generated = False
+
+
 # ==================================================
 # ACCESSIBILITY SUPPORT
 # ==================================================
