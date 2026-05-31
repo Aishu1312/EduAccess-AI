@@ -989,40 +989,219 @@ elif feature == "📜 History":
     history = load_history()
 
     if not history:
-        st.info(translate_text(
-            "No history yet. Use the app features and your activity will appear here."
-        ))
+
+        st.info(
+            translate_text(
+                "No history available yet."
+            )
+        )
+
     else:
-        st.success(translate_text(f"Total records: {len(history)}"))
+
+        st.success(
+            translate_text(
+                f"Total Records: {len(history)}"
+            )
+        )
 
         st.markdown("---")
 
-        CATEGORY_OPTIONS = [translate_text("All")] + list(
-            dict.fromkeys(h["category"] for h in history)
-        )
-        selected_cat = st.selectbox(
-            translate_text("Filter by Category"),
-            CATEGORY_OPTIONS
+        categories = ["All"]
+
+        for item in history:
+
+            if item["category"] not in categories:
+
+                categories.append(
+                    item["category"]
+                )
+
+        selected_category = st.selectbox(
+            translate_text(
+                "📂 Filter by Category"
+            ),
+            categories
         )
 
-        filtered = history if selected_cat == translate_text("All") else [
-            h for h in history if h["category"] == selected_cat
-        ]
+        if selected_category == "All":
 
-        for entry in reversed(filtered):
-            with st.expander(f"{entry['category']}  —  {entry['timestamp']}"):
-                st.write(entry["content"])
+            filtered_history = history
+
+        else:
+
+            filtered_history = [
+
+                h for h in history
+
+                if h["category"]
+                == selected_category
+            ]
 
         st.markdown("---")
 
-        if st.button(translate_text("🗑️ Clear All History"), type="secondary"):
+        for record in reversed(
+            filtered_history
+        ):
+
+            category = record.get(
+                "category",
+                "Unknown"
+            )
+
+            timestamp = record.get(
+                "timestamp",
+                ""
+            )
+
+            with st.expander(
+                f"📌 {category} | {timestamp}"
+            ):
+
+                # --------------------------
+                # QUIZ HISTORY
+                # --------------------------
+
+                if category == "Quiz":
+
+                    st.subheader(
+                        "❓ Quiz Details"
+                    )
+
+                    st.write(
+                        f"📘 Topic: "
+                        f"{record.get('topic','N/A')}"
+                    )
+
+                    st.write(
+                        f"🏆 Score: "
+                        f"{record.get('score','N/A')}"
+                    )
+
+                    questions = record.get(
+                        "questions",
+                        []
+                    )
+
+                    for idx, q in enumerate(
+                        questions,
+                        start=1
+                    ):
+
+                        st.markdown("---")
+
+                        st.write(
+                            f"**Q{idx}: "
+                            f"{q['question']}**"
+                        )
+
+                        st.success(
+                            f"Your Answer: "
+                            f"{q['user_answer']}"
+                        )
+
+                        st.info(
+                            f"Correct Answer: "
+                            f"{q['correct_answer']}"
+                        )
+
+                        st.warning(
+                            f"Reason: "
+                            f"{q['explanation']}"
+                        )
+
+                # --------------------------
+                # SUMMARY HISTORY
+                # --------------------------
+
+                elif category == "Summary":
+
+                    st.subheader(
+                        "🧠 Notes Summary"
+                    )
+
+                    st.write(
+                        record.get(
+                            "summary",
+                            ""
+                        )
+                    )
+
+                # --------------------------
+                # SPEECH HISTORY
+                # --------------------------
+
+                elif category == "Speech":
+
+                    st.subheader(
+                        "🎤 Speech Interaction"
+                    )
+
+                    st.write(
+                        "### 📝 Question"
+                    )
+
+                    st.info(
+                        record.get(
+                            "question",
+                            ""
+                        )
+                    )
+
+                    st.write(
+                        "### 🤖 Answer"
+                    )
+
+                    st.success(
+                        record.get(
+                            "answer",
+                            ""
+                        )
+                    )
+
+                # --------------------------
+                # DEFAULT
+                # --------------------------
+
+                else:
+
+                    st.write(
+                        record.get(
+                            "content",
+                            ""
+                        )
+                    )
+
+        st.markdown("---")
+
+        if st.button(
+            translate_text(
+                "🗑️ Clear All History"
+            )
+        ):
+
             try:
-                if os.path.exists(HISTORY_FILE):
-                    os.remove(HISTORY_FILE)
-                st.success(translate_text("History cleared."))
+
+                if os.path.exists(
+                    HISTORY_FILE
+                ):
+
+                    os.remove(
+                        HISTORY_FILE
+                    )
+
+                st.success(
+                    translate_text(
+                        "History Cleared Successfully"
+                    )
+                )
+
                 st.rerun()
+
             except Exception as e:
-                st.error(f"Error: {e}")
+
+                st.error(
+                    f"Error: {e}"
+                )
 
 # ==================================================
 # FOOTER
