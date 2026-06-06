@@ -1021,10 +1021,24 @@ elif feature == "😊 Emotion-Aware Learning":
 ▶️ https://www.youtube.com/results?search_query=study+motivation
 """)
             st.info(translate_text(
-                "Take proper rest. Drink water. Continue tomorrow. Avoid over-studying."
+                recommendation_text = """
+Take short breaks.
+Sleep properly.
+Reduce pressure.
+Practice mindfulness.
+"""
             ))
 
-        save_to_history("😊 Emotion Check", f"Emotion: {emotion}")
+        save_to_history(
+    "😊 Emotion Check",
+    {
+
+        "emotion": emotion,
+
+        "recommendation":
+        recommendation_text
+    }
+)
 
 # ==================================================
 # AI CAREER MENTOR
@@ -1115,7 +1129,16 @@ elif feature == "🚀 AI Career Mentor":
                 "Build real-world projects. Improve GitHub profile. Practice DSA. Learn deployment. Build LinkedIn presence."
             ))
 
-        save_to_history("🚀 Career Query", f"Query: {career_query}")
+        save_to_history(
+    "🚀 Career Query",
+    {
+
+        "query": career_query,
+
+        "career_guidance":
+        generated_guidance
+    }
+)
 
 # ==================================================
 # HISTORY
