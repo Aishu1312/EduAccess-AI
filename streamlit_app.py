@@ -617,206 +617,206 @@ elif feature == "📖 Dyslexia-Friendly Reading":
 
 elif feature == "❓ AI Quiz Generator":
 
-st.header(
-    translate_text(
-        "❓ AI Adaptive Quiz Generator"
-    )
-)
-
-topic = st.text_input(
-    translate_text(
-        "📘 Enter Subject"
-    )
-)
-
-difficulty = st.selectbox(
-    translate_text(
-        "🎯 Difficulty"
-    ),
-    [
-        "Beginner",
-        "Intermediate",
-        "Advanced"
-    ]
-)
-
-num_questions = st.slider(
-    translate_text(
-        "📊 Number of Questions"
-    ),
-    1,
-    30,
-    10
-)
-
-if st.button(
-    translate_text(
-        "🚀 Generate Quiz"
-    )
-):
-
-    if topic.strip() == "":
-
-        st.warning(
-            translate_text(
-                "Please enter a subject."
-            )
+    st.header(
+        translate_text(
+            "❓ AI Adaptive Quiz Generator"
         )
+    )
 
-    else:
+    topic = st.text_input(
+        translate_text(
+            "📘 Enter Subject"
+        )
+    )
 
-        with st.spinner(
-            "Generating Quiz..."
-        ):
+    difficulty = st.selectbox(
+        translate_text(
+            "🎯 Difficulty"
+        ),
+        [
+            "Beginner",
+            "Intermediate",
+            "Advanced"
+        ]
+    )
 
-            st.session_state.quiz_questions = (
-                generate_questions(
-                    topic,
-                    difficulty,
-                    num_questions
+    num_questions = st.slider(
+        translate_text(
+            "📊 Number of Questions"
+        ),
+        1,
+        30,
+        10
+    )
+
+    if st.button(
+        translate_text(
+            "🚀 Generate Quiz"
+        )
+    ):
+
+        if topic.strip() == "":
+
+            st.warning(
+                translate_text(
+                    "Please enter a subject."
                 )
             )
 
-            st.session_state.quiz_generated = True
+        else:
 
-if (
-    st.session_state.quiz_generated
-    and
-    st.session_state.quiz_questions
-):
+            with st.spinner(
+                "Generating Quiz..."
+            ):
 
-    answers = {}
+                st.session_state.quiz_questions = (
+                    generate_questions(
+                        topic,
+                        difficulty,
+                        num_questions
+                    )
+                )
 
-    st.markdown("---")
+                st.session_state.quiz_generated = True
 
-    for idx, q in enumerate(
+    if (
+        st.session_state.quiz_generated
+        and
         st.session_state.quiz_questions
     ):
 
-        st.subheader(
-            f"Question {idx+1}"
-        )
+        answers = {}
 
-        st.write(
-            q["question"]
-        )
-
-        answers[idx] = st.radio(
-            "Choose Answer",
-            q["options"],
-            key=f"quiz_{idx}"
-        )
-
-    if st.button(
-        "✅ Submit Quiz"
-    ):
-
-        score = 0
-
-        review = []
+        st.markdown("---")
 
         for idx, q in enumerate(
             st.session_state.quiz_questions
         ):
 
-            user_answer = answers[idx]
-
-            correct = (
-                user_answer
-                ==
-                q["answer"]
+            st.subheader(
+                f"Question {idx+1}"
             )
 
-            if correct:
-                score += 2
+            st.write(
+                q["question"]
+            )
 
-            review.append({
-
-                "question":
-                q["question"],
-
-                "options":
+            answers[idx] = st.radio(
+                "Choose Answer",
                 q["options"],
+                key=f"quiz_{idx}"
+            )
 
-                "user_answer":
-                user_answer,
+        if st.button(
+            "✅ Submit Quiz"
+        ):
 
-                "correct_answer":
-                q["answer"],
+            score = 0
 
-                "is_correct":
-                correct,
+            review = []
 
-                "explanation":
-                q["explanation"]
-            })
-
-        total = (
-            len(
+            for idx, q in enumerate(
                 st.session_state.quiz_questions
-            ) * 2
-        )
+            ):
 
-        percentage = (
-            score / total
-        ) * 100
+                user_answer = answers[idx]
 
-        st.success(
-            f"🏆 Score: {score}/{total}"
-        )
-
-        st.info(
-            f"📊 Percentage: {percentage:.2f}%"
-        )
-
-        save_to_history(
-            "Quiz",
-            {
-                "topic": topic,
-                "difficulty": difficulty,
-                "score": f"{score}/{total}",
-                "percentage": percentage,
-                "questions": review
-            }
-        )
-
-        st.markdown("---")
-
-        st.subheader(
-            "📖 Answer Review"
-        )
-
-        for item in review:
-
-            st.write(
-                f"### ❓ {item['question']}"
-            )
-
-            st.write(
-                f"Your Answer: {item['user_answer']}"
-            )
-
-            st.write(
-                f"Correct Answer: {item['correct_answer']}"
-            )
-
-            if item["is_correct"]:
-
-                st.success(
-                    "✅ Correct"
+                correct = (
+                    user_answer
+                    ==
+                    q["answer"]
                 )
 
-            else:
+                if correct:
+                    score += 2
 
-                st.error(
-                    "❌ Incorrect"
-                )
+                review.append({
+
+                    "question":
+                    q["question"],
+
+                    "options":
+                    q["options"],
+
+                    "user_answer":
+                    user_answer,
+
+                    "correct_answer":
+                    q["answer"],
+
+                    "is_correct":
+                    correct,
+
+                    "explanation":
+                    q["explanation"]
+                })
+
+            total = (
+                len(
+                    st.session_state.quiz_questions
+                ) * 2
+            )
+
+            percentage = (
+                score / total
+            ) * 100
+
+            st.success(
+                f"🏆 Score: {score}/{total}"
+            )
 
             st.info(
-                item["explanation"]
+                f"📊 Percentage: {percentage:.2f}%"
+            )
+
+            save_to_history(
+                "Quiz",
+                {
+                    "topic": topic,
+                    "difficulty": difficulty,
+                    "score": f"{score}/{total}",
+                    "percentage": percentage,
+                    "questions": review
+                }
             )
 
             st.markdown("---")
+
+            st.subheader(
+                "📖 Answer Review"
+            )
+
+            for item in review:
+
+                st.write(
+                    f"### ❓ {item['question']}"
+                )
+
+                st.write(
+                    f"Your Answer: {item['user_answer']}"
+                )
+
+                st.write(
+                    f"Correct Answer: {item['correct_answer']}"
+                )
+
+                if item["is_correct"]:
+
+                    st.success(
+                        "✅ Correct"
+                    )
+
+                else:
+
+                    st.error(
+                        "❌ Incorrect"
+                    )
+
+                st.info(
+                    item["explanation"]
+                )
+
+                st.markdown("---")
 
 # ==================================================
 # ACCESSIBILITY SUPPORT
