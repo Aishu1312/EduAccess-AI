@@ -1,8 +1,8 @@
 streamlit
-SpeechRecognition
-gTTS
-sumy
+openai
 deep-translator
+SpeechRecognition
 PyPDF2
+gTTS
 nltk
 pydub
