@@ -2,6 +2,7 @@ import streamlit as st
 import random
 import tempfile
 import os
+from openai import OpenAI
 import json
 import speech_recognition as sr
 from deep_translator import GoogleTranslator
@@ -27,6 +28,9 @@ st.set_page_config(
     page_title="EduAccess AI",
     page_icon="🚀",
     layout="wide"
+)
+client = OpenAI(
+    api_key=st.secrets["OPENAI_API_KEY"]
 )
 
 # --------------------------------------------------
@@ -153,32 +157,20 @@ high_contrast = st.sidebar.checkbox(
 
 FEATURES = {
 
-    "🏠 Home": "🏠 Home",
+    "🏠 Home":"🏠 Home",
+    "🧠 AI Notes Summarizer":"🧠 AI Notes Summarizer",
+    "🎤 Speech-to-Text":"🎤 Speech-to-Text",
+    "📖 Dyslexia-Friendly Reading":"📖 Dyslexia-Friendly Reading",
+    "❓ AI Quiz Generator":"❓ AI Quiz Generator",
+    "♿ Accessibility Support":"♿ Accessibility Support",
+    "🧠 AI Personalized Learning":"🧠 AI Personalized Learning",
+    "😊 Emotion-Aware Learning":"😊 Emotion-Aware Learning",
+    "🚀 AI Career Mentor":"🚀 AI Career Mentor",
 
-    "🧠 AI Notes Summarizer":
-    "🧠 AI Notes Summarizer",
-
-    "🎤 Speech-to-Text":
-    "🎤 Speech-to-Text",
-
-    "📖 Dyslexia-Friendly Reading":
-    "📖 Dyslexia-Friendly Reading",
-
-    "❓ AI Quiz Generator":
-    "❓ AI Quiz Generator",
-
-    "♿ Accessibility Support":
-    "♿ Accessibility Support",
-
-    "🧠 AI Personalized Learning":
-    "🧠 AI Personalized Learning",
-
-    "😊 Emotion-Aware Learning":
-    "😊 Emotion-Aware Learning",
-
-    "🚀 AI Career Mentor":
-    "🚀 AI Career Mentor"
+    # ADD THIS
+    "📜 History":"📜 History"
 }
+
 
 feature = st.sidebar.selectbox(
     "Choose Feature",
@@ -625,149 +617,206 @@ elif feature == "📖 Dyslexia-Friendly Reading":
 
 elif feature == "❓ AI Quiz Generator":
 
-    st.header(translate_text("❓ AI Adaptive Quiz Generator"))
-
-    topic = st.text_input(
-        translate_text("📘 Enter Subject")
+st.header(
+    translate_text(
+        "❓ AI Adaptive Quiz Generator"
     )
+)
 
-    difficulty = st.selectbox(
-        translate_text("🎯 Difficulty"),
-        [
-            "Beginner",
-            "Intermediate",
-            "Advanced"
-        ]
+topic = st.text_input(
+    translate_text(
+        "📘 Enter Subject"
     )
+)
 
-    num_questions = st.slider(
-        translate_text("📊 Number of Questions"),
-        1,
-        30,
-        10
+difficulty = st.selectbox(
+    translate_text(
+        "🎯 Difficulty"
+    ),
+    [
+        "Beginner",
+        "Intermediate",
+        "Advanced"
+    ]
+)
+
+num_questions = st.slider(
+    translate_text(
+        "📊 Number of Questions"
+    ),
+    1,
+    30,
+    10
+)
+
+if st.button(
+    translate_text(
+        "🚀 Generate Quiz"
     )
+):
 
-    if st.button(
-        translate_text("🚀 Generate Quiz")
-    ):
+    if topic.strip() == "":
 
-        if topic.strip() == "":
-
-            st.warning(
-                translate_text(
-                    "Please enter a subject."
-                )
+        st.warning(
+            translate_text(
+                "Please enter a subject."
             )
+        )
 
-        else:
+    else:
 
-            st.session_state.quiz_questions = generate_questions(
-                topic,
-                difficulty,
-                num_questions
+        with st.spinner(
+            "Generating Quiz..."
+        ):
+
+            st.session_state.quiz_questions = (
+                generate_questions(
+                    topic,
+                    difficulty,
+                    num_questions
+                )
             )
 
             st.session_state.quiz_generated = True
 
-    if st.session_state.get("quiz_generated", False):
+if (
+    st.session_state.quiz_generated
+    and
+    st.session_state.quiz_questions
+):
 
-        answers = {}
+    answers = {}
 
-        st.markdown("---")
+    st.markdown("---")
+
+    for idx, q in enumerate(
+        st.session_state.quiz_questions
+    ):
+
+        st.subheader(
+            f"Question {idx+1}"
+        )
+
+        st.write(
+            q["question"]
+        )
+
+        answers[idx] = st.radio(
+            "Choose Answer",
+            q["options"],
+            key=f"quiz_{idx}"
+        )
+
+    if st.button(
+        "✅ Submit Quiz"
+    ):
+
+        score = 0
+
+        review = []
 
         for idx, q in enumerate(
             st.session_state.quiz_questions
         ):
 
-            st.subheader(
-                f"{translate_text('Question')} {idx + 1}"
+            user_answer = answers[idx]
+
+            correct = (
+                user_answer
+                ==
+                q["answer"]
+            )
+
+            if correct:
+                score += 2
+
+            review.append({
+
+                "question":
+                q["question"],
+
+                "options":
+                q["options"],
+
+                "user_answer":
+                user_answer,
+
+                "correct_answer":
+                q["answer"],
+
+                "is_correct":
+                correct,
+
+                "explanation":
+                q["explanation"]
+            })
+
+        total = (
+            len(
+                st.session_state.quiz_questions
+            ) * 2
+        )
+
+        percentage = (
+            score / total
+        ) * 100
+
+        st.success(
+            f"🏆 Score: {score}/{total}"
+        )
+
+        st.info(
+            f"📊 Percentage: {percentage:.2f}%"
+        )
+
+        save_to_history(
+            "Quiz",
+            {
+                "topic": topic,
+                "difficulty": difficulty,
+                "score": f"{score}/{total}",
+                "percentage": percentage,
+                "questions": review
+            }
+        )
+
+        st.markdown("---")
+
+        st.subheader(
+            "📖 Answer Review"
+        )
+
+        for item in review:
+
+            st.write(
+                f"### ❓ {item['question']}"
             )
 
             st.write(
-                translate_text(q["question"])
+                f"Your Answer: {item['user_answer']}"
             )
 
-            answers[idx] = st.radio(
-                translate_text("Choose Answer"),
-                q["options"],
-                key=f"quiz_{idx}"
+            st.write(
+                f"Correct Answer: {item['correct_answer']}"
             )
 
-        if st.button(
-            translate_text("✅ Submit Quiz")
-        ):
+            if item["is_correct"]:
 
-            score = 0
+                st.success(
+                    "✅ Correct"
+                )
 
-            review = []
+            else:
 
-            for idx, q in enumerate(
-                st.session_state.quiz_questions
-            ):
-
-                user_answer = answers[idx]
-
-                if user_answer == q["answer"]:
-                    score += 2
-
-                review.append({
-
-                    "question":
-                    q["question"],
-
-                    "user_answer":
-                    user_answer,
-
-                    "correct_answer":
-                    q["answer"],
-
-                    "explanation":
-                    q["explanation"]
-                })
-
-            total = (
-                len(
-                    st.session_state.quiz_questions
-                ) * 2
-            )
-
-            percentage = (
-                score / total
-            ) * 100
-
-            st.success(
-                f"🏆 Score: {score}/{total}"
-            )
+                st.error(
+                    "❌ Incorrect"
+                )
 
             st.info(
-                f"📊 Percentage: {percentage:.2f}%"
+                item["explanation"]
             )
 
             st.markdown("---")
-
-            st.subheader(
-                translate_text("📖 Answer Review")
-            )
-
-            for item in review:
-
-                st.write(
-                    f"❓ {item['question']}"
-                )
-
-                st.success(
-                    f"Your Answer: {item['user_answer']}"
-                )
-
-                st.info(
-                    f"Correct Answer: {item['correct_answer']}"
-                )
-
-                st.warning(
-                    f"Explanation: {item['explanation']}"
-                )
-
-                st.markdown("---")
 
 # ==================================================
 # ACCESSIBILITY SUPPORT
@@ -1074,107 +1123,148 @@ elif feature == "🚀 AI Career Mentor":
 
 elif feature == "📜 History":
 
-    st.header(translate_text("📜 Your Learning History"))
+st.header(
+    translate_text(
+        "📜 Your Learning History"
+    )
+)
 
-    history = load_history()
+history = load_history()
 
-    if not history:
+if not history:
 
-        st.info(
-            translate_text(
-                "No history available yet."
-            )
+    st.info(
+        translate_text(
+            "No history available yet."
         )
+    )
+
+else:
+
+    st.success(
+        f"📊 Total Records: {len(history)}"
+    )
+
+    st.markdown("---")
+
+    categories = ["All"]
+
+    for item in history:
+
+        category = item.get(
+            "category",
+            "Unknown"
+        )
+
+        if category not in categories:
+
+            categories.append(
+                category
+            )
+
+    selected_category = st.selectbox(
+        translate_text(
+            "📂 Filter by Category"
+        ),
+        categories
+    )
+
+    if selected_category == "All":
+
+        filtered_history = history
 
     else:
 
-        st.success(
-            translate_text(
-                f"Total Records: {len(history)}"
+        filtered_history = [
+
+            item
+
+            for item in history
+
+            if item.get(
+                "category"
             )
+            ==
+            selected_category
+        ]
+
+    st.markdown("---")
+
+    for record in reversed(
+        filtered_history
+    ):
+
+        category = record.get(
+            "category",
+            "Unknown"
         )
 
-        st.markdown("---")
+        timestamp = record.get(
+            "timestamp",
+            "N/A"
+        )
 
-        categories = ["All"]
+        with st.expander(
+            f"📌 {category} | {timestamp}"
+        ):
 
-        for item in history:
+            # =====================================
+            # QUIZ HISTORY
+            # =====================================
 
-            if item.get("category") not in categories:
+            if category == "Quiz":
 
-                categories.append(
-                    item.get("category")
+                st.subheader(
+                    "❓ Quiz Attempt"
                 )
 
-        selected_category = st.selectbox(
-            translate_text("📂 Filter by Category"),
-            categories
-        )
+                st.write(
+                    f"📘 Topic: "
+                    f"{record.get('topic','N/A')}"
+                )
 
-        if selected_category == "All":
+                st.write(
+                    f"🎯 Difficulty: "
+                    f"{record.get('difficulty','N/A')}"
+                )
 
-            filtered_history = history
+                st.write(
+                    f"🏆 Score: "
+                    f"{record.get('score','N/A')}"
+                )
 
-        else:
-
-            filtered_history = [
-
-                h for h in history
-
-                if h.get("category")
-                == selected_category
-            ]
-
-        st.markdown("---")
-
-        for record in reversed(filtered_history):
-
-            category = record.get(
-                "category",
-                "Unknown"
-            )
-
-            timestamp = record.get(
-                "timestamp",
-                ""
-            )
-
-            with st.expander(
-                f"📌 {category} | {timestamp}"
-            ):
-
-                # -----------------------
-                # QUIZ HISTORY
-                # -----------------------
-
-                if category == "Quiz":
-
-                    st.subheader("❓ Quiz Details")
+                if (
+                    "percentage"
+                    in record
+                ):
 
                     st.write(
-                        f"📘 Topic: "
-                        f"{record.get('topic','N/A')}"
+                        f"📊 Percentage: "
+                        f"{record['percentage']:.2f}%"
                     )
 
-                    st.write(
-                        f"🏆 Score: "
-                        f"{record.get('score','N/A')}"
+                questions = record.get(
+                    "questions",
+                    []
+                )
+
+                if not questions:
+
+                    st.warning(
+                        "No questions found."
                     )
 
-                    questions = record.get(
-                        "questions",
-                        []
-                    )
+                else:
+
+                    st.markdown("---")
 
                     for idx, q in enumerate(
                         questions,
                         start=1
                     ):
 
-                        st.markdown("---")
-
                         st.markdown(
-                            f"### Q{idx}"
+                            f"### Question {idx}"
                         )
 
                         st.write(
@@ -1183,6 +1273,23 @@ elif feature == "📜 History":
                                 ""
                             )
                         )
+
+                        options = q.get(
+                            "options",
+                            []
+                        )
+
+                        if options:
+
+                            st.write(
+                                "Options:"
+                            )
+
+                            for option in options:
+
+                                st.write(
+                                    f"• {option}"
+                                )
 
                         st.success(
                             f"Your Answer: "
@@ -1194,105 +1301,172 @@ elif feature == "📜 History":
                             f"{q.get('correct_answer','')}"
                         )
 
+                        if q.get(
+                            "is_correct",
+                            False
+                        ):
+
+                            st.success(
+                                "✅ Correct"
+                            )
+
+                        else:
+
+                            st.error(
+                                "❌ Incorrect"
+                            )
+
                         st.warning(
-                            f"Reason: "
+                            f"Explanation: "
                             f"{q.get('explanation','')}"
                         )
 
-                # -----------------------
-                # SUMMARY HISTORY
-                # -----------------------
+                        st.markdown("---")
 
-                elif category == "Summary":
+            # =====================================
+            # NOTES SUMMARY
+            # =====================================
 
-                    st.subheader(
-                        "🧠 Notes Summary"
+            elif (
+                category ==
+                "📝 Notes Summary"
+            ):
+
+                st.subheader(
+                    "🧠 Notes Summary"
+                )
+
+                st.write(
+                    record.get(
+                        "content",
+                        ""
                     )
+                )
 
-                    st.write(
-                        record.get(
-                            "summary",
-                            ""
-                        )
+            # =====================================
+            # SPEECH HISTORY
+            # =====================================
+
+            elif (
+                category ==
+                "🎤 Speech Q&A"
+            ):
+
+                st.subheader(
+                    "🎤 Speech Interaction"
+                )
+
+                st.write(
+                    record.get(
+                        "content",
+                        ""
                     )
+                )
 
-                # -----------------------
-                # SPEECH HISTORY
-                # -----------------------
+            # =====================================
+            # PERSONALIZED LEARNING
+            # =====================================
 
-                elif category == "Speech":
+            elif (
+                category ==
+                "🧠 Personalized Learning"
+            ):
 
-                    st.subheader(
-                        "🎤 Speech Interaction"
+                st.subheader(
+                    "🧠 Personalized Learning"
+                )
+
+                st.write(
+                    record.get(
+                        "content",
+                        ""
                     )
+                )
 
-                    st.markdown(
-                        "### 📝 Question"
+            # =====================================
+            # CAREER MENTOR
+            # =====================================
+
+            elif (
+                category ==
+                "🚀 Career Query"
+            ):
+
+                st.subheader(
+                    "🚀 Career Guidance"
+                )
+
+                st.write(
+                    record.get(
+                        "content",
+                        ""
                     )
+                )
 
-                    st.info(
-                        record.get(
-                            "question",
-                            ""
-                        )
+            # =====================================
+            # EMOTION
+            # =====================================
+
+            elif (
+                category ==
+                "😊 Emotion Check"
+            ):
+
+                st.subheader(
+                    "😊 Emotion Analysis"
+                )
+
+                st.write(
+                    record.get(
+                        "content",
+                        ""
                     )
+                )
 
-                    st.markdown(
-                        "### 🤖 Answer"
+            # =====================================
+            # DEFAULT
+            # =====================================
+
+            else:
+
+                st.write(
+                    record.get(
+                        "content",
+                        ""
                     )
+                )
 
-                    st.success(
-                        record.get(
-                            "answer",
-                            ""
-                        )
-                    )
+    st.markdown("---")
 
-                # -----------------------
-                # DEFAULT
-                # -----------------------
+    if st.button(
+        translate_text(
+            "🗑️ Clear All History"
+        )
+    ):
 
-                else:
+        try:
 
-                    st.write(
-                        record.get(
-                            "content",
-                            ""
-                        )
-                    )
+            if os.path.exists(
+                HISTORY_FILE
+            ):
 
-        st.markdown("---")
-
-        if st.button(
-            translate_text(
-                "🗑️ Clear All History"
-            )
-        ):
-
-            try:
-
-                if os.path.exists(
+                os.remove(
                     HISTORY_FILE
-                ):
-
-                    os.remove(
-                        HISTORY_FILE
-                    )
-
-                st.success(
-                    translate_text(
-                        "History Cleared Successfully"
-                    )
                 )
 
-                st.rerun()
-
-            except Exception as e:
-
-                st.error(
-                    f"Error: {e}"
+            st.success(
+                translate_text(
+                    "History Cleared Successfully"
                 )
+            )
 
+            st.rerun()
+
+        except Exception as e:
+
+            st.error(
+                f"Error: {e}"
+            )
 
 # ==================================================
 # FOOTER
