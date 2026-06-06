@@ -1117,27 +1117,29 @@ elif feature == "🚀 AI Career Mentor":
 
         save_to_history("🚀 Career Query", f"Query: {career_query}")
 
-# ==================================================
+# =================================================
 # HISTORY
 # ==================================================
 
 elif feature == "📜 History":
 
-    st.header(
+```
+st.header(
+    translate_text(
+        "📜 Your Learning History"
+    )
+)
+
+history = load_history()
+
+if not history:
+
+    st.info(
         translate_text(
-            "📜 Your Learning History"
+            "No history available yet."
         )
     )
 
-    history = load_history()
-
-    if not history:
-
-        st.info(
-            translate_text(
-                "No history available yet."
-            )
-        )
 else:
 
     st.success(
@@ -1180,18 +1182,14 @@ else:
 
             for item in history
 
-            if item.get(
-                "category"
-            )
+            if item.get("category")
             ==
             selected_category
         ]
 
     st.markdown("---")
 
-    for record in reversed(
-        filtered_history
-    ):
+    for record in reversed(filtered_history):
 
         category = record.get(
             "category",
@@ -1207,10 +1205,6 @@ else:
             f"📌 {category} | {timestamp}"
         ):
 
-            # =====================================
-            # QUIZ HISTORY
-            # =====================================
-
             if category == "Quiz":
 
                 st.subheader(
@@ -1218,28 +1212,21 @@ else:
                 )
 
                 st.write(
-                    f"📘 Topic: "
-                    f"{record.get('topic','N/A')}"
+                    f"📘 Topic: {record.get('topic', 'N/A')}"
                 )
 
                 st.write(
-                    f"🎯 Difficulty: "
-                    f"{record.get('difficulty','N/A')}"
+                    f"🎯 Difficulty: {record.get('difficulty', 'N/A')}"
                 )
 
                 st.write(
-                    f"🏆 Score: "
-                    f"{record.get('score','N/A')}"
+                    f"🏆 Score: {record.get('score', 'N/A')}"
                 )
 
-                if (
-                    "percentage"
-                    in record
-                ):
+                if "percentage" in record:
 
                     st.write(
-                        f"📊 Percentage: "
-                        f"{record['percentage']:.2f}%"
+                        f"📊 Percentage: {record['percentage']:.2f}%"
                     )
 
                 questions = record.get(
@@ -1250,17 +1237,17 @@ else:
                 if not questions:
 
                     st.warning(
-                        "No questions found."
+                        "No questions available."
                     )
 
                 else:
-
-                    st.markdown("---")
 
                     for idx, q in enumerate(
                         questions,
                         start=1
                     ):
+
+                        st.markdown("---")
 
                         st.markdown(
                             f"### Question {idx}"
@@ -1291,13 +1278,11 @@ else:
                                 )
 
                         st.success(
-                            f"Your Answer: "
-                            f"{q.get('user_answer','')}"
+                            f"Your Answer: {q.get('user_answer', '')}"
                         )
 
                         st.info(
-                            f"Correct Answer: "
-                            f"{q.get('correct_answer','')}"
+                            f"Correct Answer: {q.get('correct_answer', '')}"
                         )
 
                         if q.get(
@@ -1316,115 +1301,8 @@ else:
                             )
 
                         st.warning(
-                            f"Explanation: "
-                            f"{q.get('explanation','')}"
+                            f"Explanation: {q.get('explanation', '')}"
                         )
-
-                        st.markdown("---")
-
-            # =====================================
-            # NOTES SUMMARY
-            # =====================================
-
-            elif (
-                category ==
-                "📝 Notes Summary"
-            ):
-
-                st.subheader(
-                    "🧠 Notes Summary"
-                )
-
-                st.write(
-                    record.get(
-                        "content",
-                        ""
-                    )
-                )
-
-            # =====================================
-            # SPEECH HISTORY
-            # =====================================
-
-            elif (
-                category ==
-                "🎤 Speech Q&A"
-            ):
-
-                st.subheader(
-                    "🎤 Speech Interaction"
-                )
-
-                st.write(
-                    record.get(
-                        "content",
-                        ""
-                    )
-                )
-
-            # =====================================
-            # PERSONALIZED LEARNING
-            # =====================================
-
-            elif (
-                category ==
-                "🧠 Personalized Learning"
-            ):
-
-                st.subheader(
-                    "🧠 Personalized Learning"
-                )
-
-                st.write(
-                    record.get(
-                        "content",
-                        ""
-                    )
-                )
-
-            # =====================================
-            # CAREER MENTOR
-            # =====================================
-
-            elif (
-                category ==
-                "🚀 Career Query"
-            ):
-
-                st.subheader(
-                    "🚀 Career Guidance"
-                )
-
-                st.write(
-                    record.get(
-                        "content",
-                        ""
-                    )
-                )
-
-            # =====================================
-            # EMOTION
-            # =====================================
-
-            elif (
-                category ==
-                "😊 Emotion Check"
-            ):
-
-                st.subheader(
-                    "😊 Emotion Analysis"
-                )
-
-                st.write(
-                    record.get(
-                        "content",
-                        ""
-                    )
-                )
-
-            # =====================================
-            # DEFAULT
-            # =====================================
 
             else:
 
