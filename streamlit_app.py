@@ -1117,130 +1117,113 @@ elif feature == "🚀 AI Career Mentor":
 
         save_to_history("🚀 Career Query", f"Query: {career_query}")
 
-# =================================================
+# ==================================================
 # HISTORY
 # ==================================================
 
 elif feature == "📜 History":
 
-```
-st.header(
-    translate_text(
-        "📜 Your Learning History"
-    )
-)
+    st.header(translate_text("📜 Your Learning History"))
 
-history = load_history()
+    history = load_history()
 
-if not history:
+    if not history:
 
-    st.info(
-        translate_text(
-            "No history available yet."
-        )
-    )
-
-else:
-
-    st.success(
-        f"📊 Total Records: {len(history)}"
-    )
-
-    st.markdown("---")
-
-    categories = ["All"]
-
-    for item in history:
-
-        category = item.get(
-            "category",
-            "Unknown"
-        )
-
-        if category not in categories:
-
-            categories.append(
-                category
+        st.info(
+            translate_text(
+                "No history available yet."
             )
-
-    selected_category = st.selectbox(
-        translate_text(
-            "📂 Filter by Category"
-        ),
-        categories
-    )
-
-    if selected_category == "All":
-
-        filtered_history = history
+        )
 
     else:
 
-        filtered_history = [
-
-            item
-
-            for item in history
-
-            if item.get("category")
-            ==
-            selected_category
-        ]
-
-    st.markdown("---")
-
-    for record in reversed(filtered_history):
-
-        category = record.get(
-            "category",
-            "Unknown"
+        st.success(
+            f"📊 Total Records: {len(history)}"
         )
 
-        timestamp = record.get(
-            "timestamp",
-            "N/A"
+        st.markdown("---")
+
+        categories = ["All"]
+
+        for item in history:
+
+            category = item.get(
+                "category",
+                "Unknown"
+            )
+
+            if category not in categories:
+
+                categories.append(
+                    category
+                )
+
+        selected_category = st.selectbox(
+            translate_text(
+                "📂 Filter by Category"
+            ),
+            categories
         )
 
-        with st.expander(
-            f"📌 {category} | {timestamp}"
-        ):
+        if selected_category == "All":
 
-            if category == "Quiz":
+            filtered_history = history
 
-                st.subheader(
-                    "❓ Quiz Attempt"
-                )
+        else:
 
-                st.write(
-                    f"📘 Topic: {record.get('topic', 'N/A')}"
-                )
+            filtered_history = [
+                item
+                for item in history
+                if item.get("category")
+                == selected_category
+            ]
 
-                st.write(
-                    f"🎯 Difficulty: {record.get('difficulty', 'N/A')}"
-                )
+        st.markdown("---")
 
-                st.write(
-                    f"🏆 Score: {record.get('score', 'N/A')}"
-                )
+        for record in reversed(filtered_history):
 
-                if "percentage" in record:
+            category = record.get(
+                "category",
+                "Unknown"
+            )
+
+            timestamp = record.get(
+                "timestamp",
+                "N/A"
+            )
+
+            with st.expander(
+                f"📌 {category} | {timestamp}"
+            ):
+
+                if category == "Quiz":
+
+                    st.subheader(
+                        "❓ Quiz Attempt"
+                    )
 
                     st.write(
-                        f"📊 Percentage: {record['percentage']:.2f}%"
+                        f"📘 Topic: {record.get('topic', 'N/A')}"
                     )
 
-                questions = record.get(
-                    "questions",
-                    []
-                )
-
-                if not questions:
-
-                    st.warning(
-                        "No questions available."
+                    st.write(
+                        f"🎯 Difficulty: {record.get('difficulty', 'N/A')}"
                     )
 
-                else:
+                    st.write(
+                        f"🏆 Score: {record.get('score', 'N/A')}"
+                    )
+
+                    if "percentage" in record:
+
+                        st.write(
+                            f"📊 Percentage: {record['percentage']:.2f}%"
+                        )
+
+                    questions = record.get(
+                        "questions",
+                        []
+                    )
 
                     for idx, q in enumerate(
                         questions,
@@ -1304,47 +1287,47 @@ else:
                             f"Explanation: {q.get('explanation', '')}"
                         )
 
-            else:
+                else:
 
-                st.write(
-                    record.get(
-                        "content",
-                        ""
+                    st.write(
+                        record.get(
+                            "content",
+                            ""
+                        )
+                    )
+
+        st.markdown("---")
+
+        if st.button(
+            translate_text(
+                "🗑️ Clear All History"
+            )
+        ):
+
+            try:
+
+                if os.path.exists(
+                    HISTORY_FILE
+                ):
+
+                    os.remove(
+                        HISTORY_FILE
+                    )
+
+                st.success(
+                    translate_text(
+                        "History Cleared Successfully"
                     )
                 )
 
-    st.markdown("---")
+                st.rerun()
 
-    if st.button(
-        translate_text(
-            "🗑️ Clear All History"
-        )
-    ):
+            except Exception as e:
 
-        try:
-
-            if os.path.exists(
-                HISTORY_FILE
-            ):
-
-                os.remove(
-                    HISTORY_FILE
+                st.error(
+                    f"Error: {e}"
                 )
-
-            st.success(
-                translate_text(
-                    "History Cleared Successfully"
-                )
-            )
-
-            st.rerun()
-
-        except Exception as e:
-
-            st.error(
-                f"Error: {e}"
-            )
-
+                
 # ==================================================
 # FOOTER
 # ==================================================
