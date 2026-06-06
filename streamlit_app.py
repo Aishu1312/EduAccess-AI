@@ -1123,22 +1123,21 @@ elif feature == "🚀 AI Career Mentor":
 
 elif feature == "📜 History":
 
-st.header(
-    translate_text(
-        "📜 Your Learning History"
-    )
-)
-
-history = load_history()
-
-if not history:
-
-    st.info(
+    st.header(
         translate_text(
-            "No history available yet."
+            "📜 Your Learning History"
         )
     )
 
+    history = load_history()
+
+    if not history:
+
+        st.info(
+            translate_text(
+                "No history available yet."
+            )
+        )
 else:
 
     st.success(
