@@ -381,138 +381,116 @@ elif feature == "🎤 Speech-to-Text":
             elif "ai" in q_lower or "artificial intelligence" in q_lower:
                 answer = "AI enables machines to learn and perform human-like tasks."
             else:
-                answer = f"Topic: {question}. This is important for your learning. Study the fundamentals and practice."
-            
-            translated_ans = translate_text(answer)
-            st.subheader(tr("🤖 AI Answer"))
-            st.success(translated_ans)
+                answer = f"You asked about {question}. This is a great topic for learning!"
 
-            tts = gTTS(text=translated_ans, lang=LANGUAGES.get(selected_language, "en"))
+            translated_answer = translate_text(answer)
+            st.subheader(tr("🤖 AI Answer"))
+            st.success(translated_answer)
+
+            tts = gTTS(text=translated_answer, lang=LANGUAGES[selected_language])
             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
                 tts.save(fp.name)
-                with open(fp.name, "rb") as af:
-                    st.audio(af.read(), format="audio/mp3")
-            
-            save_to_history("🎤 Speech Q&A", f"Q: {question}\nA: {translated_ans}")
+                with open(fp.name, "rb") as f:
+                    st.audio(f.read(), format="audio/mp3")
+
+            save_to_history("🎤 Speech Q&A", f"Q: {question}\nA: {translated_answer}")
         except Exception as e:
-            st.error(f"{tr('Speech Error')}: {e}")
+            st.error(f"Speech Error: {e}")
 
 # --- DYSLEXIA FRIENDLY READING ---
 elif feature == "📖 Dyslexia-Friendly Reading":
     st.header(tr("📖 Dyslexia-Friendly Reading"))
-    if not st.session_state.summary:
+    if st.session_state.summary == "":
         st.warning(tr("Generate a summary first using the AI Notes Summarizer."))
     else:
-        st.markdown(f'<div style="line-height:2.5; letter-spacing:2px; font-size:{font_size}px; padding:25px; background:#f4f4f4; color:black; border-radius:15px;">{st.session_state.summary}</div>', unsafe_allow_html=True)
+        st.markdown(f"""
+            <div style="line-height:2.5; letter-spacing:2px; font-size:{font_size}px; padding:25px; background:#f4f4f4; color:black; border-radius:15px;">
+            {st.session_state.summary}
+            </div>
+            """, unsafe_allow_html=True)
         st.success(tr("Reading mode activated."))
 
 # --- QUIZ GENERATOR ---
 elif feature == "❓ AI Quiz Generator":
-    st.header("❓ AI Adaptive Quiz Generator")
-    q_topic = st.text_input("Enter Topic")
-    q_diff = st.selectbox("🎯 Select Difficulty", ["Basic", "Advanced", "Expert"])
-    q_num = st.slider("📊 Number of Questions", 5, 20, 10)
+    st.header(tr("❓ AI Adaptive Quiz Generator"))
+    topic = st.text_input(tr("Enter Topic"))
+    difficulty = st.selectbox(tr("🎯 Select Difficulty"), ["Basic", "Advanced", "Expert"])
+    num_questions = st.slider(tr("📊 Number of Questions"), 5, 20, 10)
 
-    if st.button("🚀 Generate Quiz"):
-        if not q_topic.strip():
-            st.warning("Please enter a topic.")
+    if st.button(tr("🚀 Generate Quiz")):
+        if not topic.strip():
+            st.warning(tr("Please enter a topic."))
         else:
-            with st.spinner("Generating AI Quiz..."):
-                prompt = f"Generate {q_num} UNIQUE MCQ questions on {q_topic}. Level: {q_diff}. Return ONLY valid JSON: [{{'question':'','options':['','','',''],'answer':'','explanation':''}}]"
+            with st.spinner(tr("Generating AI Quiz...")):
+                prompt = f"Generate {num_questions} MCQ questions on {topic} with difficulty {difficulty}. Return ONLY JSON: [{{'question':'', 'options':['','','',''], 'answer':'', 'explanation':''}}]"
                 try:
-                    resp = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "user", "content": prompt}], temperature=0.8)
-                    content = resp.choices[0].message.content.replace("```json", "").replace("```", "")
+                    res = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "user", "content": prompt}])
+                    content = res.choices[0].message.content.replace("```json", "").replace("```", "")
                     st.session_state.quiz_questions = json.loads(content)
                     st.session_state.quiz_generated = True
                     st.session_state.user_answers = {}
                 except Exception as e:
                     st.error(f"Quiz Error: {e}")
 
-    if st.session_state.quiz_generated and st.session_state.quiz_questions:
+    if st.session_state.quiz_generated:
         for idx, q in enumerate(st.session_state.quiz_questions):
-            st.markdown("---")
-            st.write(f"### Question {idx+1}")
-            st.write(q["question"])
-            st.session_state.user_answers[idx] = st.radio("Choose Answer", q["options"], key=f"q_{idx}")
+            st.write(f"**Q{idx+1}: {q['question']}**")
+            st.session_state.user_answers[idx] = st.radio(tr("Choose Answer"), q['options'], key=f"q_{idx}")
 
-        if st.button("✅ Submit Quiz"):
-            score = sum(1 for i, q in enumerate(st.session_state.quiz_questions) if st.session_state.user_answers.get(i) == q["answer"])
-            total = len(st.session_state.quiz_questions)
-            perc = (score / total) * 100
-            st.success(f"🏆 Score: {score}/{total} ({perc:.2f}%)")
-            if perc >= 80: st.balloons()
-            
-            review_list = []
-            for i, q in enumerate(st.session_state.quiz_questions):
-                correct = st.session_state.user_answers.get(i) == q["answer"]
-                review_list.append({"question": q["question"], "user_answer": st.session_state.user_answers.get(i), "correct_answer": q["answer"], "is_correct": correct, "explanation": q["explanation"]})
-                with st.expander(f"Q{i+1}: {'✅' if correct else '❌'}"):
-                    st.write(f"**Correct Answer:** {q['answer']}")
-                    st.info(f"**Explanation:** {q['explanation']}")
-            save_quiz_history(q_topic, q_diff, f"{score}/{total}", perc, review_list)
+        if st.button(tr("✅ Submit Quiz")):
+            score = sum(1 for i, q in enumerate(st.session_state.quiz_questions) if st.session_state.user_answers.get(i) == q['answer'])
+            perc = (score / len(st.session_state.quiz_questions)) * 100
+            st.success(f"Score: {score}/{len(st.session_state.quiz_questions)} ({perc:.1f}%)")
+            save_quiz_history(topic, difficulty, score, perc, st.session_state.quiz_questions)
 
-# --- ANALYTICS DASHBOARD ---
+# --- ANALYTICS ---
 elif feature == "📈 Analytics Dashboard":
-    st.header("📈 Learning Analytics Dashboard")
-    hist = load_history()
-    quizzes = [i for i in hist if i.get("category") == "Quiz"]
-    topics = {i.get("topic") for i in quizzes if i.get("topic")}
-    lessons = sum(1 for i in hist if i.get("category") in ["📝 Notes Summary", "🎤 Speech Q&A", "🧠 Personalized Learning"])
-    
-    col1, col2, col3 = st.columns(3)
-    col1.metric("📚 Lessons", lessons)
-    col1.metric("🎯 Quizzes", len(quizzes))
-    avg_acc = sum(i.get("percentage", 0) for i in quizzes) / len(quizzes) if quizzes else 0
-    col2.metric("🏆 Avg Accuracy", f"{avg_acc:.1f}%")
-    col2.metric("🔥 Streak", f"{min(len(hist), 30)} Days")
-    col3.metric("📖 Topics", len(topics))
-
+    st.header(tr("📈 Learning Analytics Dashboard"))
+    h = load_history()
+    quizzes = [i for i in h if i.get("category") == "Quiz"]
+    st.metric(tr("🎯 Quiz Attempts"), len(quizzes))
     if quizzes:
+        avg = sum(q.get("percentage", 0) for q in quizzes) / len(quizzes)
+        st.metric(tr("🏆 Avg Accuracy"), f"{avg:.1f}%")
         st.line_chart([q.get("percentage", 0) for q in quizzes])
+
+# --- ACCESSIBILITY ---
+elif feature == "♿ Accessibility Support":
+    st.header(tr("♿ Accessibility Support"))
+    for item in ["🌍 Multi-language Support", "🔠 Adjustable Font Size", "🌗 High Contrast Mode", "📖 Dyslexia Reading Mode", "🎤 Speech Assistance"]:
+        st.success(tr(item))
+
+# --- PERSONALIZED LEARNING ---
+elif feature == "🧠 AI Personalized Learning":
+    st.header(tr("🧠 AI Personalized Learning"))
+    topic = st.text_input(tr("📘 Enter Weak Topic"))
+    if st.button(tr("🚀 Generate Recommendations")):
+        st.info(tr(f"Resources for {topic}: Check YouTube and GeeksforGeeks for tutorials."))
+        save_to_history("🧠 Personalized Learning", topic)
+
+# --- EMOTION AWARE ---
+elif feature == "😊 Emotion-Aware Learning":
+    st.header(tr("😊 Emotion-Aware Learning"))
+    emotion = st.selectbox(tr("💭 How are you feeling?"), ["Confused", "Focused", "Stressed", "Tired"])
+    if st.button(tr("🧠 Analyze Emotion")):
+        advice = {"Confused": "Start from basics.", "Focused": "Keep going!", "Stressed": "Take a break.", "Tired": "Rest well."}
+        st.info(tr(advice[emotion]))
+
+# --- CAREER MENTOR ---
+elif feature == "🚀 AI Career Mentor":
+    st.header(tr("🚀 AI Career Mentor"))
+    query = st.text_input(tr("💬 Ask Career Guidance"))
+    if st.button(tr("🚀 Get Guidance")):
+        st.success(tr("Focus on building projects and strengthening your fundamentals."))
+        save_to_history("🚀 Career Query", query)
 
 # --- HISTORY ---
 elif feature == "📜 History":
-    st.header("📜 Learning History")
-    hist = load_history()
-    if not hist:
-        st.info("No history available.")
-    else:
-        for record in reversed(hist):
-            with st.expander(f"{record.get('category')} | {record.get('timestamp')}"):
-                if record.get("category") == "Quiz":
-                    st.write(f"Topic: {record.get('topic')} | Score: {record.get('score')} ({record.get('percentage')}%)")
-                else:
-                    st.write(record.get("content"))
-        st.download_button("⬇ Download History", json.dumps(hist, indent=2), f"{st.session_state.username}_history.json")
+    st.header(tr("📜 Learning History"))
+    h = load_history()
+    for record in reversed(h):
+        with st.expander(f"{record.get('category')} | {record.get('timestamp')}"):
+            st.write(record.get("content") or record.get("topic"))
 
-# --- OTHER FEATURES (Simplified for brevity) ---
-elif feature == "♿ Accessibility Support":
-    st.header(tr("♿ Accessibility Support"))
-    for item in ["🌍 Multi-language Support", "🔠 Adjustable Font Size", "🌗 High Contrast Mode", "📖 Dyslexia Reading Mode"]:
-        st.success(tr(item))
-
-elif feature == "🧠 AI Personalized Learning":
-    st.header(tr("🧠 AI Personalized Learning"))
-    wt = st.text_input(tr("📘 Enter Weak Topic"))
-    if st.button(tr("🚀 Generate Recommendations")):
-        st.info(tr(f"Resources for {wt}: Practice daily, watch tutorials, and create notes."))
-        save_to_history("🧠 Personalized Learning", wt)
-
-elif feature == "😊 Emotion-Aware Learning":
-    st.header(tr("😊 Emotion-Aware Learning"))
-    emo = st.selectbox(tr("💭 How are you feeling?"), ["Confused", "Focused", "Stressed", "Tired"])
-    if st.button(tr("🧠 Analyze Emotion")):
-        advice = {"Confused": "Start from basics.", "Focused": "Keep going!", "Stressed": "Take a break.", "Tired": "Rest well."}
-        st.info(tr(advice.get(emo)))
-
-elif feature == "🚀 AI Career Mentor":
-    st.header(tr("🚀 AI Career Mentor"))
-    cq = st.text_input(tr("💬 Ask Career Guidance"))
-    if st.button(tr("🚀 Get Guidance")):
-        st.success(tr("Focus on projects, networking, and skill building."))
-        save_to_history("🚀 Career Query", cq)
-
-# --------------------------------------------------
-# FOOTER
-# --------------------------------------------------
+# --- FOOTER ---
 st.markdown(f"<div class='footer'>{tr('Made with')} ❤️ {tr('using Streamlit')} | EduAccess AI</div>", unsafe_allow_html=True)
