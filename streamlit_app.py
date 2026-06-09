@@ -1510,15 +1510,24 @@ elif feature == "😊 Emotion-Aware Learning":
             ))
 
         elif emotion == "Stressed":
-            st.error(translate_text("AI detected stress."))
-            st.subheader(translate_text("🧘 Relaxation Resources"))
-            st.markdown("""
+
+    st.error(translate_text("AI detected stress."))
+
+    st.subheader(translate_text("🧘 Relaxation Resources"))
+
+    st.markdown("""
 ▶️ https://www.youtube.com/results?search_query=student+stress+management
 
 ▶️ https://www.youtube.com/results?search_query=study+motivation
 """)
-            st.info(translate_text
-             else:
+
+    st.info(
+        translate_text(
+            "Take a short break, stay hydrated, practice deep breathing, and return to studying with a fresh mind."
+        )
+    )
+
+else:
 
     recommendation_text = """
 Take short breaks.
@@ -1528,15 +1537,11 @@ Practice mindfulness.
 """
 
     st.info(
-        translate_text(
-            "AI detected tiredness."
-        )
+        translate_text("AI detected tiredness.")
     )
 
     st.subheader(
-        translate_text(
-            "😴 Recovery Suggestions"
-        )
+        translate_text("😴 Recovery Suggestions")
     )
 
     st.markdown("""
@@ -1546,9 +1551,8 @@ Practice mindfulness.
 """)
 
     st.info(
-        translate_text(
-            recommendation_text
-        )
+        translate_text(recommendation_text)
+    )
     )
         
 # ==================================================
