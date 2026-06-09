@@ -368,55 +368,32 @@ elif feature == "🧠 AI Notes Summarizer":
 # SPEECH TO TEXT FEATURE
 elif feature == "🎤 Speech-to-Text":
     st.header(translate_text("🎤 Speech-to-Text"))
-    st.write(translate_text("Speak into your microphone. Your speech will be transcribed in real-time."))
+    st.write(translate_text("Ask a question using your microphone."))
 
-    # Initialize session state for transcribed text
-    if "live_question" not in st.session_state:
-        st.session_state.live_question = ""
+    # Upload WAV audio file
+    audio_file = st.file_uploader(translate_text("🎙️ Record Question"), type=["wav"])
 
-    class AudioFrameProcessor:
-        def __init__(self):
-            self.recognizer = sr.Recognizer()
-            self.buffer = b""
+    if audio_file:
+        try:
+            # Save uploaded file temporarily
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+                tmp.write(audio_file.read())
+                audio_path = tmp.name
 
-        def __call__(self, frames):
-            for frame in frames:
-                frame_bytes = frame.to_ndarray(format="int16")
-                self.buffer += frame_bytes.tobytes()
+            # Initialize recognizer
+            recognizer = sr.Recognizer()
 
-                # Buffer approx 5 seconds of audio at 16kHz
-                if len(self.buffer) > 16000 * 2 * 5:
-                    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-                        tmp.write(self.buffer)
-                        tmp.flush()
-                        try:
-                            with sr.AudioFile(tmp.name) as source:
-                                audio_data = self.recognizer.record(source)
-                                text = self.recognizer.recognize_google(audio_data, language=LANGUAGES[selected_language])
-                                st.session_state.live_question = text
-                        except:
-                            pass
-                    self.buffer = b""
+            # Load audio and recognize
+            with sr.AudioFile(audio_path) as source:
+                audio_data = recognizer.record(source)
 
-    # WebRTC for live microphone
-    webrtc_streamer(
-        key="mic-streamer",
-        mode="sendrecv",
-        media_stream_constraints={"audio": True, "video": False},
-        audio_frame_callback=AudioFrameProcessor(),
-        media_stream_processor=AudioFrameProcessor()
-    )
+            # Recognize speech using Google API
+            question = recognizer.recognize_google(audio_data, language=LANGUAGES[selected_language])
+            st.success(translate_text("Question Recognized"))
+            st.subheader(translate_text("📝 Your Question"))
+            st.info(question)
 
-    # Show transcribed text
-    if st.session_state.live_question:
-        st.subheader(translate_text("📝 Transcribed Question"))
-        st.write(st.session_state.live_question)
-
-    # Ask button
-    if st.button(translate_text("Ask Question")):
-        question = st.session_state.live_question
-        if question:
-            # Generate answer (your existing logic)
+            # Generate AI answer based on question
             q_lower = question.lower()
             if "python" in q_lower:
                 answer = translate_text("Python is a high-level programming language known for simplicity, readability and powerful libraries.")
@@ -438,27 +415,19 @@ elif feature == "🎤 Speech-to-Text":
                 tts = gTTS(text=answer, lang=lang_code)
             except:
                 tts = gTTS(text=answer, lang="en")
+
+            # Save and play TTS audio
             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
                 tts.save(fp.name)
                 with open(fp.name, "rb") as audio_file:
                     st.audio(audio_file.read(), format="audio/mp3")
-            # Save to history
+
+            # Save conversation to history
             st.session_state.speech_history.append({"question": question, "answer": answer})
             save_to_history("🎤 Speech Q&A", f"Q: {question}\nA: {answer}")
-        else:
-            st.warning("Please speak into your microphone and click 'Ask Question'.")
 
-# Rest of your code remains unchanged
-# Include your existing code for other features here
-
-# For example:
-elif feature == "🧠 AI Notes Summarizer":
-    # Your existing code
-    pass
-    
-# At the end, your footer
-st.markdown(f"""{translate_text("Made with")} ❤️ {translate_text("using Streamlit")} | EduAccess AI""", unsafe_allow_html=True)
-            
+        except Exception as e:
+            st.error(translate_text("Speech Error") + f": {e}")
 # DYSLEXIA FRIENDLY READING
 elif feature == "📖 Dyslexia-Friendly Reading":
     st.header(translate_text("📖 Dyslexia-Friendly Reading"))
