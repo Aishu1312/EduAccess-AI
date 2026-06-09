@@ -971,257 +971,366 @@ elif feature == "📖 Dyslexia-Friendly Reading":
 
 elif feature == "❓ AI Quiz Generator":
 
-    st.header(
-        translate_text(
-            "❓ AI Adaptive Quiz Generator"
+import json
+
+st.header("❓ AI Adaptive Quiz Generator")
+
+topic = st.text_input(
+    "📘 Enter Subject / Topic"
+)
+
+difficulty = st.selectbox(
+    "🎯 Select Difficulty",
+    [
+        "Basic",
+        "Advanced",
+        "Expert"
+    ]
+)
+
+num_questions = st.slider(
+    "📊 Number of Questions",
+    5,
+    20,
+    10
+)
+
+def generate_questions(
+    topic,
+    difficulty,
+    num_questions
+):
+
+    prompt = f"""
+
+Generate {num_questions} UNIQUE MCQ questions on {topic}.
+
+Difficulty Level: {difficulty}
+
+Rules:
+
+1. No duplicate questions.
+2. No duplicate options.
+3. Exactly 4 options.
+4. One correct answer.
+5. Include explanation.
+6. Questions must be educational and relevant.
+7. Return ONLY valid JSON.
+
+Format:
+
+[
+{{
+"question":"Question",
+"options":["A","B","C","D"],
+"answer":"Correct Option",
+"explanation":"Explanation"
+}}
+]
+"""
+
+    try:
+
+        response = client.chat.completions.create(
+
+            model="gpt-4o-mini",
+
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+
+            temperature=0.9
         )
-    )
 
-    topic = st.text_input(
-        translate_text(
-            "📘 Enter Subject"
+        content = (
+            response
+            .choices[0]
+            .message
+            .content
         )
-    )
 
-    difficulty = st.selectbox(
-        translate_text(
-            "🎯 Difficulty"
-        ),
-        [
-            "Beginner",
-            "Intermediate",
-            "Advanced"
-        ]
-    )
-
-    num_questions = st.slider(
-        translate_text(
-            "📊 Number of Questions"
-        ),
-        1,
-        30,
-        10
-    )
-
-    if st.button(
-        translate_text(
-            "🚀 Generate Quiz"
+        content = content.replace(
+            "```json",
+            ""
         )
-    ):
 
-        if topic.strip() == "":
+        content = content.replace(
+            "```",
+            ""
+        )
 
-            st.warning(
-                translate_text(
-                    "Please enter a subject."
+        questions = json.loads(
+            content
+        )
+
+        unique_questions = []
+        seen = set()
+
+        for q in questions:
+
+            question_text = q["question"].strip()
+
+            if question_text not in seen:
+
+                seen.add(
+                    question_text
                 )
-            )
 
-        else:
-
-            with st.spinner(
-                "Generating Quiz..."
-            ):
-
-                st.session_state.quiz_questions = (
-                    generate_questions(
-                        topic,
-                        difficulty,
-                        num_questions
+                q["options"] = list(
+                    dict.fromkeys(
+                        q["options"]
                     )
                 )
 
-                st.session_state.quiz_generated = True
+                if len(
+                    q["options"]
+                ) == 4:
 
-    if (
-        st.session_state.quiz_generated
-        and
+                    unique_questions.append(
+                        q
+                    )
+
+        return unique_questions
+
+    except Exception as e:
+
+        st.error(
+            f"Quiz Generation Error: {e}"
+        )
+
+        return []
+
+if st.button(
+    "🚀 Generate Quiz"
+):
+
+    if topic.strip() == "":
+
+        st.warning(
+            "Please enter a topic."
+        )
+
+    else:
+
+        with st.spinner(
+            "Generating AI Quiz..."
+        ):
+
+            st.session_state.quiz_questions = (
+                generate_questions(
+                    topic,
+                    difficulty,
+                    num_questions
+                )
+            )
+
+            st.session_state.quiz_generated = True
+
+            st.session_state.user_answers = {}
+
+if (
+    st.session_state.get(
+        "quiz_generated",
+        False
+    )
+    and
+    len(
+        st.session_state.quiz_questions
+    ) > 0
+):
+
+    st.markdown("---")
+
+    st.subheader(
+        "📝 Quiz Questions"
+    )
+
+    for idx, q in enumerate(
         st.session_state.quiz_questions
     ):
 
-        answers = {}
-
         st.markdown("---")
+
+        st.write(
+            f"### Question {idx+1}"
+        )
+
+        st.write(
+            q["question"]
+        )
+
+        answer = st.radio(
+
+            "Choose Answer",
+
+            q["options"],
+
+            key=f"quiz_{idx}"
+        )
+
+        st.session_state.user_answers[
+            idx
+        ] = answer
+
+    if st.button(
+        "✅ Submit Quiz"
+    ):
+
+        score = 0
+
+        review = []
+
+        total_questions = len(
+            st.session_state.quiz_questions
+        )
 
         for idx, q in enumerate(
             st.session_state.quiz_questions
         ):
 
-            st.subheader(
-                f"Question {idx+1}"
+            user_answer = (
+                st.session_state
+                .user_answers
+                .get(idx, "")
             )
 
-            st.write(
-                q["question"]
+            is_correct = (
+                user_answer
+                ==
+                q["answer"]
             )
 
-            answers[idx] = st.radio(
-                "Choose Answer",
+            if is_correct:
+
+                score += 1
+
+            review.append({
+
+                "question":
+                q["question"],
+
+                "options":
                 q["options"],
-                key=f"quiz_{idx}"
-            )
 
-        if st.button(
-            "✅ Submit Quiz"
-        ):
+                "user_answer":
+                user_answer,
 
-            score = 0
+                "correct_answer":
+                q["answer"],
 
-            review = []
+                "is_correct":
+                is_correct,
 
-            for idx, q in enumerate(
-                st.session_state.quiz_questions
-            ):
+                "explanation":
+                q["explanation"]
+            })
 
-                user_answer = answers[idx]
+        percentage = (
+            score /
+            total_questions
+        ) * 100
 
-                correct = (
-                    user_answer
-                    ==
-                    q["answer"]
-                )
+        st.markdown("---")
 
-                if correct:
-                    score += 2
+        st.success(
+            f"🏆 Final Score: {score}/{total_questions}"
+        )
 
-                review.append({
+        st.info(
+            f"📊 Percentage: {percentage:.2f}%"
+        )
 
-                    "question":
-                    q["question"],
+        if percentage >= 80:
 
-                    "options":
-                    q["options"],
-
-                    "user_answer":
-                    user_answer,
-
-                    "correct_answer":
-                    q["answer"],
-
-                    "is_correct":
-                    correct,
-
-                    "explanation":
-                    q["explanation"]
-                })
-
-            total = (
-                len(
-                    st.session_state.quiz_questions
-                ) * 2
-            )
-
-            percentage = (
-                score / total
-            ) * 100
+            st.balloons()
 
             st.success(
-                f"🏆 Score: {score}/{total}"
+                "🎉 Outstanding Performance!"
             )
 
-                        st.info(
-                f"📊 Percentage: {percentage:.2f}%"
+        elif percentage >= 60:
+
+            st.success(
+                "👍 Good Work!"
             )
 
-            save_quiz_history(
-                topic,
-                difficulty,
-                f"{score}/{total}",
-                percentage,
-                review
+        else:
+
+            st.warning(
+                "📚 Keep Practicing!"
             )
+
+        if percentage >= 90:
+
+            st.success(
+                "🏅 Expert Level Achieved"
+            )
+
+        elif percentage >= 75:
+
+            st.success(
+                "🥈 Advanced Level Performance"
+            )
+
+        elif percentage >= 50:
+
+            st.success(
+                "🥉 Basic Level Performance"
+            )
+
+        save_quiz_history(
+
+            topic,
+
+            difficulty,
+
+            f"{score}/{total_questions}",
+
+            percentage,
+
+            review
+        )
+
+        st.markdown("---")
+
+        st.subheader(
+            "📖 Detailed Answer Review"
+        )
+
+        for item in review:
 
             st.markdown("---")
 
-            st.subheader(
-                "📖 Answer Review"
+            st.write(
+                f"### ❓ {item['question']}"
             )
 
-            for item in review:
+            st.write(
+                f"Your Answer: {item['user_answer']}"
+            )
 
-                st.write(
-                    f"### ❓ {item['question']}"
+            st.write(
+                f"Correct Answer: {item['correct_answer']}"
+            )
+
+            if item["is_correct"]:
+
+                st.success(
+                    "✅ Correct"
                 )
 
-                st.write(
-                    f"Your Answer: {item['user_answer']}"
+            else:
+
+                st.error(
+                    "❌ Incorrect"
                 )
 
-                st.write(
-                    f"Correct Answer: {item['correct_answer']}"
-                )
-
-                if item["is_correct"]:
-
-                    st.success(
-                        "✅ Correct"
-                    )
-
-                else:
-
-                    st.error(
-                        "❌ Incorrect"
-                    )
-
-                st.info(
-                    item["explanation"]
-                )
-
-                st.markdown("---")
-
-def save_quiz_history(
-
-    topic,
-
-    difficulty,
-
-    score,
-
-    percentage,
-
-    review
-
-):
-
-    history = load_history()
-
-    history.append({
-
-        "timestamp":
-
-        datetime.now().strftime(
-
-            "%Y-%m-%d %H:%M:%S"
-
-        ),
-
-        "category":
-
-        "Quiz",
-
-        "topic":
-
-        topic,
-
-        "difficulty":
-
-        difficulty,
-
-        "score":
-
-        score,
-
-        "percentage":
-
-        percentage,
-
-        "questions":
-
-        review
-
-    })
-
-    save_history(history)
+            st.info(
+                item["explanation"]
+            )
 
 # ==================================================
 # ACCESSIBILITY SUPPORT
