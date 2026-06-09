@@ -281,9 +281,8 @@ if feature == "🏠 Home":
         st.metric(tr("🚀 AI Modules"), "5")
     st.markdown("---")
     st.header(tr("🎯 Why EduAccess AI?"))
-  st.success(
-    tr("""
-
+    st.success(
+        tr("""
 ✅ Helps students learn faster and smarter
 
 ✅ Supports 15+ languages for inclusive learning
@@ -303,9 +302,8 @@ if feature == "🏠 Home":
 ✅ AI Career Mentorship and Roadmaps
 
 ✅ Accessibility-focused educational ecosystem
-
 """)
-  )
+    )
 
 # USER PROFILE
 elif feature == "👤 User Profile":
@@ -429,6 +427,7 @@ elif feature == "❓ AI Quiz Generator":
     num_questions = st.slider("📊 Number of Questions", 5, 20, 10)
 
     def generate_questions(topic, difficulty, num_questions):
+        # Generate questions from 0 to 30
         prompt = f"""
         Generate {num_questions} UNIQUE MCQ questions on {topic}.
         Difficulty Level: {difficulty}
@@ -443,8 +442,8 @@ elif feature == "❓ AI Quiz Generator":
         Format:
         [{{"question":"Question","options":["A","B","C","D"],"answer":"Correct Option","explanation":"Explanation"}}]"""
         try:
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
+            response = openai.ChatCompletion.create(
+                model="gpt-4",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.9
             )
