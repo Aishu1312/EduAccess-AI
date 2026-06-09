@@ -7,15 +7,15 @@ import sqlite3
 import hashlib
 from datetime import datetime
 from reportlab.pdfgen import canvas  # Ensure reportlab is installed
-from openai import OpenAI
+import openai  # Corrected import
 import speech_recognition as sr
 from deep_translator import GoogleTranslator
 from PyPDF2 import PdfReader
 from gtts import gTTS
 import nltk
 
-# Initialize OpenAI client
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+# Initialize OpenAI API key
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # ===========================
 # USER AUTHENTICATION DATABASE
@@ -508,8 +508,8 @@ elif feature == "❓ AI Quiz Generator":
         Format:
         [{{"question":"Question","options":["A","B","C","D"],"answer":"Correct Option","explanation":"Explanation"}}]"""
         try:
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
+            response = openai.ChatCompletion.create(
+                model="gpt-4",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.9
             )
