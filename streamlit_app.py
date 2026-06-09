@@ -626,70 +626,66 @@ elif feature == "♿ Accessibility Support":
 # ==================================================
 
 elif feature == "🧠 AI Personalized Learning":
+    st.header(translate_text("🧠 AI Personalized Learning"))
+    weak_topic = st.text_input(translate_text("📘 Enter Weak Topic"))
+    STYLE_OPTIONS = ["Visual", "Theory", "Practical", "Interactive"]
+    style_idx = st.selectbox(
+        translate_text("🎯 Preferred Learning Style"),
+        range(len(STYLE_OPTIONS)),
+        format_func=lambda i: translate_text(STYLE_OPTIONS[i])
+    )
+    learning_style = STYLE_OPTIONS[style_idx]
 
-st.header(translate_text("🧠 AI Personalized Learning"))
+    if st.button(translate_text("🚀 Generate Recommendations")):
+        if weak_topic.strip() == "":
+            st.warning(translate_text("⚠️ Please enter a topic"))
+        else:
+            st.success(
+                translate_text(f"AI detected weak understanding in {weak_topic}")
+            )
 
-weak_topic = st.text_input(translate_text("📘 Enter Weak Topic"))
+            st.markdown("---")
 
-STYLE_OPTIONS = ["Visual", "Theory", "Practical", "Interactive"]
-style_idx = st.selectbox(
-    translate_text("🎯 Preferred Learning Style"),
-    range(len(STYLE_OPTIONS)),
-    format_func=lambda i: translate_text(STYLE_OPTIONS[i])
-)
-learning_style = STYLE_OPTIONS[style_idx]
+            st.subheader(translate_text("📘 Practice Resources"))
 
-if st.button(translate_text("🚀 Generate Recommendations")):
-
-    if weak_topic.strip() == "":
-        st.warning(translate_text("⚠️ Please enter a topic"))
-    else:
-        st.success(
-            translate_text(f"AI detected weak understanding in {weak_topic}")
-        )
-
-        st.markdown("---")
-
-        st.subheader(translate_text("📘 Practice Resources"))
-
-        st.markdown(f"""
+            st.markdown(f"""
 
 🔗 https://www.google.com/search?q=GeeksforGeeks+{weak_topic}+quiz
 
 🔗 https://www.google.com/search?q={weak_topic}+MCQ+questions""")
 
-        st.markdown("---")
+            st.markdown("---")
 
-        st.subheader(translate_text("🎥 Best YouTube Tutorials"))
+            st.subheader(translate_text("🎥 Best YouTube Tutorials"))
 
-        st.markdown(f"""
+            st.markdown(f"""
 
 ▶️ https://www.youtube.com/results?search_query={weak_topic}+full+course
 
 ▶️ https://www.youtube.com/results?search_query=learn+{weak_topic}+for+beginners""")
 
-        st.markdown("---")
+            st.markdown("---")
 
-        st.subheader(translate_text("📅 Daily Revision Plan"))
+            st.subheader(translate_text("📅 Daily Revision Plan"))
 
-        st.info(translate_text(f"""
+            st.info(translate_text(f"""
 
 Revise {weak_topic} dailySolve practice questionsWatch one tutorial everydayCreate handwritten notesWeekly revision"""))
 
-        st.markdown("---")
+            st.markdown("---")
 
-        st.subheader(translate_text("📊 Visual Learning"))
+            st.subheader(translate_text("📊 Visual Learning"))
 
-        st.markdown(f"""
+            st.markdown(f"""
 
 🔗 https://www.google.com/search?q={weak_topic}+diagram
 
 🔗 https://www.google.com/search?q={weak_topic}+infographics""")
 
-        save_to_history(
-            "🧠 Personalized Learning",
-            f"Topic: {weak_topic} | Style: {learning_style}"
-        )
+            save_to_history(
+                "🧠 Personalized Learning",
+                f"Topic: {weak_topic} | Style: {learning_style}"
+            )
 
 # ==================================================
 
