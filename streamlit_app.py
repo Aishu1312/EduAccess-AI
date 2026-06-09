@@ -1550,11 +1550,12 @@ Practice mindfulness.
 ▶️ https://www.youtube.com/results?search_query=study+motivation
 """)
 
-    st.info(
-        translate_text(recommendation_text)
+   st.info(
+    translate_text(
+        recommendation_text
     )
-    )
-        
+)
+
 # ==================================================
 # AI CAREER MENTOR
 # ==================================================
