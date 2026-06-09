@@ -1567,72 +1567,30 @@ elif feature == "🚀 AI Career Mentor":
 • {translate_text("Skills for Cybersecurity")}
 """)
 
-    if st.button(translate_text("🚀 Get Guidance")):
+        if st.button(translate_text("🚀 Get Guidance")):
 
         query = career_query.lower()
 
-        st.markdown("---")
+        if "data science" in query:
+            st.success("📊 Data Science Career Roadmap")
 
-        if "data science" in query or "data scientist" in query:
-
-            st.success(translate_text("📊 Data Science Career Roadmap"))
-
-            st.subheader(translate_text("🛠️ Skills Required"))
-            st.info(translate_text("Python, SQL, Machine Learning, Power BI, Statistics"))
-
-            st.subheader(translate_text("📚 Best Courses"))
-            st.markdown("""
-🔗 https://www.coursera.org/
-
-🔗 https://www.udemy.com/
-
-🔗 https://www.geeksforgeeks.org/data-science-for-beginners/
-""")
-
-            st.subheader(translate_text("🎥 YouTube Tutorials"))
-            st.markdown("▶️ https://www.youtube.com/results?search_query=data+science+full+course")
-
-        elif "ai" in query or "machine learning" in query:
-
-            st.success(translate_text("🤖 AI / ML Career Roadmap"))
-
-            st.subheader(translate_text("🛠️ Skills Required"))
-            st.info(translate_text("Python, Machine Learning, Deep Learning, NLP, Computer Vision"))
-
-            st.subheader(translate_text("🎥 Learning Resources"))
-            st.markdown("""
-▶️ https://www.youtube.com/results?search_query=machine+learning+full+course
-
-🔗 https://www.geeksforgeeks.org/machine-learning/
-""")
+        elif "ai" in query:
+            st.success("🤖 AI / ML Career Roadmap")
 
         elif "web" in query:
+            st.success("🌐 Web Development Roadmap")
 
-            st.success(translate_text("🌐 Web Development Roadmap"))
-
-            st.subheader(translate_text("🛠️ Skills Required"))
-            st.info(translate_text("HTML, CSS, JavaScript, React, Node.js"))
-
-            st.subheader(translate_text("🎥 Tutorials"))
-            st.markdown("▶️ https://www.youtube.com/results?search_query=web+development+full+course")
-
-        elif "cybersecurity" in query or "cyber" in query:
-
-            st.success(translate_text("🔐 Cybersecurity Career Roadmap"))
-
-            st.subheader(translate_text("🛠️ Skills Required"))
-            st.info(translate_text("Networking, Linux, Python, Ethical Hacking, Cryptography"))
-
-            st.subheader(translate_text("🎥 Tutorials"))
-            st.markdown("▶️ https://www.youtube.com/results?search_query=cybersecurity+full+course")
+        elif "cybersecurity" in query:
+            st.success("🔐 Cybersecurity Career Roadmap")
 
         else:
+            st.info(
+                translate_text(
+                    "Build real-world projects. Improve GitHub profile. Practice DSA. Learn deployment. Build LinkedIn presence."
+                )
+            )
 
-            st.info(translate_text(
-                "Build real-world projects. Improve GitHub profile. Practice DSA. Learn deployment. Build LinkedIn presence."
-            ))
-
-         save_to_history(
+        save_to_history(
             "🚀 Career Query",
             career_query
         )
