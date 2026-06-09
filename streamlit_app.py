@@ -282,8 +282,7 @@ if feature == "🏠 Home":
     st.markdown("---")
     st.header(tr("🎯 Why EduAccess AI?"))
   st.success(
-    tr(
-        """
+    tr("""
 
 ✅ Helps students learn faster and smarter
 
@@ -303,7 +302,10 @@ if feature == "🏠 Home":
 
 ✅ AI Career Mentorship and Roadmaps
 
-✅ Accessibility-focused educational ecosystem"""))
+✅ Accessibility-focused educational ecosystem
+
+""")
+  )
 
 # USER PROFILE
 elif feature == "👤 User Profile":
