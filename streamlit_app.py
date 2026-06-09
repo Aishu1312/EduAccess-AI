@@ -7,7 +7,6 @@ import sqlite3
 import hashlib
 from datetime import datetime
 from reportlab.pdfgen import canvas
-from openai import OpenAI
 import speech_recognition as sr
 from deep_translator import GoogleTranslator
 from PyPDF2 import PdfReader
