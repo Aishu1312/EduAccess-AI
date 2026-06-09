@@ -1473,88 +1473,75 @@ elif feature == "😊 Emotion-Aware Learning":
 
     st.header(translate_text("😊 Emotion-Aware Learning"))
 
-    EMOTION_OPTIONS = ["Confused", "Focused", "Stressed", "Tired"]
-    emotion_idx = st.selectbox(
+    emotion = st.selectbox(
         translate_text("💭 How are you feeling?"),
-        range(len(EMOTION_OPTIONS)),
-        format_func=lambda i: translate_text(EMOTION_OPTIONS[i])
+        ["Confused", "Focused", "Stressed", "Tired"]
     )
-    emotion = EMOTION_OPTIONS[emotion_idx]
 
     if st.button(translate_text("🧠 Analyze Emotion")):
 
-        st.markdown("---")
-
         if emotion == "Confused":
-            st.warning(translate_text("AI detected confusion in learning."))
-            st.subheader(translate_text("🎥 Beginner Tutorials"))
-            st.markdown("""
-▶️ https://www.youtube.com/results?search_query=beginner+programming+tutorials
 
-▶️ https://www.youtube.com/results?search_query=easy+computer+science+tutorials
-""")
-            st.info(translate_text(
-                "Start from basics. Watch visual tutorials. Practice beginner quizzes. Revise concepts slowly."
-            ))
+            st.warning(
+                translate_text(
+                    "AI detected confusion in learning."
+                )
+            )
+
+            st.info(
+                translate_text(
+                    "Start from basics, watch beginner tutorials, and practice easy questions."
+                )
+            )
 
         elif emotion == "Focused":
-            st.success(translate_text("AI detected high focus level."))
-            st.subheader(translate_text("🚀 Advanced Recommendations"))
-            st.markdown("""
-▶️ https://www.youtube.com/results?search_query=advanced+programming+projects
 
-🔗 https://www.geeksforgeeks.org/
-""")
-            st.info(translate_text(
-                "Build projects. Practice coding. Learn advanced concepts. Attempt difficult quizzes."
-            ))
+            st.success(
+                translate_text(
+                    "AI detected high focus level."
+                )
+            )
+
+            st.info(
+                translate_text(
+                    "Excellent! Continue learning advanced concepts and build projects."
+                )
+            )
 
         elif emotion == "Stressed":
 
-    st.error(translate_text("AI detected stress."))
+            st.error(
+                translate_text(
+                    "AI detected stress."
+                )
+            )
 
-    st.subheader(translate_text("🧘 Relaxation Resources"))
+            st.info(
+                translate_text(
+                    "Take a short break, drink water, and return with a fresh mind."
+                )
+            )
 
-    st.markdown("""
-▶️ https://www.youtube.com/results?search_query=student+stress+management
+        elif emotion == "Tired":
 
-▶️ https://www.youtube.com/results?search_query=study+motivation
-""")
+            st.warning(
+                translate_text(
+                    "AI detected tiredness."
+                )
+            )
 
-    st.info(
-        translate_text(
-            "Take a short break, stay hydrated, practice deep breathing, and return to studying with a fresh mind."
-        )
-    )
-
-else:
-
-    recommendation_text = """
+            recommendation_text = """
 Take short breaks.
 Sleep properly.
 Reduce pressure.
 Practice mindfulness.
 """
 
-    st.info(
-        translate_text("AI detected tiredness.")
-    )
-
-    st.subheader(
-        translate_text("😴 Recovery Suggestions")
-    )
-
-    st.markdown("""
-▶️ https://www.youtube.com/results?search_query=focus+music+for+studying
-
-▶️ https://www.youtube.com/results?search_query=study+motivation
-""")
-
-   st.info(
-    translate_text(
-        recommendation_text
-    )
-)
+            st.info(
+                translate_text(
+                    recommendation_text
+                )
+            )
 
 # ==================================================
 # AI CAREER MENTOR
