@@ -1851,347 +1851,59 @@ with col4:
 
 elif feature == "📜 History":
 
-    st.header("📜 History")
+    st.header("📜 Learning History")
 
     history = load_history()
 
     if not history:
-        st.info("No history available.")
-    else:
-        st.write(history)
+        st.info("No history available yet.")
 
     else:
 
-        st.success(
-            f"📊 Total Records: {len(history)}"
-        )
+        st.success(f"Total Records: {len(history)}")
 
-        col1,col2,col3 = st.columns(3)
-
-with col1:
-
-    st.metric(
-
-        "Records",
-
-        len(history)
-
-    )
-
-with col2:
-
-    quiz_count = len(
-
-        [
-
-            x
-
-            for x in history
-
-            if x["category"]
-
-            == "Quiz"
-
-        ]
-
-    )
-
-    st.metric(
-
-        "Quiz Attempts",
-
-        quiz_count
-
-    )
-
-with col3:
-
-    st.metric(
-
-        "User",
-
-        st.session_state.username
-
-    )
-        
-        st.markdown("---")
-
-        categories = ["All"]
-
-        for item in history:
-
-            category = item.get(
-                "category",
-                "Unknown"
-            )
-
-            if category not in categories:
-
-                categories.append(
-                    category
-                )
-
-        selected_category = st.selectbox(
-            translate_text(
-                "📂 Filter by Category"
-            ),
-            categories
-        )
-
-        if selected_category == "All":
-
-            filtered_history = history
-
-        else:
-
-            filtered_history = [
-                item
-                for item in history
-                if item.get("category")
-                == selected_category
-            ]
-
-        st.markdown("---")
-
-        for record in reversed(filtered_history):
-
-            category = record.get(
-                "category",
-                "Unknown"
-            )
-
-            timestamp = record.get(
-                "timestamp",
-                "N/A"
-            )
+        for record in reversed(history):
 
             with st.expander(
-                f"📌 {category} | {timestamp}"
+                f"{record.get('category','Unknown')} | {record.get('timestamp','N/A')}"
             ):
 
-                if category == "Quiz":
+                if record.get("category") == "Quiz":
 
-                    st.subheader(
-                        "❓ Quiz Attempt"
+                    st.write(
+                        f"Topic: {record.get('topic','N/A')}"
                     )
 
                     st.write(
-                        f"📘 Topic: {record.get('topic', 'N/A')}"
+                        f"Difficulty: {record.get('difficulty','N/A')}"
                     )
 
                     st.write(
-                        f"🎯 Difficulty: {record.get('difficulty', 'N/A')}"
+                        f"Score: {record.get('score','N/A')}"
                     )
 
                     st.write(
-                        f"🏆 Score: {record.get('score', 'N/A')}"
+                        f"Percentage: {record.get('percentage',0)}%"
                     )
-
-                    if "percentage" in record:
-
-                        st.write(
-                            f"📊 Percentage: {record['percentage']:.2f}%"
-                        )
-
-                    questions = record.get(
-                        "questions",
-                        []
-                    )
-
-                    for idx, q in enumerate(
-                        questions,
-                        start=1
-                    ):
-
-                        st.markdown("---")
-
-                        st.markdown(
-                            f"### Question {idx}"
-                        )
-
-                        st.write(
-                            q.get(
-                                "question",
-                                ""
-                            )
-                        )
-
-                        options = q.get(
-                            "options",
-                            []
-                        )
-
-                        if options:
-
-                            st.write(
-                                "Options:"
-                            )
-
-                            for option in options:
-
-                                st.write(
-                                    f"• {option}"
-                                )
-
-                        st.success(
-                            f"Your Answer: {q.get('user_answer', '')}"
-                        )
-
-                        st.info(
-                            f"Correct Answer: {q.get('correct_answer', '')}"
-                        )
-
-                        if q.get(
-                            "is_correct",
-                            False
-                        ):
-
-                            st.success(
-                                "✅ Correct"
-                            )
-
-                        else:
-
-                            st.error(
-                                "❌ Incorrect"
-                            )
-
-                        st.warning(
-                            f"Explanation: {q.get('explanation', '')}"
-                        )
 
                 else:
 
                     st.write(
-                        record.get(
-                            "content",
-                            ""
-                        )
+                        record.get("content","")
                     )
 
-st.markdown("---")
-
-history_json = json.dumps(
-
-    history,
-
-    indent=2,
-
-    ensure_ascii=False
-
-)
-
-st.download_button(
-
-    label="⬇ Download Learning History",
-
-    data=history_json,
-
-    file_name=f"{st.session_state.username}_history.json",
-
-    mime="application/json"
-)
-
-if st.button("📄 Export PDF"):
-
-        if st.button(
-            translate_text(
-                "🗑️ Clear All History"
-            )
-        ):
-
-            try:
-
-              history_file = get_history_file()
-
-if os.path.exists(history_file):
-
-                   os.remove(history_file)
-
-                st.success(
-                    translate_text(
-                        "History Cleared Successfully"
-                    )
-                )
-
-                st.rerun()
-
-            except Exception as e:
-
-                st.error(
-                    f"Error: {e}"
-                )
-
-    pdf_file = create_history_pdf(
-
-        history
-
+    history_json = json.dumps(
+        history,
+        indent=2,
+        ensure_ascii=False
     )
 
-    with open(
-
-        pdf_file,
-
-        "rb"
-
-    ) as f:
-
-        st.download_button(
-
-            "⬇ Download PDF",
-
-            f,
-
-            "Learning_History.pdf",
-
-            "application/pdf"
-        )
-
-def create_history_pdf(history):
-
-    filename = "learning_history.pdf"
-
-    c = canvas.Canvas(filename)
-
-    y = 800
-
-    c.drawString(
-
-        50,
-
-        y,
-
-        "EduAccess AI Learning History"
-
+    st.download_button(
+        label="⬇ Download History",
+        data=history_json,
+        file_name=f"{st.session_state.username}_history.json",
+        mime="application/json"
     )
-
-    y -= 40
-
-    for item in history:
-
-        line = f"{item['timestamp']} | {item['category']}"
-
-        c.drawString(
-
-            50,
-
-            y,
-
-            line[:100]
-
-        )
-
-        y -= 20
-
-        if y < 50:
-
-            c.showPage()
-
-            y = 800
-
-    c.save()
-
-    return filename
                 
 # ==================================================
 # FOOTER
