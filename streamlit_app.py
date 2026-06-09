@@ -88,7 +88,11 @@ def save_to_history(category, content):
     history = history[-500:]
     save_history(history)
 
+# ==================================================
+
 # NLTK DOWNLOAD
+
+# ==================================================
 try:
     nltk.data.find("tokenizers/punkt")
 except:
@@ -214,7 +218,12 @@ if "logged_in" not in st.session_state:
 if "username" not in st.session_state:
     st.session_state.username = ""
 
+# ==================================================
+
 # LOGIN PAGE
+
+# ==================================================
+
 if not st.session_state.logged_in:
     st.title("🔐 " + tr("EduAccess AI"))
     option = st.radio("Choose Option", ["Login", "Register"])
@@ -241,7 +250,11 @@ if not st.session_state.logged_in:
                 st.error("Invalid Credentials")
     st.stop()
 
+# ==================================================
+
 # HOME PAGE
+
+# ==================================================
 if feature == "🏠 Home":
     st.title(tr("🚀 EduAccess AI"))
     st.subheader(tr("AI-Powered Accessibility Platform for Students"))
@@ -316,7 +329,12 @@ if feature == "🏠 Home":
 """)
     )
 
+# ==================================================
+
 # USER PROFILE
+
+# ==================================================
+
 elif feature == "👤 User Profile":
     st.header("👤 User Profile")
     st.success(f"Welcome {st.session_state.username}")
@@ -327,7 +345,12 @@ elif feature == "👤 User Profile":
         st.session_state.username = ""
         st.experimental_rerun()
 
+# ==================================================
+
 # AI NOTES SUMMARIZER
+
+# ==================================================
+
 elif feature == "🧠 AI Notes Summarizer":
     st.header(translate_text("🧠 AI Notes Summarizer"))
     uploaded_file = st.file_uploader(translate_text("Upload PDF"), type=["pdf"])
@@ -365,7 +388,12 @@ elif feature == "🧠 AI Notes Summarizer":
             st.success(translate_text("Summary Generated Successfully"))
             st.write(final_summary)
 
-# SPEECH TO TEXT FEATURE
+# ==================================================
+
+# SPEECH TO TEXT
+
+# ==================================================
+
 elif feature == "🎤 Speech-to-Text":
     st.header(translate_text("🎤 Speech-to-Text"))
     st.write(translate_text("Ask a question using your microphone."))
@@ -428,7 +456,13 @@ elif feature == "🎤 Speech-to-Text":
 
         except Exception as e:
             st.error(translate_text("Speech Error") + f": {e}")
+            
+# ==================================================
+
 # DYSLEXIA FRIENDLY READING
+
+# ==================================================
+
 elif feature == "📖 Dyslexia-Friendly Reading":
     st.header(translate_text("📖 Dyslexia-Friendly Reading"))
     if st.session_state.summary == "":
@@ -449,7 +483,12 @@ elif feature == "📖 Dyslexia-Friendly Reading":
         """, unsafe_allow_html=True)
         st.success(translate_text("Reading mode activated."))
 
+# ==================================================
+
 # AI QUIZ GENERATOR
+
+# ==================================================
+
 elif feature == "❓ AI Quiz Generator":
     st.header("❓ AI Adaptive Quiz Generator")
     topic = st.text_input("Enter Topic")
@@ -561,7 +600,12 @@ elif feature == "❓ AI Quiz Generator":
                     st.error("❌ Incorrect")
                 st.info(item["explanation"])
 
+# ==================================================
+
 # ACCESSIBILITY SUPPORT
+
+# ==================================================
+
 elif feature == "♿ Accessibility Support":
     st.header(translate_text("♿ Accessibility Support"))
     st.success(translate_text("🌍 Multi-language Support"))
@@ -575,74 +619,257 @@ elif feature == "♿ Accessibility Support":
     st.subheader(translate_text("Why Accessibility Matters?"))
     st.write(translate_text("Accessibility ensures that every learner, including students with visual, hearing, language or learning difficulties, can access education equally."))
 
+# ==================================================
+
 # AI PERSONALIZED LEARNING
+
+# ==================================================
+
 elif feature == "🧠 AI Personalized Learning":
-    st.header(translate_text("🧠 AI Personalized Learning"))
-    weak_topic = st.text_input(translate_text("📘 Enter Weak Topic"))
-    STYLE_OPTIONS = ["Visual", "Theory", "Practical", "Interactive"]
-    style_idx = st.selectbox(translate_text("🎯 Preferred Learning Style"),
-                             range(len(STYLE_OPTIONS)),
-                             format_func=lambda i: translate_text(STYLE_OPTIONS[i]))
-    learning_style = STYLE_OPTIONS[style_idx]
-    if st.button(translate_text("🚀 Generate Recommendations")):
-        if weak_topic.strip() == "":
-            st.warning(translate_text("⚠️ Please enter a topic"))
-        else:
-            st.success(translate_text(f"AI detected weak understanding in {weak_topic}"))
-            st.markdown("---")
-            st.subheader(translate_text("📘 Practice Resources"))
-            st.markdown(f"🔗 https://www.google.com/search?q=GeeksforGeeks+{weak_topic}+quiz")
-            st.markdown(f"🔗 https://www.google.com/search?q={weak_topic}+MCQ+questions")
-            st.markdown("---")
-            st.subheader(translate_text("🎥 Best YouTube Tutorials"))
-            st.markdown(f"▶️ https://www.youtube.com/results?search_query={weak_topic}+full+course")
-            st.markdown(f"▶️ https://www.youtube.com/results?search_query=learn+{weak_topic}+for+beginners")
-            st.markdown("---")
-            st.subheader(translate_text("📅 Daily Revision Plan"))
-            st.info(translate_text(f"Revise {weak_topic} daily\nSolve practice questions\nWatch one tutorial every day\nCreate handwritten notes\nWeekly revision"))
-            st.markdown("---")
-            st.subheader(translate_text("📊 Visual Learning"))
-            st.markdown(f"🔗 https://www.google.com/search?q={weak_topic}+diagram")
-            st.markdown(f"🔗 https://www.google.com/search?q={weak_topic}+infographics")
-            save_to_history("🧠 Personalized Learning", f"Topic: {weak_topic} | Style: {learning_style}")
 
-# 😊 EMOTION-AWARE LEARNING
+st.header(translate_text("🧠 AI Personalized Learning"))
+
+weak_topic = st.text_input(translate_text("📘 Enter Weak Topic"))
+
+STYLE_OPTIONS = ["Visual", "Theory", "Practical", "Interactive"]
+style_idx = st.selectbox(
+    translate_text("🎯 Preferred Learning Style"),
+    range(len(STYLE_OPTIONS)),
+    format_func=lambda i: translate_text(STYLE_OPTIONS[i])
+)
+learning_style = STYLE_OPTIONS[style_idx]
+
+if st.button(translate_text("🚀 Generate Recommendations")):
+
+    if weak_topic.strip() == "":
+        st.warning(translate_text("⚠️ Please enter a topic"))
+    else:
+        st.success(
+            translate_text(f"AI detected weak understanding in {weak_topic}")
+        )
+
+        st.markdown("---")
+
+        st.subheader(translate_text("📘 Practice Resources"))
+
+        st.markdown(f"""
+
+🔗 https://www.google.com/search?q=GeeksforGeeks+{weak_topic}+quiz
+
+🔗 https://www.google.com/search?q={weak_topic}+MCQ+questions""")
+
+        st.markdown("---")
+
+        st.subheader(translate_text("🎥 Best YouTube Tutorials"))
+
+        st.markdown(f"""
+
+▶️ https://www.youtube.com/results?search_query={weak_topic}+full+course
+
+▶️ https://www.youtube.com/results?search_query=learn+{weak_topic}+for+beginners""")
+
+        st.markdown("---")
+
+        st.subheader(translate_text("📅 Daily Revision Plan"))
+
+        st.info(translate_text(f"""
+
+Revise {weak_topic} dailySolve practice questionsWatch one tutorial everydayCreate handwritten notesWeekly revision"""))
+
+        st.markdown("---")
+
+        st.subheader(translate_text("📊 Visual Learning"))
+
+        st.markdown(f"""
+
+🔗 https://www.google.com/search?q={weak_topic}+diagram
+
+🔗 https://www.google.com/search?q={weak_topic}+infographics""")
+
+        save_to_history(
+            "🧠 Personalized Learning",
+            f"Topic: {weak_topic} | Style: {learning_style}"
+        )
+
+# ==================================================
+
+# EMOTION-AWARE LEARNING
+
+# ==================================================
+
 elif feature == "😊 Emotion-Aware Learning":
-    st.header(translate_text("😊 Emotion-Aware Learning"))
-    emotion = st.selectbox(translate_text("💭 How are you feeling?"), ["Confused", "Focused", "Stressed", "Tired"])
-    if st.button(translate_text("🧠 Analyze Emotion")):
-        if emotion == "Confused":
-            st.warning(translate_text("AI detected confusion in learning."))
-            st.info(translate_text("Start from basics, watch beginner tutorials, and practice easy questions."))
-        elif emotion == "Focused":
-            st.success(translate_text("AI detected high focus level."))
-            st.info(translate_text("Excellent! Continue learning advanced concepts and build projects."))
-        elif emotion == "Stressed":
-            st.error(translate_text("AI detected stress."))
-            st.info(translate_text("Take a short break, drink water, and return with a fresh mind."))
-        elif emotion == "Tired":
-            st.warning(translate_text("AI detected tiredness."))
-            st.info(translate_text("Take short breaks. Sleep properly. Reduce pressure. Practice mindfulness."))
 
-# 🚀 AI CAREER MENTOR
+st.header(translate_text("😊 Emotion-Aware Learning"))
+
+EMOTION_OPTIONS = ["Confused", "Focused", "Stressed", "Tired"]
+emotion_idx = st.selectbox(
+    translate_text("💭 How are you feeling?"),
+    range(len(EMOTION_OPTIONS)),
+    format_func=lambda i: translate_text(EMOTION_OPTIONS[i])
+)
+emotion = EMOTION_OPTIONS[emotion_idx]
+
+if st.button(translate_text("🧠 Analyze Emotion")):
+
+    st.markdown("---")
+
+    if emotion == "Confused":
+        st.warning(translate_text("AI detected confusion in learning."))
+        st.subheader(translate_text("🎥 Beginner Tutorials"))
+        st.markdown("""
+
+▶️ https://www.youtube.com/results?search_query=beginner+programming+tutorials
+
+▶️ https://www.youtube.com/results?search_query=easy+computer+science+tutorials""")st.info(translate_text("Start from basics. Watch visual tutorials. Practice beginner quizzes. Revise concepts slowly."))
+
+    elif emotion == "Focused":
+        st.success(translate_text("AI detected high focus level."))
+        st.subheader(translate_text("🚀 Advanced Recommendations"))
+        st.markdown("""
+
+▶️ https://www.youtube.com/results?search_query=advanced+programming+projects
+
+🔗 https://www.geeksforgeeks.org/""")st.info(translate_text("Build projects. Practice coding. Learn advanced concepts. Attempt difficult quizzes."))
+
+    elif emotion == "Stressed":
+        st.error(translate_text("AI detected stress."))
+        st.subheader(translate_text("🧘 Relaxation Resources"))
+        st.markdown("""
+
+▶️ https://www.youtube.com/results?search_query=student+stress+management
+
+▶️ https://www.youtube.com/results?search_query=study+motivation""")st.info(translate_text(else:
+
+recommendation_text = """
+
+Take short breaks.Sleep properly.Reduce pressure.Practice mindfulness."""
+
+st.info(
+    translate_text(
+        "AI detected tiredness."
+    )
+)
+
+st.subheader(
+    translate_text(
+        "😴 Recovery Suggestions"
+    )
+)
+
+st.markdown("""
+
+▶️ https://www.youtube.com/results?search_query=focus+music+for+studying
+
+▶️ https://www.youtube.com/results?search_query=study+motivation""")
+
+st.info(
+    translate_text(
+        recommendation_text
+    )
+)
+    
+
+# ==================================================
+
+# AI CAREER MENTOR
+
+# ==================================================
+
 elif feature == "🚀 AI Career Mentor":
-    st.header(translate_text("🚀 AI Career Mentor"))
-    career_query = st.text_input(translate_text("💬 Ask Career Guidance"))
-    if st.button(translate_text("🚀 Get Guidance")):
-        query = career_query.lower()
-        if "data science" in query:
-            st.success("📊 Data Science Career Roadmap")
-        elif "ai" in query:
-            st.success("🤖 AI / ML Career Roadmap")
-        elif "web" in query:
-            st.success("🌐 Web Development Roadmap")
-        elif "cybersecurity" in query:
-            st.success("🔐 Cybersecurity Career Roadmap")
-        else:
-            st.info("Build projects, improve GitHub, practice DSA and strengthen your LinkedIn profile.")
-        save_to_history("🚀 Career Query", career_query)
+
+st.header(translate_text("🚀 AI Career Mentor"))
+
+career_query = st.text_input(translate_text("💬 Ask Career Guidance"))
+
+st.markdown(f"""
+
+💡 {translate_text("Sample Questions")}
+
+• {translate_text("How to become Data Scientist")}
+
+• {translate_text("AI Engineer roadmap")}
+
+• {translate_text("Web Development roadmap")}
+
+• {translate_text("Best AI projects")}
+
+• {translate_text("Skills for Cybersecurity")}""")
+
+if st.button(translate_text("🚀 Get Guidance")):
+
+    query = career_query.lower()
+
+    st.markdown("---")
+
+    if "data science" in query or "data scientist" in query:
+
+        st.success(translate_text("📊 Data Science Career Roadmap"))
+
+        st.subheader(translate_text("🛠️ Skills Required"))
+        st.info(translate_text("Python, SQL, Machine Learning, Power BI, Statistics"))
+
+        st.subheader(translate_text("📚 Best Courses"))
+        st.markdown("""
+
+🔗 https://www.coursera.org/
+
+🔗 https://www.udemy.com/
+
+🔗 https://www.geeksforgeeks.org/data-science-for-beginners/""")
+
+        st.subheader(translate_text("🎥 YouTube Tutorials"))
+        st.markdown("▶️ https://www.youtube.com/results?search_query=data+science+full+course")
+
+    elif "ai" in query or "machine learning" in query:
+
+        st.success(translate_text("🤖 AI / ML Career Roadmap"))
+
+        st.subheader(translate_text("🛠️ Skills Required"))
+        st.info(translate_text("Python, Machine Learning, Deep Learning, NLP, Computer Vision"))
+
+        st.subheader(translate_text("🎥 Learning Resources"))
+        st.markdown("""
+
+▶️ https://www.youtube.com/results?search_query=machine+learning+full+course
+
+🔗 https://www.geeksforgeeks.org/machine-learning/""")
+
+    elif "web" in query:
+
+        st.success(translate_text("🌐 Web Development Roadmap"))
+
+        st.subheader(translate_text("🛠️ Skills Required"))
+        st.info(translate_text("HTML, CSS, JavaScript, React, Node.js"))
+
+        st.subheader(translate_text("🎥 Tutorials"))
+        st.markdown("▶️ https://www.youtube.com/results?search_query=web+development+full+course")
+
+    elif "cybersecurity" in query or "cyber" in query:
+
+        st.success(translate_text("🔐 Cybersecurity Career Roadmap"))
+
+        st.subheader(translate_text("🛠️ Skills Required"))
+        st.info(translate_text("Networking, Linux, Python, Ethical Hacking, Cryptography"))
+
+        st.subheader(translate_text("🎥 Tutorials"))
+        st.markdown("▶️ https://www.youtube.com/results?search_query=cybersecurity+full+course")
+
+    else:
+
+        st.info(translate_text(
+            "Build real-world projects. Improve GitHub profile. Practice DSA. Learn deployment. Build LinkedIn presence."
+        ))
+
+     save_to_history(
+        "🚀 Career Query",
+        career_query
+    )
+
+# ==================================================
 
 # ANALYTICS DASHBOARD
+
+# ==================================================
 elif feature == "📈 Analytics Dashboard":
     st.header("📈 Learning Analytics Dashboard")
     history = load_history()
@@ -698,7 +925,12 @@ elif feature == "📈 Analytics Dashboard":
     with col4:
         st.metric("Topics Learned", len(topics))
 
+# ==================================================
+
 # HISTORY
+
+# ==================================================
+
 elif feature == "📜 History":
     st.header("📜 Learning History")
     history = load_history()
@@ -718,5 +950,9 @@ elif feature == "📜 History":
         history_json = json.dumps(history, indent=2, ensure_ascii=False)
         st.download_button("⬇ Download History", data=history_json, file_name=f"{st.session_state.username}_history.json", mime="application/json")
 
+# ==================================================
+
 # FOOTER
+
+# ==================================================
 st.markdown(f"""{translate_text("Made with")} ❤️ {translate_text("using Streamlit")} | EduAccess AI""", unsafe_allow_html=True)
