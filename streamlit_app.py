@@ -1517,7 +1517,7 @@ elif feature == "😊 Emotion-Aware Learning":
 
 ▶️ https://www.youtube.com/results?search_query=study+motivation
 """)
-            st.info(translate_text(
+            st.info(translate_text
              else:
 
     recommendation_text = """
