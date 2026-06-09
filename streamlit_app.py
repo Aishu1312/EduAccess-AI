@@ -459,6 +459,8 @@ if "username" not in st.session_state:
 # --------------------------------------------------
 
 defaults = {
+    "learning_streak": 0,
+    "topics_learned": [],
     "summary": "",
     "quiz_generated": False,
     "quiz_score": 0,
@@ -1521,6 +1523,200 @@ elif feature == "🚀 AI Career Mentor":
         generated_guidance
     }
 )
+
+# ==================================================
+# ANALYTICS DASHBOARD
+# ==================================================
+
+elif feature == "📈 Analytics Dashboard":
+
+    st.header("📈 Learning Analytics Dashboard")
+
+    history = load_history()
+
+    quiz_attempts = 0
+
+    total_percentage = 0
+
+    topics = set()
+
+    lessons_completed = 0
+
+    for item in history:
+
+        if item.get("category") == "Quiz":
+
+            quiz_attempts += 1
+
+            total_percentage += item.get(
+                "percentage",
+                0
+            )
+
+            if item.get("topic"):
+
+                topics.add(
+                    item["topic"]
+                )
+
+        if item.get("category") in [
+
+            "📝 Notes Summary",
+
+            "🎤 Speech Q&A",
+
+            "🧠 Personalized Learning"
+
+        ]:
+
+            lessons_completed += 1
+
+    accuracy = 0
+
+    if quiz_attempts > 0:
+
+        accuracy = (
+            total_percentage
+            /
+            quiz_attempts
+        )
+
+    learning_streak = min(
+
+        len(history),
+
+        30
+
+    )
+
+    col1,col2 = st.columns(2)
+
+    with col1:
+
+        st.metric(
+
+            "📚 Lessons Completed",
+
+            lessons_completed
+
+        )
+
+        st.metric(
+
+            "🎯 Quiz Attempts",
+
+            quiz_attempts
+
+        )
+
+    with col2:
+
+        st.metric(
+
+            "🏆 Accuracy",
+
+            f"{accuracy:.1f}%"
+
+        )
+
+        st.metric(
+
+            "🔥 Learning Streak",
+
+            f"{learning_streak} Days"
+
+        )
+
+    st.markdown("---")
+
+    st.subheader(
+        "📖 Topics Learned"
+    )
+
+    st.markdown("---")
+
+st.subheader(
+    "📊 Quiz Performance Trend"
+)
+
+performance_data = []
+
+for item in history:
+
+    if item.get("category") == "Quiz":
+
+        performance_data.append({
+
+            "Attempt":
+            len(performance_data)+1,
+
+            "Score":
+            item.get(
+                "percentage",
+                0
+            )
+        })
+
+if performance_data:
+
+    chart_data = performance_data
+
+    st.line_chart(
+        {
+            "Score":[
+                x["Score"]
+                for x in chart_data
+            ]
+        }
+    )
+
+else:
+
+    st.info(
+        "Attempt quizzes to view progress."
+    )
+
+    if len(topics) > 0:
+
+        for topic in topics:
+
+            st.success(topic)
+
+    else:
+
+        st.info(
+            "No topics learned yet."
+        )
+
+st.markdown("---")
+
+st.subheader("🌍 SDG 4 Impact Metrics")
+
+col1,col2,col3,col4 = st.columns(4)
+
+with col1:
+    st.metric(
+        "Students Supported",
+        len(history)
+    )
+
+with col2:
+    st.metric(
+        "Languages Supported",
+        len(LANGUAGES)
+    )
+
+with col3:
+    st.metric(
+        "Accessibility Features",
+        5
+    )
+
+with col4:
+    st.metric(
+        "Topics Learned",
+        len(topics)
+    )
 
 # ==================================================
 # HISTORY
