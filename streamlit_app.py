@@ -282,7 +282,7 @@ if feature == "🏠 Home":
     st.markdown("---")
     st.header(tr("🎯 Why EduAccess AI?"))
     st.success(
-        tr("""
+tr("""
 ✅ Helps students learn faster and smarter
 
 ✅ Supports 15+ languages for inclusive learning
