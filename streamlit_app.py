@@ -206,8 +206,38 @@ def save_quiz_history(
     save_history(history)
 
 def load_history():
-def save_history():
-def save_to_history():
+
+    history_file = get_history_file()
+
+    if os.path.exists(history_file):
+
+        with open(
+            history_file,
+            "r",
+            encoding="utf-8"
+        ) as f:
+
+            return json.load(f)
+
+    return []
+
+
+def save_history(history):
+
+    history_file = get_history_file()
+
+    with open(
+        history_file,
+        "w",
+        encoding="utf-8"
+    ) as f:
+
+        json.dump(
+            history,
+            f,
+            ensure_ascii=False,
+            indent=2
+        )
 
 # --------------------------------------------------
 # NLTK DOWNLOAD
