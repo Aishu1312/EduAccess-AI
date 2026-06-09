@@ -1,11 +1,10 @@
 import streamlit as st
+import json
 import random
 import tempfile
 import os
-import json
 import sqlite3
 import hashlib
-
 from datetime import datetime
 from reportlab.pdfgen import canvas
 from openai import OpenAI
@@ -970,8 +969,6 @@ elif feature == "📖 Dyslexia-Friendly Reading":
 # ==================================================
 
 elif feature == "❓ AI Quiz Generator":
-
-import json
 
 st.header("❓ AI Adaptive Quiz Generator")
 
