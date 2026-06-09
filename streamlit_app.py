@@ -100,63 +100,78 @@ def get_history_file():
 
     return f"history_{username}.json"
 
-def load_history():
-history_file = get_history_file()
 
-if os.path.exists(history_file):
+def load_history():
+
+    history_file = get_history_file()
+
+    if os.path.exists(history_file):
 
         try:
 
             with open(
-
                 history_file,
-
                 "r",
-
                 encoding="utf-8"
-
             ) as f:
 
                 return json.load(f)
 
-        except:
+        except Exception:
 
             return []
 
     return []
+
 
 def save_history(history):
 
     history_file = get_history_file()
 
     with open(
-
         history_file,
-
         "w",
-
         encoding="utf-8"
-
     ) as f:
 
         json.dump(
-
             history,
-
             f,
-
             ensure_ascii=False,
-
             indent=2
-
         )
 
-def save_to_history(
 
-    category,
+def save_to_history(category, content):
 
-    content
+    history = load_history()
 
+    history.append({
+
+        "timestamp":
+        datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
+        ),
+
+        "category":
+        category,
+
+        "content":
+        str(content)
+
+    })
+
+    history = history[-500:]
+
+    save_history(history)
+
+
+def save_quiz_history(
+    topic,
+    difficulty,
+    score,
+    percentage,
+    review
 ):
 
     history = load_history()
@@ -164,24 +179,29 @@ def save_to_history(
     history.append({
 
         "timestamp":
-
         datetime.now().strftime(
-
             "%Y-%m-%d %H:%M:%S"
-
         ),
 
         "category":
+        "Quiz",
 
-        category,
+        "topic":
+        topic,
 
-        "content":
+        "difficulty":
+        difficulty,
 
-        content
+        "score":
+        score,
+
+        "percentage":
+        percentage,
+
+        "questions":
+        review
 
     })
-
-    history = history[-500:]
 
     save_history(history)
 
