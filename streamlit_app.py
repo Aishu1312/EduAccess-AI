@@ -14,9 +14,9 @@ from PyPDF2 import PdfReader
 from gtts import gTTS
 
 import nltk
+import openai
 
-# Initialize OpenAI
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+openai.api_key = st.secrets["OPENAI_API_KEY"]Y"])
 
 # USER AUTHENTICATION DATABASE
 conn = sqlite3.connect("eduaccess_users.db", check_same_thread=False)
