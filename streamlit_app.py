@@ -2,15 +2,91 @@ import streamlit as st
 import random
 import tempfile
 import os
-from openai import OpenAI
 import json
+import sqlite3
+import hashlib
+
+from datetime import datetime
+
+from openai import OpenAI
 import speech_recognition as sr
 from deep_translator import GoogleTranslator
 from PyPDF2 import PdfReader
 from gtts import gTTS
-import nltk
-from datetime import datetime
 
+import nltk
+client = OpenAI(
+    api_key=st.secrets["OPENAI_API_KEY"]
+)
+
+# =====================================================
+# USER AUTHENTICATION DATABASE
+# =====================================================
+
+conn = sqlite3.connect(
+    "eduaccess_users.db",
+    check_same_thread=False
+)
+
+c = conn.cursor()
+
+c.execute("""
+CREATE TABLE IF NOT EXISTS users(
+
+username TEXT PRIMARY KEY,
+
+password TEXT
+
+)
+""")
+
+conn.commit()
+
+def make_hash(password):
+
+    return hashlib.sha256(
+        password.encode()
+    ).hexdigest()
+
+def register_user(
+    username,
+    password
+):
+
+    c.execute(
+
+        "INSERT INTO users VALUES (?,?)",
+
+        (
+            username,
+            make_hash(password)
+        )
+    )
+
+    conn.commit()
+
+def login_user(
+    username,
+    password
+):
+
+    c.execute(
+
+        """
+        SELECT *
+        FROM users
+        WHERE username=?
+        AND password=?
+        """,
+
+        (
+            username,
+            make_hash(password)
+        )
+    )
+
+    return c.fetchone()
+    
 # --------------------------------------------------
 # NLTK DOWNLOAD
 # --------------------------------------------------
@@ -158,16 +234,27 @@ high_contrast = st.sidebar.checkbox(
 FEATURES = {
 
     "🏠 Home":"🏠 Home",
+
+    "👤 User Profile":"👤 User Profile",
+
     "🧠 AI Notes Summarizer":"🧠 AI Notes Summarizer",
+
     "🎤 Speech-to-Text":"🎤 Speech-to-Text",
+
     "📖 Dyslexia-Friendly Reading":"📖 Dyslexia-Friendly Reading",
+
     "❓ AI Quiz Generator":"❓ AI Quiz Generator",
+
+    "📈 Analytics Dashboard":"📈 Analytics Dashboard",
+
     "♿ Accessibility Support":"♿ Accessibility Support",
+
     "🧠 AI Personalized Learning":"🧠 AI Personalized Learning",
+
     "😊 Emotion-Aware Learning":"😊 Emotion-Aware Learning",
+
     "🚀 AI Career Mentor":"🚀 AI Career Mentor",
 
-    # ADD THIS
     "📜 History":"📜 History"
 }
 
@@ -260,6 +347,18 @@ if high_contrast:
     </style>
     """, unsafe_allow_html=True)
 
+# =====================================================
+# LOGIN SESSION
+# =====================================================
+
+if "logged_in" not in st.session_state:
+
+    st.session_state.logged_in = False
+
+if "username" not in st.session_state:
+
+    st.session_state.username = ""
+
 # --------------------------------------------------
 # SESSION STATE
 # --------------------------------------------------
@@ -279,6 +378,100 @@ defaults = {
 for key, value in defaults.items():
     if key not in st.session_state:
         st.session_state[key] = value
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in=False
+
+if "username" not in st.session_state:
+    st.session_state.username=""
+
+# =====================================================
+# LOGIN PAGE
+# =====================================================
+
+if not st.session_state.logged_in:
+
+    st.title("🔐 EduAccess AI")
+
+    option = st.radio(
+
+        "Choose Option",
+
+        [
+            "Login",
+            "Register"
+        ]
+    )
+
+    username = st.text_input(
+        "Username"
+    )
+
+    password = st.text_input(
+        "Password",
+        type="password"
+    )
+
+    if option == "Register":
+
+        if st.button(
+            "Create Account"
+        ):
+
+            if (
+                username.strip() == ""
+                or
+                password.strip() == ""
+            ):
+
+                st.warning(
+                    "Enter username and password"
+                )
+
+            else:
+
+                try:
+
+                    register_user(
+                        username,
+                        password
+                    )
+
+                    st.success(
+                        "Account Created Successfully"
+                    )
+
+                except:
+
+                    st.error(
+                        "Username already exists"
+                    )
+
+    else:
+
+        if st.button(
+            "Login"
+        ):
+
+            user = login_user(
+                username,
+                password
+            )
+
+            if user:
+
+                st.session_state.logged_in = True
+
+                st.session_state.username = username
+
+                st.rerun()
+
+            else:
+
+                st.error(
+                    "Invalid Credentials"
+                )
+
+    st.stop()
 
 # ==================================================
 # HOME PAGE
@@ -422,6 +615,43 @@ if feature == "🏠 Home":
 """
         )
     )
+
+# =====================================================
+# USER PROFILE
+# =====================================================
+
+elif feature == "👤 User Profile":
+
+    st.header("👤 User Profile")
+
+    st.success(
+
+        f"Welcome {st.session_state.username}"
+
+    )
+
+    st.write(
+
+        f"Username: {st.session_state.username}"
+
+    )
+
+    st.write(
+
+        f"Account Type: Student"
+
+    )
+
+    if st.button(
+        "Logout"
+    ):
+
+        st.session_state.logged_in = False
+
+        st.session_state.username = ""
+
+        st.rerun()
+
 # ==================================================
 # AI NOTES SUMMARIZER
 # ==================================================
