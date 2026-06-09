@@ -365,50 +365,69 @@ elif feature == "🧠 AI Notes Summarizer":
             st.success(translate_text("Summary Generated Successfully"))
             st.write(final_summary)
 
-# SPEECH TO TEXT
+# SPEECH TO TEXT FEATURE
 elif feature == "🎤 Speech-to-Text":
     st.header(translate_text("🎤 Speech-to-Text"))
     st.write(translate_text("Ask a question using your microphone."))
-    audio = st.file_uploader(translate_text("🎙️ Record Question"), type=["wav"])
-    if audio:
+
+    # Upload WAV audio file
+    audio_file = st.file_uploader(translate_text("🎙️ Record Question"), type=["wav"])
+
+    if audio_file:
         try:
+            # Save uploaded file temporarily
             with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-                tmp.write(audio.read())
+                tmp.write(audio_file.read())
                 audio_path = tmp.name
+
+            # Initialize recognizer
             recognizer = sr.Recognizer()
+
+            # Load audio and recognize
             with sr.AudioFile(audio_path) as source:
                 audio_data = recognizer.record(source)
+
+            # Recognize speech using Google API
             question = recognizer.recognize_google(audio_data, language=LANGUAGES[selected_language])
             st.success(translate_text("Question Recognized"))
             st.subheader(translate_text("📝 Your Question"))
             st.info(question)
-            q = question.lower()
-            if "python" in q:
+
+            # Generate AI answer based on question
+            q_lower = question.lower()
+            if "python" in q_lower:
                 answer = translate_text("Python is a high-level programming language known for simplicity, readability and powerful libraries.")
-            elif "artificial intelligence" in q or "ai" in q:
+            elif "artificial intelligence" in q_lower or "ai" in q_lower:
                 answer = translate_text("Artificial Intelligence enables machines to learn, reason, make decisions and perform tasks that usually require human intelligence.")
-            elif "machine learning" in q:
+            elif "machine learning" in q_lower:
                 answer = translate_text("Machine Learning is a branch of AI where systems learn patterns from data and improve automatically.")
-            elif "dbms" in q:
+            elif "dbms" in q_lower:
                 answer = translate_text("DBMS stands for Database Management System. It helps store, retrieve and manage data efficiently.")
             else:
                 answer = translate_text(f"Topic: {question}\n\nThis topic is important for academic and professional learning.\n\nStudy the fundamentals, solve practice questions and build projects related to this topic.")
+
             st.subheader(translate_text("🤖 AI Answer"))
             st.success(answer)
+
+            # Generate speech from answer
             lang_code = LANGUAGES[selected_language]
             try:
                 tts = gTTS(text=answer, lang=lang_code)
             except:
                 tts = gTTS(text=answer, lang="en")
+
+            # Save and play TTS audio
             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
                 tts.save(fp.name)
                 with open(fp.name, "rb") as audio_file:
                     st.audio(audio_file.read(), format="audio/mp3")
+
+            # Save conversation to history
             st.session_state.speech_history.append({"question": question, "answer": answer})
             save_to_history("🎤 Speech Q&A", f"Q: {question}\nA: {answer}")
+
         except Exception as e:
             st.error(translate_text("Speech Error") + f": {e}")
-
 # DYSLEXIA FRIENDLY READING
 elif feature == "📖 Dyslexia-Friendly Reading":
     st.header(translate_text("📖 Dyslexia-Friendly Reading"))
