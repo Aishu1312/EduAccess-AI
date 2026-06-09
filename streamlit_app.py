@@ -205,9 +205,9 @@ def save_quiz_history(
 
     save_history(history)
 
-def load_history()
-def save_history()
-def save_to_history()
+def load_history():
+def save_history():
+def save_to_history():
 
 # --------------------------------------------------
 # NLTK DOWNLOAD
