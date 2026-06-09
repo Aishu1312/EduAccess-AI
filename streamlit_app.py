@@ -127,7 +127,7 @@ def load_history():
 def save_history(history):
 
     history_file = get_history_file()
-
+    
     with open(
         history_file,
         "w",
