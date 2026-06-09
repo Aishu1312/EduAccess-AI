@@ -101,10 +101,9 @@ def get_history_file():
     return f"history_{username}.json"
 
 def load_history():
+history_file = get_history_file()
 
-    history_file = get_history_file()
-
-    if os.path.exists(history_file):
+if os.path.exists(history_file):
 
         try:
 
@@ -277,32 +276,6 @@ LANGUAGES = {
     "Japanese": "ja"
 }
 
-# --------------------------------------------------
-# PERSISTENT HISTORY (JSON FILE)
-# --------------------------------------------------
-
-    if os.path.exists(HISTORY_FILE):
-        try:
-            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            return []
-    return []
-
-
-def save_to_history(category, content):
-    history = load_history()
-    history.append({
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "category": category,
-        "content": str(content)
-    })
-    history = history[-300:]
-    try:
-        with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-            json.dump(history, f, ensure_ascii=False, indent=2)
-    except Exception:
-        pass
 
 # --------------------------------------------------
 # SIDEBAR
@@ -1096,13 +1069,13 @@ elif feature == "❓ AI Quiz Generator":
                 f"📊 Percentage: {percentage:.2f}%"
             )
 
-     save_quiz_history(
-    topic,
-    difficulty,
-    f"{score}/{total}",
-    percentage,
-    review
-)
+            save_quiz_history(
+                topic,
+                difficulty,
+                f"{score}/{total}",
+                percentage,
+                review
+            )
 
             st.markdown("---")
 
@@ -1387,7 +1360,10 @@ elif feature == "😊 Emotion-Aware Learning":
 ▶️ https://www.youtube.com/results?search_query=study+motivation
 """)
             st.info(translate_text(
-                "Take short breaks. Sleep properly. Reduce pressure. Practice mindfulness."
+                "Take short breaks. 
+                Sleep properly.
+                Reduce pressure. 
+                Practice mindfulness."
             ))
 
         else:
@@ -1398,38 +1374,7 @@ elif feature == "😊 Emotion-Aware Learning":
 
 ▶️ https://www.youtube.com/results?search_query=study+motivation
 """)
-           else:
-
-    recommendation_text = """
-Take short breaks.
-Sleep properly.
-Reduce pressure.
-Practice mindfulness.
-"""
-
-    st.info(
-        translate_text(
-            "AI detected tiredness."
-        )
-    )
-
-    st.subheader(
-        translate_text(
-            "😴 Recovery Suggestions"
-        )
-    )
-
-    st.markdown("""
-▶️ https://www.youtube.com/results?search_query=focus+music+for+studying
-
-▶️ https://www.youtube.com/results?search_query=study+motivation
-""")
-
-    st.info(
-        translate_text(
-            recommendation_text
-        )
-    )
+        
 # ==================================================
 # AI CAREER MENTOR
 # ==================================================
@@ -1519,122 +1464,16 @@ elif feature == "🚀 AI Career Mentor":
                 "Build real-world projects. Improve GitHub profile. Practice DSA. Learn deployment. Build LinkedIn presence."
             ))
 
-        save_to_history(
-    "🚀 Career Query",
-    career_query
-)
+         save_to_history(
+            "🚀 Career Query",
+            career_query
+        )
 
 # ==================================================
 # ANALYTICS DASHBOARD
 # ==================================================
 
 elif feature == "📈 Analytics Dashboard":
-
-    st.header("📈 Learning Analytics Dashboard")
-
-    history = load_history()
-
-    quiz_attempts = 0
-
-    total_percentage = 0
-
-    topics = set()
-
-    lessons_completed = 0
-
-    for item in history:
-
-        if item.get("category") == "Quiz":
-
-            quiz_attempts += 1
-
-            total_percentage += item.get(
-                "percentage",
-                0
-            )
-
-            if item.get("topic"):
-
-                topics.add(
-                    item["topic"]
-                )
-
-        if item.get("category") in [
-
-            "📝 Notes Summary",
-
-            "🎤 Speech Q&A",
-
-            "🧠 Personalized Learning"
-
-        ]:
-
-            lessons_completed += 1
-
-    accuracy = 0
-
-    if quiz_attempts > 0:
-
-        accuracy = (
-            total_percentage
-            /
-            quiz_attempts
-        )
-
-    learning_streak = min(
-
-        len(history),
-
-        30
-
-    )
-
-    col1,col2 = st.columns(2)
-
-    with col1:
-
-        st.metric(
-
-            "📚 Lessons Completed",
-
-            lessons_completed
-
-        )
-
-        st.metric(
-
-            "🎯 Quiz Attempts",
-
-            quiz_attempts
-
-        )
-
-    with col2:
-
-        st.metric(
-
-            "🏆 Accuracy",
-
-            f"{accuracy:.1f}%"
-
-        )
-
-        st.metric(
-
-            "🔥 Learning Streak",
-
-            f"{learning_streak} Days"
-
-        )
-
-    st.markdown("---")
-
-    st.subheader(
-        "📖 Topics Learned"
-    )
-
-    st.markdown("---")
-
 st.subheader(
     "📊 Quiz Performance Trend"
 )
@@ -1717,6 +1556,113 @@ with col4:
         "Topics Learned",
         len(topics)
     )
+
+
+    st.header("📈 Learning Analytics Dashboard")
+
+    history = load_history()
+
+    quiz_attempts = 0
+
+    total_percentage = 0
+
+    topics = set()
+
+    lessons_completed = 0
+
+    for item in history:
+
+        if item.get("category") == "Quiz":
+
+            quiz_attempts += 1
+
+            total_percentage += item.get(
+                "percentage",
+                0
+            )
+
+            if item.get("topic"):
+
+                topics.add(
+                    item["topic"]
+                )
+
+        if item.get("category") in [
+
+            "📝 Notes Summary",
+
+            "🎤 Speech Q&A",
+
+            "🧠 Personalized Learning"
+
+        ]:
+
+            lessons_completed += 1
+
+    accuracy = 0
+
+    if quiz_attempts > 0:
+
+        accuracy = (
+            total_percentage
+            /
+            quiz_attempts
+        )
+
+    learning_streak = min(
+
+        len(history),
+
+        30
+
+    )
+
+            col1,col2,col3 = st.columns(3)
+
+        with col1:
+
+        st.metric(
+
+            "📚 Lessons Completed",
+
+            lessons_completed
+
+        )
+
+        st.metric(
+
+            "🎯 Quiz Attempts",
+
+            quiz_attempts
+
+        )
+
+    with col2:
+
+        st.metric(
+
+            "🏆 Accuracy",
+
+            f"{accuracy:.1f}%"
+
+        )
+
+        st.metric(
+
+            "🔥 Learning Streak",
+
+            f"{learning_streak} Days"
+
+        )
+
+    st.markdown("---")
+
+    st.subheader(
+        "📖 Topics Learned"
+    )
+
+    st.markdown("---")
+
 
 # ==================================================
 # HISTORY
@@ -1970,6 +1916,8 @@ st.download_button(
     mime="application/json"
 )
 
+if st.button("📄 Export PDF"):
+
         if st.button(
             translate_text(
                 "🗑️ Clear All History"
@@ -1978,13 +1926,11 @@ st.download_button(
 
             try:
 
-                if os.path.exists(
-                    HISTORY_FILE
-                ):
+              history_file = get_history_file()
 
-                    os.remove(
-                        HISTORY_FILE
-                    )
+if os.path.exists(history_file):
+
+                   os.remove(history_file)
 
                 st.success(
                     translate_text(
@@ -1999,12 +1945,6 @@ st.download_button(
                 st.error(
                     f"Error: {e}"
                 )
-
-if st.button(
-
-    "📄 Export PDF"
-
-):
 
     pdf_file = create_history_pdf(
 
