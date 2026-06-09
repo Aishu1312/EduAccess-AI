@@ -1,8 +1,9 @@
 streamlit
 openai
-deep-translator
-SpeechRecognition
+googletrans==4.0.0-rc1
 PyPDF2
-gTTS
+gtts
+deep-translator
+speechrecognition
 nltk
-pydub
+reportlab
