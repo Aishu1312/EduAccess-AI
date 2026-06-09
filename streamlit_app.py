@@ -970,11 +970,9 @@ elif feature == "📖 Dyslexia-Friendly Reading":
 
 elif feature == "❓ AI Quiz Generator":
 
-st.header("❓ AI Adaptive Quiz Generator")
+    st.header("❓ AI Adaptive Quiz Generator")
 
-topic = st.text_input(
-    "📘 Enter Subject / Topic"
-)
+    topic = st.text_input("Enter Topic")
 
 difficulty = st.selectbox(
     "🎯 Select Difficulty",
