@@ -1380,20 +1380,38 @@ elif feature == "😊 Emotion-Aware Learning":
 ▶️ https://www.youtube.com/results?search_query=study+motivation
 """)
             st.info(translate_text(
-                "Take short breaks. 
-                Sleep properly.
-                Reduce pressure. 
-                Practice mindfulness."
-            ))
+             else:
 
-        else:
-            st.info(translate_text("AI detected tiredness."))
-            st.subheader(translate_text("😴 Recovery Suggestions"))
-            st.markdown("""
+    recommendation_text = """
+Take short breaks.
+Sleep properly.
+Reduce pressure.
+Practice mindfulness.
+"""
+
+    st.info(
+        translate_text(
+            "AI detected tiredness."
+        )
+    )
+
+    st.subheader(
+        translate_text(
+            "😴 Recovery Suggestions"
+        )
+    )
+
+    st.markdown("""
 ▶️ https://www.youtube.com/results?search_query=focus+music+for+studying
 
 ▶️ https://www.youtube.com/results?search_query=study+motivation
 """)
+
+    st.info(
+        translate_text(
+            recommendation_text
+        )
+    )
         
 # ==================================================
 # AI CAREER MENTOR
