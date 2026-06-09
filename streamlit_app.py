@@ -6,7 +6,7 @@ import os
 import sqlite3
 import hashlib
 from datetime import datetime
-from reportlab.pdfgen import canvas
+from reportlab.pdfgen import canvas  # Ensure reportlab is installed
 from openai import OpenAI
 import speech_recognition as sr
 from deep_translator import GoogleTranslator
