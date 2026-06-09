@@ -1096,18 +1096,12 @@ elif feature == "❓ AI Quiz Generator":
                 f"📊 Percentage: {percentage:.2f}%"
             )
 
-         save_quiz_history(
-
+     save_quiz_history(
     topic,
-
     difficulty,
-
     f"{score}/{total}",
-
     percentage,
-
     review
-
 )
 
             st.markdown("---")
@@ -1404,26 +1398,38 @@ elif feature == "😊 Emotion-Aware Learning":
 
 ▶️ https://www.youtube.com/results?search_query=study+motivation
 """)
-            st.info(translate_text(
-                recommendation_text = """
+           else:
+
+    recommendation_text = """
 Take short breaks.
 Sleep properly.
 Reduce pressure.
 Practice mindfulness.
 """
-            ))
 
-        save_to_history(
-    "😊 Emotion Check",
-    {
+    st.info(
+        translate_text(
+            "AI detected tiredness."
+        )
+    )
 
-        "emotion": emotion,
+    st.subheader(
+        translate_text(
+            "😴 Recovery Suggestions"
+        )
+    )
 
-        "recommendation":
-        recommendation_text
-    }
-)
+    st.markdown("""
+▶️ https://www.youtube.com/results?search_query=focus+music+for+studying
 
+▶️ https://www.youtube.com/results?search_query=study+motivation
+""")
+
+    st.info(
+        translate_text(
+            recommendation_text
+        )
+    )
 # ==================================================
 # AI CAREER MENTOR
 # ==================================================
@@ -1515,13 +1521,7 @@ elif feature == "🚀 AI Career Mentor":
 
         save_to_history(
     "🚀 Career Query",
-    {
-
-        "query": career_query,
-
-        "career_guidance":
-        generated_guidance
-    }
+    career_query
 )
 
 # ==================================================
