@@ -1551,43 +1551,36 @@ elif feature == "🚀 AI Career Mentor":
 
     st.header(translate_text("🚀 AI Career Mentor"))
 
-    career_query = st.text_input(translate_text("💬 Ask Career Guidance"))
+    career_query = st.text_input(
+        translate_text("💬 Ask Career Guidance")
+    )
 
-    st.markdown(f"""
-### 💡 {translate_text("Sample Questions")}
-
-• {translate_text("How to become Data Scientist")}
-
-• {translate_text("AI Engineer roadmap")}
-
-• {translate_text("Web Development roadmap")}
-
-• {translate_text("Best AI projects")}
-
-• {translate_text("Skills for Cybersecurity")}
-""")
-
-        if st.button(translate_text("🚀 Get Guidance")):
+    if st.button(
+        translate_text("🚀 Get Guidance")
+    ):
 
         query = career_query.lower()
 
         if "data science" in query:
+
             st.success("📊 Data Science Career Roadmap")
 
         elif "ai" in query:
+
             st.success("🤖 AI / ML Career Roadmap")
 
         elif "web" in query:
+
             st.success("🌐 Web Development Roadmap")
 
         elif "cybersecurity" in query:
+
             st.success("🔐 Cybersecurity Career Roadmap")
 
         else:
+
             st.info(
-                translate_text(
-                    "Build real-world projects. Improve GitHub profile. Practice DSA. Learn deployment. Build LinkedIn presence."
-                )
+                "Build projects, improve GitHub, practice DSA and strengthen your LinkedIn profile."
             )
 
         save_to_history(
