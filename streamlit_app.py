@@ -7,7 +7,7 @@ import sqlite3
 import hashlib
 
 from datetime import datetime
-
+from reportlab.pdfgen import canvas
 from openai import OpenAI
 import speech_recognition as sr
 from deep_translator import GoogleTranslator
@@ -87,6 +87,105 @@ def login_user(
 
     return c.fetchone()
     
+# =====================================================
+# USER HISTORY FILE
+# =====================================================
+
+def get_history_file():
+
+    username = st.session_state.get(
+        "username",
+        "guest"
+    )
+
+    return f"history_{username}.json"
+
+def load_history():
+
+    history_file = get_history_file()
+
+    if os.path.exists(history_file):
+
+        try:
+
+            with open(
+
+                history_file,
+
+                "r",
+
+                encoding="utf-8"
+
+            ) as f:
+
+                return json.load(f)
+
+        except:
+
+            return []
+
+    return []
+
+def save_history(history):
+
+    history_file = get_history_file()
+
+    with open(
+
+        history_file,
+
+        "w",
+
+        encoding="utf-8"
+
+    ) as f:
+
+        json.dump(
+
+            history,
+
+            f,
+
+            ensure_ascii=False,
+
+            indent=2
+
+        )
+
+def save_to_history(
+
+    category,
+
+    content
+
+):
+
+    history = load_history()
+
+    history.append({
+
+        "timestamp":
+
+        datetime.now().strftime(
+
+            "%Y-%m-%d %H:%M:%S"
+
+        ),
+
+        "category":
+
+        category,
+
+        "content":
+
+        content
+
+    })
+
+    history = history[-500:]
+
+    save_history(history)
+
 # --------------------------------------------------
 # NLTK DOWNLOAD
 # --------------------------------------------------
@@ -182,10 +281,6 @@ LANGUAGES = {
 # PERSISTENT HISTORY (JSON FILE)
 # --------------------------------------------------
 
-HISTORY_FILE = "eduaccess_history.json"
-
-
-def load_history():
     if os.path.exists(HISTORY_FILE):
         try:
             with open(HISTORY_FILE, "r", encoding="utf-8") as f:
@@ -999,16 +1094,19 @@ elif feature == "❓ AI Quiz Generator":
                 f"📊 Percentage: {percentage:.2f}%"
             )
 
-            save_to_history(
-                "Quiz",
-                {
-                    "topic": topic,
-                    "difficulty": difficulty,
-                    "score": f"{score}/{total}",
-                    "percentage": percentage,
-                    "questions": review
-                }
-            )
+         save_quiz_history(
+
+    topic,
+
+    difficulty,
+
+    f"{score}/{total}",
+
+    percentage,
+
+    review
+
+)
 
             st.markdown("---")
 
@@ -1047,6 +1145,60 @@ elif feature == "❓ AI Quiz Generator":
                 )
 
                 st.markdown("---")
+
+def save_quiz_history(
+
+    topic,
+
+    difficulty,
+
+    score,
+
+    percentage,
+
+    review
+
+):
+
+    history = load_history()
+
+    history.append({
+
+        "timestamp":
+
+        datetime.now().strftime(
+
+            "%Y-%m-%d %H:%M:%S"
+
+        ),
+
+        "category":
+
+        "Quiz",
+
+        "topic":
+
+        topic,
+
+        "difficulty":
+
+        difficulty,
+
+        "score":
+
+        score,
+
+        "percentage":
+
+        percentage,
+
+        "questions":
+
+        review
+
+    })
+
+    save_history(history)
 
 # ==================================================
 # ACCESSIBILITY SUPPORT
@@ -1380,6 +1532,8 @@ elif feature == "📜 History":
 
     history = load_history()
 
+
+    
     if not history:
 
         st.info(
@@ -1394,6 +1548,54 @@ elif feature == "📜 History":
             f"📊 Total Records: {len(history)}"
         )
 
+        col1,col2,col3 = st.columns(3)
+
+with col1:
+
+    st.metric(
+
+        "Records",
+
+        len(history)
+
+    )
+
+with col2:
+
+    quiz_count = len(
+
+        [
+
+            x
+
+            for x in history
+
+            if x["category"]
+
+            == "Quiz"
+
+        ]
+
+    )
+
+    st.metric(
+
+        "Quiz Attempts",
+
+        quiz_count
+
+    )
+
+with col3:
+
+    st.metric(
+
+        "User",
+
+        st.session_state.username
+
+    )
+        
         st.markdown("---")
 
         categories = ["All"]
@@ -1549,7 +1751,28 @@ elif feature == "📜 History":
                         )
                     )
 
-        st.markdown("---")
+st.markdown("---")
+
+history_json = json.dumps(
+
+    history,
+
+    indent=2,
+
+    ensure_ascii=False
+
+)
+
+st.download_button(
+
+    label="⬇ Download Learning History",
+
+    data=history_json,
+
+    file_name=f"{st.session_state.username}_history.json",
+
+    mime="application/json"
+)
 
         if st.button(
             translate_text(
@@ -1580,6 +1803,83 @@ elif feature == "📜 History":
                 st.error(
                     f"Error: {e}"
                 )
+
+if st.button(
+
+    "📄 Export PDF"
+
+):
+
+    pdf_file = create_history_pdf(
+
+        history
+
+    )
+
+    with open(
+
+        pdf_file,
+
+        "rb"
+
+    ) as f:
+
+        st.download_button(
+
+            "⬇ Download PDF",
+
+            f,
+
+            "Learning_History.pdf",
+
+            "application/pdf"
+        )
+
+def create_history_pdf(history):
+
+    filename = "learning_history.pdf"
+
+    c = canvas.Canvas(filename)
+
+    y = 800
+
+    c.drawString(
+
+        50,
+
+        y,
+
+        "EduAccess AI Learning History"
+
+    )
+
+    y -= 40
+
+    for item in history:
+
+        line = f"{item['timestamp']} | {item['category']}"
+
+        c.drawString(
+
+            50,
+
+            y,
+
+            line[:100]
+
+        )
+
+        y -= 20
+
+        if y < 50:
+
+            c.showPage()
+
+            y = 800
+
+    c.save()
+
+    return filename
                 
 # ==================================================
 # FOOTER
