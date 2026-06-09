@@ -1851,19 +1851,14 @@ with col4:
 
 elif feature == "📜 History":
 
-    st.header(translate_text("📜 Your Learning History"))
+    st.header("📜 History")
 
     history = load_history()
 
-
-    
     if not history:
-
-        st.info(
-            translate_text(
-                "No history available yet."
-            )
-        )
+        st.info("No history available.")
+    else:
+        st.write(history)
 
     else:
 
