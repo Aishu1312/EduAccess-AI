@@ -12,11 +12,11 @@ import speech_recognition as sr
 from deep_translator import GoogleTranslator
 from PyPDF2 import PdfReader
 from gtts import gTTS
-
 import nltk
+
 import openai
 
-openai.api_key = st.secrets["OPENAI_API_KEY"]Y"])
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # USER AUTHENTICATION DATABASE
 conn = sqlite3.connect("eduaccess_users.db", check_same_thread=False)
