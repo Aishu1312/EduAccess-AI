@@ -77,6 +77,17 @@ def save_quiz_history(topic, difficulty, score, percentage, review):
     history = history[-500:]
     save_history(history)
 
+# New function to save general notes or summaries
+def save_to_history(category, content):
+    history = load_history()
+    history.append({
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "category": category,
+        "content": content
+    })
+    history = history[-500:]
+    save_history(history)
+
 # NLTK DOWNLOAD
 try:
     nltk.data.find("tokenizers/punkt")
@@ -282,7 +293,7 @@ if feature == "🏠 Home":
     st.markdown("---")
     st.header(tr("🎯 Why EduAccess AI?"))
     st.success(
-tr("""
+        tr("""
 ✅ Helps students learn faster and smarter
 
 ✅ Supports 15+ languages for inclusive learning
@@ -424,7 +435,7 @@ elif feature == "❓ AI Quiz Generator":
     st.header("❓ AI Adaptive Quiz Generator")
     topic = st.text_input("Enter Topic")
     difficulty = st.selectbox("🎯 Select Difficulty", ["Basic", "Advanced", "Expert"])
-    num_questions = st.slider("📊 Number of Questions", 5, 20, 10)
+    num_questions = st.slider("📊 Number of Questions", 5, 30, 10)  # Changed max to 30
 
     def generate_questions(topic, difficulty, num_questions):
         # Generate questions from 0 to 30
