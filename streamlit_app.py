@@ -6,30 +6,25 @@ import os
 import sqlite3
 import hashlib
 from datetime import datetime
-from reportlab.pdfgen import canvas  # Ensure reportlab is installed
-import openai  # Corrected import
+from reportlab.pdfgen import canvas
+from openai import OpenAI
 import speech_recognition as sr
 from deep_translator import GoogleTranslator
 from PyPDF2 import PdfReader
 from gtts import gTTS
+
 import nltk
 
-# Initialize OpenAI API key
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+# Initialize OpenAI
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-# ===========================
 # USER AUTHENTICATION DATABASE
-# ===========================
-
 conn = sqlite3.connect("eduaccess_users.db", check_same_thread=False)
 c = conn.cursor()
-
-c.execute("""
-CREATE TABLE IF NOT EXISTS users(
+c.execute("""CREATE TABLE IF NOT EXISTS users(
     username TEXT PRIMARY KEY,
     password TEXT
-)
-""")
+)""")
 conn.commit()
 
 def make_hash(password):
@@ -44,20 +39,12 @@ def register_user(username, password):
 
 def login_user(username, password):
     c.execute(
-        """
-        SELECT *
-        FROM users
-        WHERE username=?
-        AND password=?
-        """,
+        "SELECT * FROM users WHERE username=? AND password=?",
         (username, make_hash(password))
     )
     return c.fetchone()
 
-# ===========================
 # USER HISTORY FILE
-# ===========================
-
 def get_history_file():
     username = st.session_state.get("username", "guest")
     return f"history_{username}.json"
@@ -68,7 +55,7 @@ def load_history():
         try:
             with open(history_file, "r", encoding="utf-8") as f:
                 return json.load(f)
-        except Exception:
+        except:
             return []
     return []
 
@@ -76,17 +63,6 @@ def save_history(history):
     history_file = get_history_file()
     with open(history_file, "w", encoding="utf-8") as f:
         json.dump(history, f, ensure_ascii=False, indent=2)
-
-def save_to_history(category, content):
-    history = load_history()
-    history.append({
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "category": category,
-        "content": str(content)
-    })
-    # Keep only last 500 records
-    history = history[-500:]
-    save_history(history)
 
 def save_quiz_history(topic, difficulty, score, percentage, review):
     history = load_history()
@@ -99,27 +75,19 @@ def save_quiz_history(topic, difficulty, score, percentage, review):
         "percentage": percentage,
         "questions": review
     })
+    history = history[-500:]
     save_history(history)
 
-# ===========================
 # NLTK DOWNLOAD
-# ===========================
-
 try:
     nltk.data.find("tokenizers/punkt")
-except LookupError:
+except:
     nltk.download("punkt")
 
-# ===========================
 # PAGE CONFIG
-# ===========================
-
 st.set_page_config(page_title="EduAccess AI", page_icon="🚀", layout="wide")
 
-# ===========================
 # CUSTOM CSS
-# ===========================
-
 st.markdown("""
 <style>
 html, body, [class*="css"] {
@@ -131,10 +99,7 @@ p, li, div, span, label, .stMarkdown, .stText, .stRadio, .stSelectbox, .stButton
 </style>
 """, unsafe_allow_html=True)
 
-# ===========================
 # LANGUAGE SUPPORT
-# ===========================
-
 LANGUAGES = {
     "English": "en",
     "Hindi": "hi",
@@ -153,10 +118,7 @@ LANGUAGES = {
     "Japanese": "ja"
 }
 
-# ===========================
 # SIDEBAR
-# ===========================
-
 st.sidebar.title("⚙️ Settings")
 selected_language = st.sidebar.selectbox("🌍 Choose Language", list(LANGUAGES.keys()))
 font_size = st.sidebar.slider("🔠 Font Size", 16, 40, 23)
@@ -179,10 +141,7 @@ FEATURES = {
 
 feature = st.sidebar.selectbox("Choose Feature", list(FEATURES.keys()))
 
-# ===========================
 # GLOBAL FONT SIZE
-# ===========================
-
 st.markdown(f"""
 <style>
 html, body, [class*="css"] {{
@@ -194,50 +153,36 @@ p, li, div, span, label, .stMarkdown, .stText, .stRadio, .stSelectbox, .stButton
 </style>
 """, unsafe_allow_html=True)
 
-# ===========================
 # TRANSLATION FUNCTION
-# ===========================
-
 def translate_text(text):
     if selected_language == "English":
         return text
     try:
         return GoogleTranslator(source="auto", target=LANGUAGES[selected_language]).translate(text)
-    except Exception:
+    except:
         return text
 
 # SAFE TRANSLATION
-DO_NOT_TRANSLATE = ["Choose Language", "Font Size", "Dark Contrast Mode", "Core Features"]
+DO_NOT_TRANSLATE = [
+    "Choose Language", "Font Size", "Dark Contrast Mode", "Core Features"
+]
 
 def tr(text):
     if text in DO_NOT_TRANSLATE:
         return text
     return translate_text(text)
 
-# ===========================
 # HIGH CONTRAST MODE
-# ===========================
-
 if high_contrast:
-    st.markdown("""
-    <style>
-    .stApp {background: #000; color: #fff;}
-    </style>
-    """, unsafe_allow_html=True)
+    st.markdown("""<style>.stApp{background:#000;color:#fff;}</style>""", unsafe_allow_html=True)
 
-# ===========================
 # LOGIN SESSION
-# ===========================
-
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "username" not in st.session_state:
     st.session_state.username = ""
 
-# ===========================
-# SESSION STATE DEFAULTS
-# ===========================
-
+# SESSION DEFAULTS
 defaults = {
     "learning_streak": 0,
     "topics_learned": [],
@@ -251,22 +196,17 @@ defaults = {
     "speech_history": [],
     "summary_history": []
 }
-
 for key, value in defaults.items():
     if key not in st.session_state:
         st.session_state[key] = value
-
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "username" not in st.session_state:
     st.session_state.username = ""
 
-# ===========================
 # LOGIN PAGE
-# ===========================
-
 if not st.session_state.logged_in:
-    st.title("🔐 EduAccess AI")
+    st.title("🔐 " + tr("EduAccess AI"))
     option = st.radio("Choose Option", ["Login", "Register"])
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
@@ -286,19 +226,16 @@ if not st.session_state.logged_in:
             if user:
                 st.session_state.logged_in = True
                 st.session_state.username = username
-                st.rerun()
+                st.experimental_rerun()
             else:
                 st.error("Invalid Credentials")
     st.stop()
 
-# ===========================
 # HOME PAGE
-# ===========================
-
 if feature == "🏠 Home":
-    st.title(translate_text("🚀 EduAccess AI"))
-    st.subheader(translate_text("AI-Powered Accessibility Platform for Students"))
-    st.success(translate_text("Inclusive AI Learning Ecosystem"))
+    st.title(tr("🚀 EduAccess AI"))
+    st.subheader(tr("AI-Powered Accessibility Platform for Students"))
+    st.success(tr("Inclusive AI Learning Ecosystem"))
     st.markdown("---")
     st.header("🌟 Core Features")
     col1, col2 = st.columns(2)
@@ -325,7 +262,7 @@ if feature == "🏠 Home":
         <p>{tr("Adaptive quizzes with Easy, Medium and Hard levels.")}</p>
         </div>""", unsafe_allow_html=True)
     st.markdown("---")
-    st.header(translate_text("🚀 Advanced AI Features"))
+    st.header(tr("🚀 Advanced AI Features"))
     advanced_features = [
         "🧠 AI Personalized Learning",
         "😊 Emotion-Aware Learning",
@@ -336,16 +273,16 @@ if feature == "🏠 Home":
     for item in advanced_features:
         st.info(tr(item))
     st.markdown("---")
-    c1, c2, c3 = st.columns(3)
-    with c1:
+    col1, col2, col3 = st.columns(3)
+    with col1:
         st.metric(tr("🌍 Languages"), "15+")
-    with c2:
+    with col2:
         st.metric(tr("⚙️ Features"), "5+")
-    with c3:
+    with col3:
         st.metric(tr("🚀 AI Modules"), "5")
     st.markdown("---")
-    st.header(translate_text("🎯 Why EduAccess AI?"))
-    st.success(translate_text("""
+    st.header(tr("🎯 Why EduAccess AI?"))
+    st.success(tr("""
 ✅ Helps students learn faster and smarter
 ✅ Supports 15+ languages for inclusive learning
 ✅ AI-powered Notes Summarization
@@ -357,10 +294,7 @@ if feature == "🏠 Home":
 ✅ AI Career Mentorship and Roadmaps
 ✅ Accessibility-focused educational ecosystem"""))
 
-# ===========================
 # USER PROFILE
-# ===========================
-
 elif feature == "👤 User Profile":
     st.header("👤 User Profile")
     st.success(f"Welcome {st.session_state.username}")
@@ -369,12 +303,9 @@ elif feature == "👤 User Profile":
     if st.button("Logout"):
         st.session_state.logged_in = False
         st.session_state.username = ""
-        st.rerun()
+        st.experimental_rerun()
 
-# ===========================
 # AI NOTES SUMMARIZER
-# ===========================
-
 elif feature == "🧠 AI Notes Summarizer":
     st.header(translate_text("🧠 AI Notes Summarizer"))
     uploaded_file = st.file_uploader(translate_text("Upload PDF"), type=["pdf"])
@@ -412,14 +343,11 @@ elif feature == "🧠 AI Notes Summarizer":
             st.success(translate_text("Summary Generated Successfully"))
             st.write(final_summary)
 
-# ===========================
 # SPEECH TO TEXT
-# ===========================
-
 elif feature == "🎤 Speech-to-Text":
     st.header(translate_text("🎤 Speech-to-Text"))
     st.write(translate_text("Ask a question using your microphone."))
-    audio = st.audio_input(translate_text("🎙️ Record Question"))
+    audio = st.file_uploader(translate_text("🎙️ Record Question"), type=["wav"])
     if audio:
         try:
             with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
@@ -448,7 +376,7 @@ elif feature == "🎤 Speech-to-Text":
             lang_code = LANGUAGES[selected_language]
             try:
                 tts = gTTS(text=answer, lang=lang_code)
-            except Exception:
+            except:
                 tts = gTTS(text=answer, lang="en")
             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
                 tts.save(fp.name)
@@ -459,10 +387,7 @@ elif feature == "🎤 Speech-to-Text":
         except Exception as e:
             st.error(translate_text("Speech Error") + f": {e}")
 
-# ===========================
 # DYSLEXIA FRIENDLY READING
-# ===========================
-
 elif feature == "📖 Dyslexia-Friendly Reading":
     st.header(translate_text("📖 Dyslexia-Friendly Reading"))
     if st.session_state.summary == "":
@@ -483,10 +408,7 @@ elif feature == "📖 Dyslexia-Friendly Reading":
         """, unsafe_allow_html=True)
         st.success(translate_text("Reading mode activated."))
 
-# ===========================
-# QUIZ GENERATOR
-# ===========================
-
+# AI QUIZ GENERATOR
 elif feature == "❓ AI Quiz Generator":
     st.header("❓ AI Adaptive Quiz Generator")
     topic = st.text_input("Enter Topic")
@@ -508,8 +430,8 @@ elif feature == "❓ AI Quiz Generator":
         Format:
         [{{"question":"Question","options":["A","B","C","D"],"answer":"Correct Option","explanation":"Explanation"}}]"""
         try:
-            response = openai.ChatCompletion.create(
-                model="gpt-4",
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.9
             )
@@ -544,17 +466,18 @@ elif feature == "❓ AI Quiz Generator":
         st.subheader("📝 Quiz Questions")
         for idx, q in enumerate(st.session_state.quiz_questions):
             st.markdown("---")
-            st.write(f"### Question {idx + 1}")
+            st.write(f"### Question {idx+1}")
             st.write(q["question"])
             answer = st.radio("Choose Answer", q["options"], key=f"quiz_{idx}")
             st.session_state.user_answers[idx] = answer
+
         if st.button("✅ Submit Quiz"):
             score = 0
             review = []
             total_questions = len(st.session_state.quiz_questions)
             for idx, q in enumerate(st.session_state.quiz_questions):
                 user_answer = st.session_state.user_answers.get(idx, "")
-                is_correct = user_answer == q["answer"]
+                is_correct = (user_answer == q["answer"])
                 if is_correct:
                     score += 1
                 review.append({
@@ -596,10 +519,7 @@ elif feature == "❓ AI Quiz Generator":
                     st.error("❌ Incorrect")
                 st.info(item["explanation"])
 
-# ===========================
 # ACCESSIBILITY SUPPORT
-# ===========================
-
 elif feature == "♿ Accessibility Support":
     st.header(translate_text("♿ Accessibility Support"))
     st.success(translate_text("🌍 Multi-language Support"))
@@ -613,15 +533,14 @@ elif feature == "♿ Accessibility Support":
     st.subheader(translate_text("Why Accessibility Matters?"))
     st.write(translate_text("Accessibility ensures that every learner, including students with visual, hearing, language or learning difficulties, can access education equally."))
 
-# ===========================
 # AI PERSONALIZED LEARNING
-# ===========================
-
 elif feature == "🧠 AI Personalized Learning":
     st.header(translate_text("🧠 AI Personalized Learning"))
     weak_topic = st.text_input(translate_text("📘 Enter Weak Topic"))
     STYLE_OPTIONS = ["Visual", "Theory", "Practical", "Interactive"]
-    style_idx = st.selectbox(translate_text("🎯 Preferred Learning Style"), range(len(STYLE_OPTIONS)), format_func=lambda i: translate_text(STYLE_OPTIONS[i]))
+    style_idx = st.selectbox(translate_text("🎯 Preferred Learning Style"),
+                             range(len(STYLE_OPTIONS)),
+                             format_func=lambda i: translate_text(STYLE_OPTIONS[i]))
     learning_style = STYLE_OPTIONS[style_idx]
     if st.button(translate_text("🚀 Generate Recommendations")):
         if weak_topic.strip() == "":
@@ -645,10 +564,7 @@ elif feature == "🧠 AI Personalized Learning":
             st.markdown(f"🔗 https://www.google.com/search?q={weak_topic}+infographics")
             save_to_history("🧠 Personalized Learning", f"Topic: {weak_topic} | Style: {learning_style}")
 
-# ===========================
-# EMOTION-AWARE LEARNING
-# ===========================
-
+# 😊 EMOTION-AWARE LEARNING
 elif feature == "😊 Emotion-Aware Learning":
     st.header(translate_text("😊 Emotion-Aware Learning"))
     emotion = st.selectbox(translate_text("💭 How are you feeling?"), ["Confused", "Focused", "Stressed", "Tired"])
@@ -664,13 +580,9 @@ elif feature == "😊 Emotion-Aware Learning":
             st.info(translate_text("Take a short break, drink water, and return with a fresh mind."))
         elif emotion == "Tired":
             st.warning(translate_text("AI detected tiredness."))
-            recommendation_text = "Take short breaks.\nSleep properly.\nReduce pressure.\nPractice mindfulness."
-            st.info(translate_text(recommendation_text))
+            st.info(translate_text("Take short breaks. Sleep properly. Reduce pressure. Practice mindfulness."))
 
-# ===========================
-# AI CAREER MENTOR
-# ===========================
-
+# 🚀 AI CAREER MENTOR
 elif feature == "🚀 AI Career Mentor":
     st.header(translate_text("🚀 AI Career Mentor"))
     career_query = st.text_input(translate_text("💬 Ask Career Guidance"))
@@ -688,10 +600,7 @@ elif feature == "🚀 AI Career Mentor":
             st.info("Build projects, improve GitHub, practice DSA and strengthen your LinkedIn profile.")
         save_to_history("🚀 Career Query", career_query)
 
-# ===========================
 # ANALYTICS DASHBOARD
-# ===========================
-
 elif feature == "📈 Analytics Dashboard":
     st.header("📈 Learning Analytics Dashboard")
     history = load_history()
@@ -747,10 +656,7 @@ elif feature == "📈 Analytics Dashboard":
     with col4:
         st.metric("Topics Learned", len(topics))
 
-# ===========================
 # HISTORY
-# ===========================
-
 elif feature == "📜 History":
     st.header("📜 Learning History")
     history = load_history()
@@ -759,24 +665,16 @@ elif feature == "📜 History":
     else:
         st.success(f"Total Records: {len(history)}")
         for record in reversed(history):
-            with st.expander(f"{record.get('category','Unknown')} | {record.get('timestamp','N/A')}"):
+            with st.expander(f"{record.get('category', 'Unknown')} | {record.get('timestamp', 'N/A')}"):
                 if record.get("category") == "Quiz":
-                    st.write(f"Topic: {record.get('topic','N/A')}")
-                    st.write(f"Difficulty: {record.get('difficulty','N/A')}")
-                    st.write(f"Score: {record.get('score','N/A')}")
-                    st.write(f"Percentage: {record.get('percentage',0)}%")
+                    st.write(f"Topic: {record.get('topic', 'N/A')}")
+                    st.write(f"Difficulty: {record.get('difficulty', 'N/A')}")
+                    st.write(f"Score: {record.get('score', 'N/A')}")
+                    st.write(f"Percentage: {record.get('percentage', 0)}%")
                 else:
-                    st.write(record.get("content",""))
+                    st.write(record.get("content", ""))
         history_json = json.dumps(history, indent=2, ensure_ascii=False)
-        st.download_button(
-            label="⬇ Download History",
-            data=history_json,
-            file_name=f"{st.session_state.username}_history.json",
-            mime="application/json"
-        )
+        st.download_button("⬇ Download History", data=history_json, file_name=f"{st.session_state.username}_history.json", mime="application/json")
 
-# ===========================
 # FOOTER
-# ===========================
-
 st.markdown(f"""{translate_text("Made with")} ❤️ {translate_text("using Streamlit")} | EduAccess AI""", unsafe_allow_html=True)
