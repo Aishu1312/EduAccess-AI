@@ -433,12 +433,53 @@ elif feature == "🎤 Speech-to-Text":
 
             st.write(question)
 
-            answer = f"""
-Question:
+            question_lower = question.lower()
+
+if "what is ai" in question_lower:
+    answer = """
+Artificial Intelligence (AI) is a technology that enables computers and machines to simulate human intelligence.
+
+AI can perform tasks such as:
+• Learning from data
+• Problem solving
+• Speech recognition
+• Image recognition
+• Decision making
+
+Real-world examples include ChatGPT, Google Assistant, self-driving cars, and recommendation systems.
+"""
+
+elif "what is python" in question_lower:
+    answer = """
+Python is a high-level programming language known for its simple syntax and readability.
+
+It is widely used for:
+• Data Science
+• Machine Learning
+• Web Development
+• Automation
+• Artificial Intelligence
+"""
+
+elif "what is machine learning" in question_lower:
+    answer = """
+Machine Learning is a branch of Artificial Intelligence that enables computers to learn from data without being explicitly programmed.
+
+Examples:
+• Spam detection
+• Recommendation systems
+• Image classification
+"""
+
+else:
+    answer = f"""
+I understood your question:
 
 {question}
 
-Speech recognition completed successfully.
+Currently this project is running without an AI API.
+
+Please integrate a local question-answer dataset or AI model for advanced responses.
 """
 
             st.subheader(
