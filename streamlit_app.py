@@ -405,6 +405,8 @@ elif feature == "🎤 Speech-to-Text":
 
         try:
 
+            recognizer = sr.Recognizer()
+
             with tempfile.NamedTemporaryFile(
                 delete=False,
                 suffix=".wav"
@@ -413,15 +415,11 @@ elif feature == "🎤 Speech-to-Text":
                 tmp.write(audio_file.read())
                 audio_path = tmp.name
 
-            recognizer = sr.Recognizer()
-
             with sr.AudioFile(audio_path) as source:
 
-                audio_data = recognizer.record(source)
+                audio = recognizer.record(source)
 
-            question = recognizer.recognize_google(
-                audio_data
-            )
+            question = recognizer.recognize_google(audio)
 
             st.success(
                 "Speech Recognized Successfully"
@@ -435,51 +433,77 @@ elif feature == "🎤 Speech-to-Text":
 
             question_lower = question.lower()
 
-if "what is ai" in question_lower:
-    answer = """
+            # ==================================
+            # AI RESPONSES WITHOUT API
+            # ==================================
+
+            if "what is ai" in question_lower:
+
+                answer = """
 Artificial Intelligence (AI) is a technology that enables computers and machines to simulate human intelligence.
 
-AI can perform tasks such as:
-• Learning from data
-• Problem solving
-• Speech recognition
-• Image recognition
-• Decision making
+AI can learn from data, recognize patterns, make decisions, and solve problems.
 
-Real-world examples include ChatGPT, Google Assistant, self-driving cars, and recommendation systems.
+Examples:
+• ChatGPT
+• Google Assistant
+• Self-driving cars
+• Recommendation systems
 """
 
-elif "what is python" in question_lower:
-    answer = """
-Python is a high-level programming language known for its simple syntax and readability.
+            elif "python" in question_lower:
 
-It is widely used for:
+                answer = """
+Python is a high-level programming language used for:
+
 • Data Science
 • Machine Learning
 • Web Development
 • Automation
 • Artificial Intelligence
+
+It is easy to learn and widely used.
 """
 
-elif "what is machine learning" in question_lower:
-    answer = """
-Machine Learning is a branch of Artificial Intelligence that enables computers to learn from data without being explicitly programmed.
+            elif "machine learning" in question_lower:
+
+                answer = """
+Machine Learning is a branch of AI that allows computers to learn from data without being explicitly programmed.
 
 Examples:
 • Spam detection
+• Face recognition
 • Recommendation systems
-• Image classification
 """
 
-else:
-    answer = f"""
-I understood your question:
+            elif "data science" in question_lower:
+
+                answer = """
+Data Science is the process of collecting, analyzing, and interpreting data to gain insights and make decisions.
+
+Main tools:
+• Python
+• SQL
+• Power BI
+• Tableau
+"""
+
+            else:
+
+                answer = f"""
+Question:
 
 {question}
 
-Currently this project is running without an AI API.
+Answer:
 
-Please integrate a local question-answer dataset or AI model for advanced responses.
+Sorry, I do not have a predefined answer for this question.
+
+Please try asking about:
+• AI
+• Python
+• Machine Learning
+• Data Science
 """
 
             st.subheader(
@@ -488,10 +512,19 @@ Please integrate a local question-answer dataset or AI model for advanced respon
 
             st.success(answer)
 
+            st.success(
+                "Speech recognition completed successfully."
+            )
+
+            save_to_history(
+                "🎤 Speech Q&A",
+                f"Q: {question}\nA: {answer}"
+            )
+
         except Exception as e:
 
             st.error(
-                f"Speech Recognition Error: {e}"
+                f"Speech Error: {e}"
             )
             
 # ==================================================
