@@ -568,30 +568,30 @@ elif feature == "❓ AI Quiz Generator":
     }
 
     prompt = f"""
-You are an expert educational quiz creator. Generate {num_questions} high-quality, relevant, and meaningful multiple-choice questions on the topic "{topic}". 
+    You are an expert educational quiz creator. Generate {num_questions} high-quality, relevant, and meaningful multiple-choice questions on the topic "{topic}". 
 
-The questions should be clear, concise, and directly related to the topic. Each question must have exactly 4 options that are plausible and relevant to the question. The options should be meaningful and not generic or filler options. 
+    The questions should be clear, concise, and directly related to the topic. Each question must have exactly 4 options that are plausible and relevant to the question. The options should be meaningful and not generic or filler options. 
 
-The questions should be suitable for {difficulty.lower()} level learners based on the following instructions:
-{difficulty_instruction[difficulty]}
+    The questions should be suitable for {difficulty.lower()} level learners based on the following instructions:
+    {difficulty_instruction[difficulty]}
 
-Rules:
-1. Questions must be factual and educational.
-2. Questions must be directly related ONLY to the topic "{topic}".
-3. Provide ONE correct answer and explicitly indicate which one it is.
-4. Include a clear explanation for each question.
-5. Return the output ONLY in JSON format as specified below.
+    Rules:
+    1. Questions must be factual and educational.
+    2. Questions must be directly related ONLY to the topic "{topic}".
+    3. Provide ONE correct answer and explicitly indicate which one it is.
+    4. Include a clear explanation for each question.
+    5. Return the output ONLY in JSON format as specified below.
 
-Format:
-[
-  {{
-    "question": "Question text",
-    "options": ["Option1", "Option2", "Option3", "Option4"],
-    "answer": "Correct Option",
-    "explanation": "Detailed explanation"
-  }}
-]
-"""
+    Format:
+    [
+      {{
+        "question": "Question text",
+        "options": ["Option1", "Option2", "Option3", "Option4"],
+        "answer": "Correct Option",
+        "explanation": "Detailed explanation"
+      }}
+    ]
+    """
 
     try:
         response = client.chat.completions.create(
@@ -638,7 +638,7 @@ Format:
     except Exception as e:
         st.error(f"Quiz Generation Error: {e}")
         return []
-
+        
 # ==================================================
 
 # ACCESSIBILITY SUPPORT
