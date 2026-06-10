@@ -561,117 +561,83 @@ elif feature == "❓ AI Quiz Generator":
     num_questions = st.slider("📊 Number of Questions", 1, 30, 10)  # Changed max to 30
 
     def generate_questions(topic, difficulty, num_questions):
-        # Generate questions from 0 to 30
-        prompt = f"""
-        Generate {num_questions} UNIQUE MCQ questions on {topic}.
-        Difficulty Level: {difficulty}
-        Rules:
-        No duplicate questions.
-        No duplicate options.
-        Exactly 4 options.
-        One correct answer.
-        Include explanation.
-        Questions must be educational and relevant.
-        Return ONLY valid JSON.
-        Format:
-        [{{"question":"Question","options":["A","B","C","D"],"answer":"Correct Option","explanation":"Explanation"}}]"""
-        try:
-           response = client.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[
-        {
-            "role":"user",
-            "content":prompt
-        }
-    ],
-    temperature=0.8
-)
+    difficulty_instruction = {
+        "Basic": "Create beginner-level questions testing definitions, fundamentals, and basic understanding.",
+        "Advanced": "Create application-based and analytical questions requiring deeper understanding.",
+        "Expert": "Create challenging scenario-based and problem-solving questions."
+    }
 
-content = response.choices[0].message.content
-            content = response.choices[0].message.content
-            content = content.replace("```json", "").replace("```", "")
-            questions = json.loads(content)
-            unique_questions = []
-            seen = set()
-            for q in questions:
-                question_text = q["question"].strip()
-                if question_text not in seen:
-                    seen.add(question_text)
-                    q["options"] = list(dict.fromkeys(q["options"]))
-                    if len(q["options"]) == 4:
-                        unique_questions.append(q)
-            return unique_questions
-        except Exception as e:
-            st.error(f"Quiz Generation Error: {e}")
-            return []
+    prompt = f"""
+You are an expert educational quiz creator. Generate {num_questions} high-quality, relevant, and meaningful multiple-choice questions on the topic "{topic}". 
 
-    if st.button("🚀 Generate Quiz"):
-        if topic.strip() == "":
-            st.warning("Please enter a topic.")
-        else:
-            with st.spinner("Generating AI Quiz..."):
-                st.session_state.quiz_questions = generate_questions(topic, difficulty, num_questions)
-                st.session_state.quiz_generated = True
-                st.session_state.user_answers = {}
+The questions should be clear, concise, and directly related to the topic. Each question must have exactly 4 options that are plausible and relevant to the question. The options should be meaningful and not generic or filler options. 
 
-    if st.session_state.get("quiz_generated", False) and len(st.session_state.quiz_questions) > 0:
-        st.markdown("---")
-        st.subheader("📝 Quiz Questions")
-        for idx, q in enumerate(st.session_state.quiz_questions):
-            st.markdown("---")
-            st.write(f"### Question {idx+1}")
-            st.write(q["question"])
-            answer = st.radio("Choose Answer", q["options"], key=f"quiz_{idx}")
-            st.session_state.user_answers[idx] = answer
+The questions should be suitable for {difficulty.lower()} level learners based on the following instructions:
+{difficulty_instruction[difficulty]}
 
-        if st.button("✅ Submit Quiz"):
-            score = 0
-            review = []
-            total_questions = len(st.session_state.quiz_questions)
-            for idx, q in enumerate(st.session_state.quiz_questions):
-                user_answer = st.session_state.user_answers.get(idx, "")
-                is_correct = (user_answer == q["answer"])
-                if is_correct:
-    score += 1
-    st.balloons()
-                review.append({
-                    "question": q["question"],
-                    "options": q["options"],
-                    "user_answer": user_answer,
-                    "correct_answer": q["answer"],
-                    "is_correct": is_correct,
-                    "explanation": q.get("explanation", "")
-                })
-            percentage = (score / total_questions) * 100
-            st.markdown("---")
-            st.success(f"🏆 Final Score: {score}/{total_questions}")
-            st.info(f"📊 Percentage: {percentage:.2f}%")
-            if percentage >= 80:
-                st.balloons()
-                st.success("🎉 Outstanding Performance!")
-            elif percentage >= 60:
-                st.success("👍 Good Work!")
-            else:
-                st.warning("📚 Keep Practicing!")
-            if percentage >= 90:
-                st.success("🏅 Expert Level Achieved")
-            elif percentage >= 75:
-                st.success("🥈 Advanced Level Performance")
-            elif percentage >= 50:
-                st.success("🥉 Basic Level Performance")
-            save_quiz_history(topic, difficulty, f"{score}/{total_questions}", percentage, review)
-            st.markdown("---")
-            st.subheader("📖 Detailed Answer Review")
-            for item in review:
-                st.markdown("---")
-                st.write(f"### ❓ {item['question']}")
-                st.write(f"Your Answer: {item['user_answer']}")
-                st.write(f"Correct Answer: {item['correct_answer']}")
-                if item["is_correct"]:
-                    st.success("✅ Correct")
-                else:
-                    st.error("❌ Incorrect")
-                st.info(item["explanation"])
+Rules:
+1. Questions must be factual and educational.
+2. Questions must be directly related ONLY to the topic "{topic}".
+3. Provide ONE correct answer and explicitly indicate which one it is.
+4. Include a clear explanation for each question.
+5. Return the output ONLY in JSON format as specified below.
+
+Format:
+[
+  {{
+    "question": "Question text",
+    "options": ["Option1", "Option2", "Option3", "Option4"],
+    "answer": "Correct Option",
+    "explanation": "Detailed explanation"
+  }}
+]
+"""
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are an expert educational quiz creator."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7
+        )
+
+        content = response.choices[0].message.content
+        content = content.replace("```json", "").replace("```", "").strip()
+        questions = json.loads(content)
+
+        # Remove duplicates and ensure options correctness
+        unique_questions = []
+        seen_questions = set()
+
+        for q in questions:
+            question_text = q.get("question", "").strip()
+            options = q.get("options", [])
+            answer = q.get("answer", "").strip()
+            explanation = q.get("explanation", "")
+
+            if (
+                question_text
+                and question_text not in seen_questions
+                and len(options) == 4
+            ):
+                seen_questions.add(question_text)
+                options = list(dict.fromkeys(options))
+                if len(options) == 4:
+                    random.shuffle(options)
+                    unique_questions.append({
+                        "question": question_text,
+                        "options": options,
+                        "answer": answer,
+                        "explanation": explanation
+                    })
+
+        return unique_questions
+
+    except Exception as e:
+        st.error(f"Quiz Generation Error: {e}")
+        return []
 
 # ==================================================
 
