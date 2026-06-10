@@ -391,77 +391,67 @@ elif feature == "🧠 AI Notes Summarizer":
 
 elif feature == "🎤 Speech-to-Text":
 
-    st.header(translate_text("🎤 Speech-to-Text AI Assistant"))
+    st.header("🎤 Speech-to-Text AI Assistant")
 
     st.info(
-        translate_text(
-            "Click record and ask your question in any language."
-        )
+        "Click record and ask your question in any language."
     )
 
     audio_file = st.audio_input(
-        translate_text("🎙️ Record Your Voice")
+        "🎙️ Record Your Voice"
     )
 
-   if audio_file:
+    if audio_file:
 
-    try:
+        try:
 
-        with tempfile.NamedTemporaryFile(
-            delete=False,
-            suffix=".wav"
-        ) as tmp:
+            with tempfile.NamedTemporaryFile(
+                delete=False,
+                suffix=".wav"
+            ) as tmp:
 
-            tmp.write(audio_file.read())
-            audio_path = tmp.name
+                tmp.write(audio_file.read())
+                audio_path = tmp.name
 
-        recognizer = sr.Recognizer()
+            recognizer = sr.Recognizer()
 
-        with sr.AudioFile(audio_path) as source:
+            with sr.AudioFile(audio_path) as source:
 
-            audio_data = recognizer.record(source)
+                audio_data = recognizer.record(source)
 
-        question = recognizer.recognize_google(
-            audio_data
-        )
+            question = recognizer.recognize_google(
+                audio_data
+            )
 
-        st.success(
-            "Speech Recognized Successfully"
-        )
+            st.success(
+                "Speech Recognized Successfully"
+            )
 
-        st.subheader(
-            "📝 Your Question"
-        )
+            st.subheader(
+                "📝 Your Question"
+            )
 
-        st.write(question)
+            st.write(question)
 
-        answer = f"""
+            answer = f"""
 Question:
 
 {question}
 
 Speech recognition completed successfully.
-
-This version of EduAccess AI is running
-without OpenAI API.
 """
 
-        st.subheader(
-            "🤖 Response"
-        )
+            st.subheader(
+                "🤖 Response"
+            )
 
-        st.success(answer)
+            st.success(answer)
 
-        save_to_history(
-            "🎤 Speech Q&A",
-            f"Q: {question}\nA: {answer}"
-        )
+        except Exception as e:
 
-    except Exception as e:
-
-        st.error(
-            f"Speech Recognition Error: {e}"
-        )
+            st.error(
+                f"Speech Recognition Error: {e}"
+            )
             
 # ==================================================
 
