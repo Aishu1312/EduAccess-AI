@@ -560,83 +560,110 @@ elif feature == "❓ AI Quiz Generator":
     difficulty = st.selectbox("🎯 Select Difficulty", ["Basic", "Advanced", "Expert"])
     num_questions = st.slider("📊 Number of Questions", 1, 30, 10)  # Changed max to 30
 
-    def generate_questions(topic, difficulty, num_questions):
+   def generate_questions(topic, difficulty, num_questions):
+
     difficulty_instruction = {
-        "Basic": "Create beginner-level questions testing definitions, fundamentals, and basic understanding.",
+        "Basic": "Create beginner-level questions testing definitions, fundamentals and basic understanding.",
         "Advanced": "Create application-based and analytical questions requiring deeper understanding.",
         "Expert": "Create challenging scenario-based and problem-solving questions."
     }
 
     prompt = f"""
-    You are an expert educational quiz creator. Generate {num_questions} high-quality, relevant, and meaningful multiple-choice questions on the topic "{topic}". 
+Generate {num_questions} UNIQUE MCQ questions on "{topic}".
 
-    The questions should be clear, concise, and directly related to the topic. Each question must have exactly 4 options that are plausible and relevant to the question. The options should be meaningful and not generic or filler options. 
+Difficulty Level:
+{difficulty}
 
-    The questions should be suitable for {difficulty.lower()} level learners based on the following instructions:
-    {difficulty_instruction[difficulty]}
+Instructions:
+{difficulty_instruction[difficulty]}
 
-    Rules:
-    1. Questions must be factual and educational.
-    2. Questions must be directly related ONLY to the topic "{topic}".
-    3. Provide ONE correct answer and explicitly indicate which one it is.
-    4. Include a clear explanation for each question.
-    5. Return the output ONLY in JSON format as specified below.
+Rules:
+1. Questions must be educational.
+2. Questions must be factually correct.
+3. Questions must be related ONLY to the topic.
+4. Every question must have exactly 4 meaningful options.
+5. Do NOT use generic options like A, B, C, D.
+6. Options must be actual answers.
+7. One correct answer.
+8. Include explanation.
+9. No duplicate questions.
+10. No duplicate options.
+11. Return ONLY valid JSON.
 
-    Format:
-    [
-      {{
-        "question": "Question text",
-        "options": ["Option1", "Option2", "Option3", "Option4"],
-        "answer": "Correct Option",
-        "explanation": "Detailed explanation"
-      }}
-    ]
-    """
+Format:
+
+[
+  {{
+    "question":"Question",
+    "options":["Option1","Option2","Option3","Option4"],
+    "answer":"Correct Option",
+    "explanation":"Explanation"
+  }}
+]
+"""
 
     try:
+
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "You are an expert educational quiz creator."},
-                {"role": "user", "content": prompt}
+                {
+                    "role": "system",
+                    "content": "You are an expert educational quiz creator."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
             ],
             temperature=0.7
         )
 
         content = response.choices[0].message.content
-        content = content.replace("```json", "").replace("```", "").strip()
+
+        content = (
+            content.replace("```json", "")
+            .replace("```", "")
+            .strip()
+        )
+
         questions = json.loads(content)
 
-        # Remove duplicates and ensure options correctness
         unique_questions = []
         seen_questions = set()
 
         for q in questions:
-            question_text = q.get("question", "").strip()
+
+            question = q.get("question", "").strip()
             options = q.get("options", [])
-            answer = q.get("answer", "").strip()
-            explanation = q.get("explanation", "")
 
             if (
-                question_text
-                and question_text not in seen_questions
+                question
+                and question not in seen_questions
                 and len(options) == 4
             ):
-                seen_questions.add(question_text)
+
+                seen_questions.add(question)
+
                 options = list(dict.fromkeys(options))
+
                 if len(options) == 4:
+
                     random.shuffle(options)
+
                     unique_questions.append({
-                        "question": question_text,
+                        "question": question,
                         "options": options,
-                        "answer": answer,
-                        "explanation": explanation
+                        "answer": q["answer"],
+                        "explanation": q["explanation"]
                     })
 
         return unique_questions
 
     except Exception as e:
+
         st.error(f"Quiz Generation Error: {e}")
+
         return []
         
 # ==================================================
