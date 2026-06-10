@@ -7,12 +7,16 @@ import sqlite3
 import hashlib
 from datetime import datetime
 from reportlab.pdfgen import canvas
-from openai import OpenAI
 import speech_recognition as sr
 from deep_translator import GoogleTranslator
 from PyPDF2 import PdfReader
 from gtts import gTTS
 import nltk
+from openai import OpenAI
+
+client = OpenAI(
+    api_key=st.secrets["OPENAI_API_KEY"]
+)
 
 
 # USER AUTHENTICATION DATABASE
@@ -438,18 +442,15 @@ elif feature == "🎤 Speech-to-Text":
             ai_prompt = f"""
 You are an educational AI tutor.
 
-Answer the following question accurately.
-
 Question:
 {question}
 
-Rules:
-1. Give educational answer.
-2. Keep answer clear and student friendly.
-3. Answer in this language:
-{selected_language}
-4. If question is academic, explain properly.
-5. If question is general knowledge, provide factual answer.
+Answer ONLY in {selected_language} language.
+
+Give:
+1. Correct answer
+2. Student friendly explanation
+3. Real-world example if possible
 """
 
             response = client.chat.completions.create(
@@ -557,7 +558,7 @@ elif feature == "❓ AI Quiz Generator":
     st.header("❓ AI Adaptive Quiz Generator")
     topic = st.text_input("Enter Topic")
     difficulty = st.selectbox("🎯 Select Difficulty", ["Basic", "Advanced", "Expert"])
-    num_questions = st.slider("📊 Number of Questions", 5, 30, 10)  # Changed max to 30
+    num_questions = st.slider("📊 Number of Questions", 1, 30, 10)  # Changed max to 30
 
     def generate_questions(topic, difficulty, num_questions):
         # Generate questions from 0 to 30
@@ -575,11 +576,18 @@ elif feature == "❓ AI Quiz Generator":
         Format:
         [{{"question":"Question","options":["A","B","C","D"],"answer":"Correct Option","explanation":"Explanation"}}]"""
         try:
-            response = openai.ChatCompletion.create(
-                model="gpt-4",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.9
-            )
+           response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {
+            "role":"user",
+            "content":prompt
+        }
+    ],
+    temperature=0.8
+)
+
+content = response.choices[0].message.content
             content = response.choices[0].message.content
             content = content.replace("```json", "").replace("```", "")
             questions = json.loads(content)
@@ -624,7 +632,8 @@ elif feature == "❓ AI Quiz Generator":
                 user_answer = st.session_state.user_answers.get(idx, "")
                 is_correct = (user_answer == q["answer"])
                 if is_correct:
-                    score += 1
+    score += 1
+    st.balloons()
                 review.append({
                     "question": q["question"],
                     "options": q["options"],
