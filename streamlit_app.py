@@ -12,11 +12,6 @@ from deep_translator import GoogleTranslator
 from PyPDF2 import PdfReader
 from gtts import gTTS
 import nltk
-from openai import OpenAI
-
-client = OpenAI(
-    api_key=st.secrets["OPENAI_API_KEY"]
-)
 
 
 # USER AUTHENTICATION DATABASE
@@ -422,10 +417,13 @@ elif feature == "🎤 Speech-to-Text":
 
             with open(audio_path, "rb") as f:
 
-                transcript = client.audio.transcriptions.create(
-                    model="whisper-1",
-                    file=f
-                )
+               recognizer = sr.Recognizer()
+
+with sr.AudioFile(audio_path) as source:
+
+    audio_data = recognizer.record(source)
+
+question = recognizer.recognize_google(audio_data)
 
             question = transcript.text
 
