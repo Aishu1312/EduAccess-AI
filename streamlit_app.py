@@ -433,59 +433,248 @@ elif feature == "🎤 Speech-to-Text":
 
             question_lower = question.lower()
 
-            # ==================================
-            # AI RESPONSES WITHOUT API
-            # ==================================
+            # =========================================
+            # EDUCATIONAL KNOWLEDGE BASE
+            # =========================================
 
-            if "what is ai" in question_lower:
+            if "what is ai" in question_lower or "artificial intelligence" in question_lower:
 
                 answer = """
-Artificial Intelligence (AI) is a technology that enables computers and machines to simulate human intelligence.
-
-AI can learn from data, recognize patterns, make decisions, and solve problems.
+Artificial Intelligence (AI) is a technology that enables computers to perform tasks that normally require human intelligence.
 
 Examples:
 • ChatGPT
+• Self Driving Cars
 • Google Assistant
-• Self-driving cars
-• Recommendation systems
+• Face Recognition
+
+AI learns from data and improves decision making.
 """
 
             elif "python" in question_lower:
 
                 answer = """
-Python is a high-level programming language used for:
+Python is a high-level programming language.
 
+Uses:
 • Data Science
 • Machine Learning
 • Web Development
 • Automation
 • Artificial Intelligence
 
-It is easy to learn and widely used.
+Python is easy to learn and beginner friendly.
+"""
+
+            elif "java" in question_lower:
+
+                answer = """
+Java is an object-oriented programming language.
+
+Uses:
+• Android Development
+• Enterprise Applications
+• Web Applications
+• Banking Software
+
+Features:
+• Platform Independent
+• Secure
+• Robust
+"""
+                
+            elif "c++" in question_lower or "cpp" in question_lower:
+
+                answer = """
+C++ is a powerful programming language.
+
+Uses:
+• Game Development
+• Operating Systems
+• Embedded Systems
+• Competitive Programming
+
+Features:
+• Fast execution
+• Object Oriented
+• High Performance
+"""
+
+            elif "c language" in question_lower or question_lower.strip() == "c":
+
+                answer = """
+C is a procedural programming language.
+
+Uses:
+• System Programming
+• Embedded Systems
+• Operating Systems
+
+It is considered the foundation of modern programming.
+"""
+
+            elif "javascript" in question_lower:
+
+                answer = """
+JavaScript is a scripting language used to make websites interactive.
+
+Uses:
+• Web Development
+• Frontend Applications
+• Backend Applications (Node.js)
+
+Examples:
+• Form Validation
+• Interactive Websites
+• Dynamic Content
+"""
+
+            elif "html" in question_lower:
+
+                answer = """
+HTML stands for HyperText Markup Language.
+
+It is used to create the structure of web pages.
+
+Examples:
+• Headings
+• Paragraphs
+• Images
+• Tables
+• Forms
+"""
+
+            elif "css" in question_lower:
+
+                answer = """
+CSS stands for Cascading Style Sheets.
+
+It is used to design and style web pages.
+
+Examples:
+• Colors
+• Fonts
+• Layouts
+• Animations
+"""
+
+            elif "sql" in question_lower:
+
+                answer = """
+SQL stands for Structured Query Language.
+
+It is used to manage databases.
+
+Common Commands:
+• SELECT
+• INSERT
+• UPDATE
+• DELETE
+
+Popular Databases:
+• MySQL
+• PostgreSQL
+• SQL Server
 """
 
             elif "machine learning" in question_lower:
 
                 answer = """
-Machine Learning is a branch of AI that allows computers to learn from data without being explicitly programmed.
+Machine Learning is a branch of Artificial Intelligence.
+
+It enables computers to learn from data.
 
 Examples:
-• Spam detection
-• Face recognition
-• Recommendation systems
+• Recommendation Systems
+• Spam Detection
+• Face Recognition
+• Fraud Detection
+"""
+
+            elif "deep learning" in question_lower:
+
+                answer = """
+Deep Learning is a subset of Machine Learning.
+
+It uses Neural Networks to solve complex problems.
+
+Applications:
+• Image Recognition
+• NLP
+• Chatbots
+• Self Driving Cars
 """
 
             elif "data science" in question_lower:
 
                 answer = """
-Data Science is the process of collecting, analyzing, and interpreting data to gain insights and make decisions.
+Data Science involves collecting, analyzing and visualizing data.
 
-Main tools:
+Tools:
 • Python
 • SQL
 • Power BI
 • Tableau
+• Excel
+
+Goal:
+Extract useful insights from data.
+"""
+
+            elif "power bi" in question_lower:
+
+                answer = """
+Power BI is a Business Intelligence tool developed by Microsoft.
+
+Uses:
+• Dashboard Creation
+• Data Visualization
+• Reporting
+• Business Analytics
+"""
+
+            elif "tableau" in question_lower:
+
+                answer = """
+Tableau is a data visualization tool.
+
+Uses:
+• Dashboards
+• Reports
+• Data Analysis
+• Business Intelligence
+"""
+
+            elif "excel" in question_lower:
+
+                answer = """
+Microsoft Excel is a spreadsheet application.
+
+Uses:
+• Data Analysis
+• Calculations
+• Dashboards
+• Reporting
+
+Popular Functions:
+• SUM
+• IF
+• VLOOKUP
+• XLOOKUP
+• COUNTIF
+"""
+
+            elif "what is programming" in question_lower:
+
+                answer = """
+Programming is the process of writing instructions that computers can understand and execute.
+
+Popular Languages:
+• Python
+• Java
+• C++
+• JavaScript
+• C#
 """
 
             else:
@@ -497,13 +686,26 @@ Question:
 
 Answer:
 
-Sorry, I do not have a predefined answer for this question.
+I currently do not have a predefined answer for this question.
 
-Please try asking about:
-• AI
+Try asking about:
+
+• Artificial Intelligence
 • Python
+• Java
+• C++
+• C
+• JavaScript
+• HTML
+• CSS
+• SQL
 • Machine Learning
+• Deep Learning
 • Data Science
+• Power BI
+• Tableau
+• Excel
+• Programming
 """
 
             st.subheader(
