@@ -415,9 +415,7 @@ elif feature == "🎤 Speech-to-Text":
                 tmp.write(audio_file.read())
                 audio_path = tmp.name
 
-            with open(audio_path, "rb") as f:
-
-               recognizer = sr.Recognizer()
+           try:
 
 with sr.AudioFile(audio_path) as source:
 
