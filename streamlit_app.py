@@ -403,120 +403,65 @@ elif feature == "🎤 Speech-to-Text":
         translate_text("🎙️ Record Your Voice")
     )
 
-    if audio_file:
+   if audio_file:
 
-        try:
+    try:
 
-            with tempfile.NamedTemporaryFile(
-                delete=False,
-                suffix=".wav"
-            ) as tmp:
+        with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=".wav"
+        ) as tmp:
 
-                tmp.write(audio_file.read())
-                audio_path = tmp.name
+            tmp.write(audio_file.read())
+            audio_path = tmp.name
 
-           try:
+        recognizer = sr.Recognizer()
 
-with sr.AudioFile(audio_path) as source:
+        with sr.AudioFile(audio_path) as source:
 
-    audio_data = recognizer.record(source)
+            audio_data = recognizer.record(source)
 
-question = recognizer.recognize_google(audio_data)
+        question = recognizer.recognize_google(
+            audio_data
+        )
 
-            question = transcript.text
+        st.success(
+            "Speech Recognized Successfully"
+        )
 
-            st.success(
-                translate_text("Speech Recognized Successfully")
-            )
+        st.subheader(
+            "📝 Your Question"
+        )
 
-            st.subheader(
-                translate_text("📝 Your Question")
-            )
+        st.write(question)
 
-            st.write(question)
-
-            ai_prompt = f"""
-You are an educational AI tutor.
-
+        answer = f"""
 Question:
+
 {question}
 
-Answer ONLY in {selected_language} language.
+Speech recognition completed successfully.
 
-Give:
-1. Correct answer
-2. Student friendly explanation
-3. Real-world example if possible
+This version of EduAccess AI is running
+without OpenAI API.
 """
 
-            response = client.chat.completions.create(
+        st.subheader(
+            "🤖 Response"
+        )
 
-                model="gpt-4o-mini",
+        st.success(answer)
 
-                messages=[
-                    {
-                        "role": "user",
-                        "content": ai_prompt
-                    }
-                ],
+        save_to_history(
+            "🎤 Speech Q&A",
+            f"Q: {question}\nA: {answer}"
+        )
 
-                temperature=0.4
-            )
+    except Exception as e:
 
-            answer = response.choices[0].message.content
-
-            st.subheader(
-                translate_text("🤖 AI Answer")
-            )
-
-            st.success(answer)
-
-            lang_code = LANGUAGES.get(
-                selected_language,
-                "en"
-            )
-
-            try:
-
-                tts = gTTS(
-                    text=answer,
-                    lang=lang_code
-                )
-
-            except:
-
-                tts = gTTS(
-                    text=answer,
-                    lang="en"
-                )
-
-            with tempfile.NamedTemporaryFile(
-                delete=False,
-                suffix=".mp3"
-            ) as fp:
-
-                tts.save(fp.name)
-
-                with open(
-                    fp.name,
-                    "rb"
-                ) as audio_out:
-
-                    st.audio(
-                        audio_out.read(),
-                        format="audio/mp3"
-                    )
-
-            save_to_history(
-                "🎤 Speech Q&A",
-                f"Q: {question}\nA: {answer}"
-            )
-
-        except Exception as e:
-
-            st.error(
-                f"Speech Error: {e}"
-            )
+        st.error(
+            f"Speech Recognition Error: {e}"
+        )
             
 # ==================================================
 
