@@ -90,11 +90,13 @@ def save_to_history(category, content):
 # NLTK DOWNLOAD
 
 # ==================================================
+import nltk
+
 try:
     nltk.data.find("tokenizers/punkt")
-except:
-    nltk.download("punkt")
-
+except LookupError:
+    nltk.download("punkt", quiet=True)
+    
 # PAGE CONFIG
 st.set_page_config(page_title="EduAccess AI", page_icon="🚀", layout="wide")
 
