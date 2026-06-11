@@ -2,9 +2,7 @@ streamlit
 SpeechRecognition
 deep-translator
 PyPDF2
-pyaudio
-gtts
+gTTS
 nltk
 reportlab
-pandas
-numpy
+openai
