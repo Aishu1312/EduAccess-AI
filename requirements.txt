@@ -1,9 +1,9 @@
 streamlit
-openai>=1.30.0
-SpeechRecognition
+speechrecognition
 deep-translator
 PyPDF2
 gtts
-reportlab
 nltk
+reportlab
 pandas
+numpy
