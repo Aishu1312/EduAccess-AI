@@ -1381,4 +1381,5 @@ elif feature == "📜 History":
 # FOOTER
 
 # ==================================================
-st.markdown(f"""{translate_text("Made with")} ❤️ {translate_text("using Streamlit")} | EduAccess AI""", unsafe_allow_html=True)
+st.markdown(f"""{translate_text("Made with")} ❤️
+{translate_text("using Streamlit")} | EduAccess AI""", unsafe_allow_html=True)
