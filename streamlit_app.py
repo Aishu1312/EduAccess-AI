@@ -17,11 +17,19 @@ from openai import OpenAI
 
 load_dotenv()
 
-# Initialize OpenAI-compatible Groq client
-client = OpenAI(
-    base_url="https://api.groq.com/openai/v1",
-    api_key=os.environ.get("GROQ_API_KEY", "")
-)
+def get_groq_api_key():
+    # 1. Check Streamlit Secrets (for cloud deployment)
+    try:
+        if "GROQ_API_KEY" in st.secrets:
+            return st.secrets["GROQ_API_KEY"]
+    except:
+        pass
+    # 2. Check local environment variables (for local development)
+    return os.environ.get("GROQ_API_KEY", "")
+
+# Initialize client lazily later
+client = None
+
 
 # USER AUTHENTICATION DATABASE
 conn = sqlite3.connect("eduaccess_users.db", check_same_thread=False)
@@ -776,7 +784,7 @@ elif feature == "❓ AI Quiz Generator":
 
     st.header("❓ AI Adaptive Quiz Generator")
 
-    groq_key = os.environ.get("GROQ_API_KEY", "")
+    groq_key = get_groq_api_key()
     if not groq_key or groq_key == "your_groq_api_key_here":
         st.warning("⚠️ Groq API Key is not configured. Please edit the `.env` file in the project folder and set a valid `GROQ_API_KEY` to use the AI Quiz Generator.")
 
@@ -795,6 +803,14 @@ elif feature == "❓ AI Quiz Generator":
     )
 
     def generate_questions(topic, difficulty, num_questions):
+        global client
+        if client is None:
+            from openai import OpenAI
+            api_key = get_groq_api_key()
+            client = OpenAI(
+                base_url="https://api.groq.com/openai/v1",
+                api_key=api_key if api_key else "placeholder_key"
+            )
 
         difficulty_instruction = {
             "Basic": """
@@ -824,37 +840,28 @@ LEVEL:
 RULES:
 
 1. Questions must be UNIQUE.
-
 2. Questions must be relevant to the topic.
-
 3. Options must be REAL answers.
+4. Every option should be meaningful.
+5. Only ONE correct answer.
+6. Include explanation.
 
-4. NEVER use:
-A, B, C, D
-
-5. Every option should be meaningful.
-
-6. Only ONE correct answer.
-
-7. Include explanation.
-
-8. Return ONLY JSON.
-
-Example:
-
-[
+Return your response in this exact JSON format (a JSON object containing a "questions" array):
 {{
-"question":"What is Python?",
-"options":[
-"Programming Language",
-"Database",
-"Operating System",
-"Browser"
-],
-"answer":"Programming Language",
-"explanation":"Python is a programming language."
+  "questions": [
+    {{
+      "question": "What is Python?",
+      "options": [
+        "Programming Language",
+        "Database",
+        "Operating System",
+        "Browser"
+      ],
+      "answer": "Programming Language",
+      "explanation": "Python is a programming language."
+    }}
+  ]
 }}
-]
 """
 
         try:
@@ -863,22 +870,22 @@ Example:
                 model="llama-3.1-8b-instant",
                 messages=[
                     {
+                        "role": "system",
+                        "content": "You are a helpful assistant designed to output JSON."
+                    },
+                    {
                         "role": "user",
                         "content": prompt
                     }
                 ],
+                response_format={"type": "json_object"},
                 temperature=0.8
             )
 
             content = response.choices[0].message.content
 
-            content = (
-                content.replace("```json", "")
-                .replace("```", "")
-                .strip()
-            )
-
-            questions = json.loads(content)
+            data = json.loads(content)
+            questions = data.get("questions", [])
 
             valid_questions = []
 
@@ -925,9 +932,9 @@ Example:
 
     if st.button("🚀 Generate Quiz"):
 
-        groq_key = os.environ.get("GROQ_API_KEY", "")
+        groq_key = get_groq_api_key()
         if not groq_key or groq_key == "your_groq_api_key_here":
-            st.error("⚠️ Cannot generate quiz: Groq API Key is not configured. Please add a valid GROQ_API_KEY in the `.env` file.")
+            st.error("⚠️ Cannot generate quiz: Groq API Key is not configured. Please add a valid GROQ_API_KEY in the `.env` file or Streamlit Secrets.")
 
         elif topic.strip() == "":
 
