@@ -12,7 +12,16 @@ from deep_translator import GoogleTranslator
 from PyPDF2 import PdfReader
 from gtts import gTTS
 import nltk
+from dotenv import load_dotenv
+from openai import OpenAI
 
+load_dotenv()
+
+# Initialize OpenAI-compatible Groq client
+client = OpenAI(
+    base_url="https://api.groq.com/openai/v1",
+    api_key=os.environ.get("GROQ_API_KEY", "")
+)
 
 # USER AUTHENTICATION DATABASE
 conn = sqlite3.connect("eduaccess_users.db", check_same_thread=False)
@@ -244,7 +253,7 @@ if not st.session_state.logged_in:
             if user:
                 st.session_state.logged_in = True
                 st.session_state.username = username
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("Invalid Credentials")
     st.stop()
@@ -342,7 +351,7 @@ elif feature == "👤 User Profile":
     if st.button("Logout"):
         st.session_state.logged_in = False
         st.session_state.username = ""
-        st.experimental_rerun()
+        st.rerun()
 
 # ==================================================
 
@@ -767,6 +776,10 @@ elif feature == "❓ AI Quiz Generator":
 
     st.header("❓ AI Adaptive Quiz Generator")
 
+    groq_key = os.environ.get("GROQ_API_KEY", "")
+    if not groq_key or groq_key == "your_groq_api_key_here":
+        st.warning("⚠️ Groq API Key is not configured. Please edit the `.env` file in the project folder and set a valid `GROQ_API_KEY` to use the AI Quiz Generator.")
+
     topic = st.text_input("📚 Enter Any Topic")
 
     difficulty = st.selectbox(
@@ -847,7 +860,7 @@ Example:
         try:
 
             response = client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="llama-3.1-8b-instant",
                 messages=[
                     {
                         "role": "user",
@@ -912,7 +925,11 @@ Example:
 
     if st.button("🚀 Generate Quiz"):
 
-        if topic.strip() == "":
+        groq_key = os.environ.get("GROQ_API_KEY", "")
+        if not groq_key or groq_key == "your_groq_api_key_here":
+            st.error("⚠️ Cannot generate quiz: Groq API Key is not configured. Please add a valid GROQ_API_KEY in the `.env` file.")
+
+        elif topic.strip() == "":
 
             st.warning("Please enter a topic.")
 

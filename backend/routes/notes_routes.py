@@ -1,10 +1,16 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from transformers import pipeline
 
 router = APIRouter()
 
-summarizer = pipeline("summarization")
+summarizer = None
+
+def get_summarizer():
+    global summarizer
+    if summarizer is None:
+        from transformers import pipeline
+        summarizer = pipeline("summarization")
+    return summarizer
 
 class TextRequest(BaseModel):
     text: str
@@ -12,7 +18,8 @@ class TextRequest(BaseModel):
 @router.post("/generate-notes")
 def generate_notes(request: TextRequest):
 
-    summary = summarizer(
+    sum_pipeline = get_summarizer()
+    summary = sum_pipeline(
         request.text,
         max_length=120,
         min_length=30,
@@ -22,3 +29,4 @@ def generate_notes(request: TextRequest):
     return {
         "notes": summary[0]["summary_text"]
     }
+

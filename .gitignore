@@ -58,3 +58,8 @@ logs/
 # Firebase
 .firebase/
 firebase-debug.log
+
+# Databases & User Local Data
+*.db
+history_*.json
+

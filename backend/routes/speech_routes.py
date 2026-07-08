@@ -1,10 +1,16 @@
 from fastapi import APIRouter, UploadFile, File
-import whisper
 import os
 
 router = APIRouter()
 
-model = whisper.load_model("base")
+model = None
+
+def get_whisper_model():
+    global model
+    if model is None:
+        import whisper
+        model = whisper.load_model("base")
+    return model
 
 @router.post("/transcribe")
 async def transcribe_audio(file: UploadFile = File(...)):
@@ -14,10 +20,12 @@ async def transcribe_audio(file: UploadFile = File(...)):
     with open(temp_file, "wb") as f:
         f.write(await file.read())
 
-    result = model.transcribe(temp_file)
+    ws_model = get_whisper_model()
+    result = ws_model.transcribe(temp_file)
 
     os.remove(temp_file)
 
     return {
         "transcription": result["text"]
     }
+
